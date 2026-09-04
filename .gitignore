@@ -1,0 +1,12 @@
+# Local/runtime database files
+cie/*.duckdb*
+cie/*.db-shm
+cie/*.db-wal
+
+# Local machine files
+.DS_Store
+
+# Dependencies and build output
+**/node_modules/
+**/dist/
+**/.next/

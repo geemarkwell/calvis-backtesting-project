@@ -1,0 +1,122 @@
+{
+  "job_ids": [
+    "50837"
+  ],
+  "what_went_wrong": "On job 50837 the copilot went quiet after the first hour. It woke on schedule five times between 3am and 7am and sent nothing at all — no patrol report asked for, no check on the guard, all the way to the end of the shift.",
+  "failure_mode": "The scheduled-check-in prompt strongly favors silence whenever no formal obligation is open, but does not make prolonged absence of guard-originated updates an independent reason to check status. In the supplied window, this produced two consecutive silent scheduled turns before later outreach occurred.",
+  "evidence_windows": [
+    {
+      "job_id": "50837",
+      "start_turn": 8,
+      "end_turn": 12,
+      "trace_refs": [
+        "job:50837:simulation:22:baseline:0",
+        "job:50837:simulation:22:baseline:1",
+        "job:50837:simulation:22:baseline:2",
+        "job:50837:simulation:22:baseline:3",
+        "job:50837:simulation:22:baseline:4",
+        "job:50837:simulation:22:baseline:5",
+        "job:50837:simulation:22:baseline:6",
+        "job:50837:simulation:22:baseline:7",
+        "job:50837:simulation:22:baseline:8",
+        "job:50837:simulation:22:baseline:9",
+        "job:50837:simulation:22:baseline:10"
+      ]
+    }
+  ],
+  "observed_behavior": [
+    {
+      "claim": "Scheduled-check-in turns 8 and 9 explicitly ended silently, with no following message or relevant action recorded for either wake.",
+      "trace_refs": [
+        "job:50837:simulation:22:baseline:0",
+        "job:50837:simulation:22:baseline:1"
+      ]
+    },
+    {
+      "claim": "Turn 10 was not silent: the Copilot sent a message stating that no required rounds were showing and told the guard to stay posted, then added an internal note. The message did not ask the guard to report current status.",
+      "trace_refs": [
+        "job:50837:simulation:22:baseline:2",
+        "job:50837:simulation:22:baseline:3",
+        "job:50837:simulation:22:baseline:4"
+      ]
+    },
+    {
+      "claim": "Turns 11 and 12 were also not silent. They sent an arrival/POC check-in request and a follow-up firm-up, with corresponding internal notes.",
+      "trace_refs": [
+        "job:50837:simulation:22:baseline:5",
+        "job:50837:simulation:22:baseline:6",
+        "job:50837:simulation:22:baseline:7",
+        "job:50837:simulation:22:baseline:8",
+        "job:50837:simulation:22:baseline:9",
+        "job:50837:simulation:22:baseline:10"
+      ]
+    },
+    {
+      "claim": "Therefore, the supplied trace does not show five silent wakes through the end of the selected window; it shows two silent wakes followed by three turns with guard-facing messages.",
+      "trace_refs": [
+        "job:50837:simulation:22:baseline:0",
+        "job:50837:simulation:22:baseline:1",
+        "job:50837:simulation:22:baseline:2",
+        "job:50837:simulation:22:baseline:3",
+        "job:50837:simulation:22:baseline:5",
+        "job:50837:simulation:22:baseline:6",
+        "job:50837:simulation:22:baseline:8",
+        "job:50837:simulation:22:baseline:9"
+      ]
+    }
+  ],
+  "expected_behavior": "At scheduled wakes, detect the extended lack of guard updates and send a concise check-in requesting the guard’s status and any required patrol report. NEVER remain silent across repeated scheduled wakes through the end of the shift.",
+  "relevant_turns": [
+    {
+      "turn_ref": "job:50837:simulation:22:baseline:0",
+      "trigger": "scheduled_check_in",
+      "instruction_file": "instructions/scheduled_check_in.md"
+    },
+    {
+      "turn_ref": "job:50837:simulation:22:baseline:1",
+      "trigger": "scheduled_check_in",
+      "instruction_file": "instructions/scheduled_check_in.md"
+    },
+    {
+      "turn_ref": "job:50837:simulation:22:baseline:2",
+      "trigger": "scheduled_check_in",
+      "instruction_file": "instructions/scheduled_check_in.md"
+    },
+    {
+      "turn_ref": "job:50837:simulation:22:baseline:5",
+      "trigger": "scheduled_check_in",
+      "instruction_file": "instructions/scheduled_check_in.md"
+    },
+    {
+      "turn_ref": "job:50837:simulation:22:baseline:8",
+      "trigger": "scheduled_check_in",
+      "instruction_file": "instructions/scheduled_check_in.md"
+    }
+  ],
+  "prompt_diagnosis": {
+    "file": "instructions/scheduled_check_in.md",
+    "section": "Two things to run, in order — Anything else worth doing",
+    "exact_text": "- **Anything else worth doing.** A part of the site you haven't heard about, a thread\n  the guard left open, a quick look that sharpens the picture. Reach out only when it\n  helps the shift AND the moment fits. **A cycle with nothing worth saying is a no-op.\n  Staying quiet is correct.** A new window that closed empty is not nothing. A window ops\n  already owns gets a note, never another DM. Don't manufacture a DM to break a silence, and don't re-ping a guard you\n  already messaged unless something genuinely new and urgent came up.",
+    "diagnosis_type": "overly_forceful",
+    "explanation": "This passage repeatedly directs the model not to break silence or re-ping unless something new and urgent appears. It does not identify a prolonged lack of guard-originated updates as a monitoring signal worth acting on. Together with the compliance instruction that nothing open means nothing is owed, the model can interpret an obligation-free but unresponsive shift as a correct no-op, as occurred on turns 8 and 9."
+  },
+  "hypothesis": "The model likely treated the absence of an open ledger obligation as eliminating the compliance reason to message, then applied the forceful no-op and anti-re-ping language to the remaining discretionary sweep. Explicitly making an hour without a guard-originated update a bounded status-check condition should test whether that missing exception caused the consecutive silent wakes, without inventing a patrol cadence.",
+  "proposed_edit": {
+    "file": "instructions/scheduled_check_in.md",
+    "old_text": "- **Anything else worth doing.** A part of the site you haven't heard about, a thread\n  the guard left open, a quick look that sharpens the picture. Reach out only when it\n  helps the shift AND the moment fits. **A cycle with nothing worth saying is a no-op.\n  Staying quiet is correct.** A new window that closed empty is not nothing. A window ops\n  already owns gets a note, never another DM. Don't manufacture a DM to break a silence, and don't re-ping a guard you\n  already messaged unless something genuinely new and urgent came up.",
+    "new_text": "- **Anything else worth doing.** A part of the site you haven't heard about, a thread\n  the guard left open, a quick look that sharpens the picture. Reach out only when it\n  helps the shift AND the moment fits. **A cycle with nothing worth saying is a no-op.\n  Staying quiet is correct.** One exception: during an active shift, an hour with no\n  guard-originated update is worth one concise status check. Include any open patrol or\n  report obligation in that check, but don't invent one. If the check is still unanswered\n  at the next scheduled wake, firm it up once, then escalate per core cadence instead of\n  letting repeated wakes pass silently. A new window that closed empty is not nothing. A\n  window ops already owns gets a note, never another DM. Don't manufacture any other DM\n  just to break a silence, and don't re-ping a guard you already messaged unless something\n  genuinely new and urgent came up.",
+    "intended_effect": "Make prolonged guard silence an explicit, bounded monitoring condition: one status check after an hour, inclusion of only genuinely open patrol/report requirements, one firm-up if unanswered, and escalation rather than repeated silent wakes or unlimited nagging."
+  },
+  "risks": [
+    "This may increase guard-facing messages on legitimately quiet shifts where guards normally provide few unsolicited updates.",
+    "The phrase “guard-originated update” must be applied to the conversation history correctly; acknowledgements or unrelated events should not reset it.",
+    "A fixed one-hour threshold may be too aggressive for some posts without reporting cadences, though the one-check and one-firm-up limits constrain over-pinging."
+  ],
+  "confidence": 0.88,
+  "uncertainties": [
+    "The selected trace omits earlier conversation history and tool results, so it does not independently establish exactly when the guard last sent an update or whether the obligations ledger was empty versus unavailable.",
+    "The supplied trace contradicts the report that all five wakes were silent: turns 10 through 12 contain guard-facing messages. The diagnosis therefore targets the two explicitly silent consecutive wakes and the lack of a general status check, not five silent turns.",
+    "Tool unavailability is mentioned in Copilot-authored messages and notes, but the supplied window does not include the actual failed tool call, so its contribution cannot be verified here.",
+    "Prompt language can support the causal hypothesis but cannot prove that it alone determined the model's decisions."
+  ]
+}

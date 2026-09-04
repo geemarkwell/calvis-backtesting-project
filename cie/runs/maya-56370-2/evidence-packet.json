@@ -1,0 +1,3324 @@
+{
+  "callout": "On job 56370 the guard said he'd walked the full site and checked both buildings. The copilot pushed back on him three times in four minutes and flagged him. Too hard for what it actually had.",
+  "jobId": "56370",
+  "startTurn": 8,
+  "endTurn": 11,
+  "trajectories": {
+    "historical": {
+      "name": "historical",
+      "turns": [
+        {
+          "ref": "historical:turn:8",
+          "turn": 8,
+          "trigger": "scheduled_check_in",
+          "timestamp": "2026-08-05T02:01:01.385661+00:00",
+          "events": [
+            {
+              "ref": "historical:turn:8:event:0",
+              "timestamp": "2026-08-05T01:01:15.038457+00:00",
+              "type": "telemetry",
+              "data": {
+                "battery": 0.3499999940395355,
+                "battery_state": "unplugged",
+                "motion": "stationary",
+                "steps": 13,
+                "distance_m": "9.490000",
+                "altitude": "-0.121552",
+                "signal": null
+              }
+            },
+            {
+              "ref": "historical:turn:8:event:1",
+              "timestamp": "2026-08-05T01:01:31.911602+00:00",
+              "type": "location",
+              "data": {
+                "lat": 36.313777,
+                "lng": -77.931622,
+                "accuracy_m": 25.59184341422926,
+                "speed": 0,
+                "heading": null
+              }
+            },
+            {
+              "ref": "historical:turn:8:event:2",
+              "timestamp": "2026-08-05T01:01:44.691978+00:00",
+              "type": "telemetry",
+              "data": {
+                "battery": 0.3499999940395355,
+                "battery_state": "unplugged",
+                "motion": "stationary",
+                "steps": 13,
+                "distance_m": "9.490000",
+                "altitude": "0.219307",
+                "signal": null
+              }
+            },
+            {
+              "ref": "historical:turn:8:event:3",
+              "timestamp": "2026-08-05T01:02:02.234449+00:00",
+              "type": "location",
+              "data": {
+                "lat": 36.313777,
+                "lng": -77.931622,
+                "accuracy_m": 24.384757754143436,
+                "speed": 0,
+                "heading": null
+              }
+            },
+            {
+              "ref": "historical:turn:8:event:4",
+              "timestamp": "2026-08-05T01:02:32.539232+00:00",
+              "type": "location",
+              "data": {
+                "lat": 36.31387,
+                "lng": -77.931656,
+                "accuracy_m": 22.86966591541151,
+                "speed": 0.4745468672962132,
+                "heading": null
+              }
+            },
+            {
+              "ref": "historical:turn:8:event:5",
+              "timestamp": "2026-08-05T01:02:55.386507+00:00",
+              "type": "telemetry",
+              "data": {
+                "battery": 0.3499999940395355,
+                "battery_state": "unplugged",
+                "motion": "unknown",
+                "steps": 18,
+                "distance_m": "15.110000",
+                "altitude": "-0.956520",
+                "signal": null
+              }
+            },
+            {
+              "ref": "historical:turn:8:event:6",
+              "timestamp": "2026-08-05T01:03:03.060614+00:00",
+              "type": "location",
+              "data": {
+                "lat": 36.313796,
+                "lng": -77.931544,
+                "accuracy_m": 19.066410496160266,
+                "speed": 0,
+                "heading": null
+              }
+            },
+            {
+              "ref": "historical:turn:8:event:7",
+              "timestamp": "2026-08-05T01:03:03.370659+00:00",
+              "type": "telemetry",
+              "data": {
+                "battery": 0.3499999940395355,
+                "battery_state": "unplugged",
+                "motion": "stationary",
+                "steps": 24,
+                "distance_m": "19.277064",
+                "altitude": "-1.249817",
+                "signal": null
+              }
+            },
+            {
+              "ref": "historical:turn:8:event:8",
+              "timestamp": "2026-08-05T01:03:33.627405+00:00",
+              "type": "location",
+              "data": {
+                "lat": 36.313794,
+                "lng": -77.931494,
+                "accuracy_m": 23.22388053440115,
+                "speed": 0,
+                "heading": null
+              }
+            },
+            {
+              "ref": "historical:turn:8:event:9",
+              "timestamp": "2026-08-05T01:03:34.226602+00:00",
+              "type": "telemetry",
+              "data": {
+                "battery": 0.3499999940395355,
+                "battery_state": "unplugged",
+                "motion": "stationary",
+                "steps": 24,
+                "distance_m": "19.277064",
+                "altitude": "0.338219",
+                "signal": null
+              }
+            },
+            {
+              "ref": "historical:turn:8:event:10",
+              "timestamp": "2026-08-05T01:04:04.464934+00:00",
+              "type": "location",
+              "data": {
+                "lat": 36.3138,
+                "lng": -77.931458,
+                "accuracy_m": 23.163524082028427,
+                "speed": 0,
+                "heading": null
+              }
+            },
+            {
+              "ref": "historical:turn:8:event:11",
+              "timestamp": "2026-08-05T01:04:34.492702+00:00",
+              "type": "telemetry",
+              "data": {
+                "battery": 0.3499999940395355,
+                "battery_state": "unplugged",
+                "motion": "stationary",
+                "steps": 24,
+                "distance_m": "19.277064",
+                "altitude": "-0.023781",
+                "signal": null
+              }
+            },
+            {
+              "ref": "historical:turn:8:event:12",
+              "timestamp": "2026-08-05T01:04:35.737133+00:00",
+              "type": "location",
+              "data": {
+                "lat": 36.313809,
+                "lng": -77.931464,
+                "accuracy_m": 16.26706259529742,
+                "speed": 0,
+                "heading": null
+              }
+            },
+            {
+              "ref": "historical:turn:8:event:13",
+              "timestamp": "2026-08-05T01:05:04.462159+00:00",
+              "type": "telemetry",
+              "data": {
+                "battery": 0.3499999940395355,
+                "battery_state": "unplugged",
+                "motion": "stationary",
+                "steps": 24,
+                "distance_m": "19.277064",
+                "altitude": "0.002640",
+                "signal": null
+              }
+            },
+            {
+              "ref": "historical:turn:8:event:14",
+              "timestamp": "2026-08-05T01:05:06.180866+00:00",
+              "type": "location",
+              "data": {
+                "lat": 36.313809,
+                "lng": -77.931464,
+                "accuracy_m": 15.375501281773806,
+                "speed": 0,
+                "heading": null
+              }
+            },
+            {
+              "ref": "historical:turn:8:event:15",
+              "timestamp": "2026-08-05T01:05:34.713353+00:00",
+              "type": "telemetry",
+              "data": {
+                "battery": 0.30000001192092896,
+                "battery_state": "unplugged",
+                "motion": "stationary",
+                "steps": 24,
+                "distance_m": "19.277064",
+                "altitude": "-0.126831",
+                "signal": null
+              }
+            },
+            {
+              "ref": "historical:turn:8:event:16",
+              "timestamp": "2026-08-05T01:05:36.426036+00:00",
+              "type": "location",
+              "data": {
+                "lat": 36.313809,
+                "lng": -77.931464,
+                "accuracy_m": 15.225207953692566,
+                "speed": 0,
+                "heading": null
+              }
+            },
+            {
+              "ref": "historical:turn:8:event:17",
+              "timestamp": "2026-08-05T01:06:06.756246+00:00",
+              "type": "location",
+              "data": {
+                "lat": 36.313809,
+                "lng": -77.931464,
+                "accuracy_m": 14.776618912627344,
+                "speed": 0,
+                "heading": null
+              }
+            },
+            {
+              "ref": "historical:turn:8:event:18",
+              "timestamp": "2026-08-05T01:06:34.183521+00:00",
+              "type": "telemetry",
+              "data": {
+                "battery": 0.30000001192092896,
+                "battery_state": "unplugged",
+                "motion": "stationary",
+                "steps": 24,
+                "distance_m": "19.277064",
+                "altitude": "-0.044914",
+                "signal": null
+              }
+            },
+            {
+              "ref": "historical:turn:8:event:19",
+              "timestamp": "2026-08-05T01:06:37.556289+00:00",
+              "type": "location",
+              "data": {
+                "lat": 36.313809,
+                "lng": -77.931464,
+                "accuracy_m": 14.706156013482973,
+                "speed": 0,
+                "heading": null
+              }
+            },
+            {
+              "ref": "historical:turn:8:event:20",
+              "timestamp": "2026-08-05T01:07:07.435903+00:00",
+              "type": "location",
+              "data": {
+                "lat": 36.313826,
+                "lng": -77.931466,
+                "accuracy_m": 4.599644536369067,
+                "speed": null,
+                "heading": null
+              }
+            },
+            {
+              "ref": "historical:turn:8:event:21",
+              "timestamp": "2026-08-05T01:07:36.163129+00:00",
+              "type": "telemetry",
+              "data": {
+                "battery": 0.30000001192092896,
+                "battery_state": "unplugged",
+                "motion": "stationary",
+                "steps": 24,
+                "distance_m": "19.277064",
+                "altitude": "0.171745",
+                "signal": null
+              }
+            },
+            {
+              "ref": "historical:turn:8:event:22",
+              "timestamp": "2026-08-05T01:07:37.764564+00:00",
+              "type": "location",
+              "data": {
+                "lat": 36.313833,
+                "lng": -77.931464,
+                "accuracy_m": 4.376692408616062,
+                "speed": null,
+                "heading": null
+              }
+            },
+            {
+              "ref": "historical:turn:8:event:23",
+              "timestamp": "2026-08-05T01:08:07.794554+00:00",
+              "type": "location",
+              "data": {
+                "lat": 36.313843,
+                "lng": -77.931462,
+                "accuracy_m": 4.097404541071105,
+                "speed": null,
+                "heading": null
+              }
+            },
+            {
+              "ref": "historical:turn:8:event:24",
+              "timestamp": "2026-08-05T01:08:36.902483+00:00",
+              "type": "telemetry",
+              "data": {
+                "battery": 0.30000001192092896,
+                "battery_state": "unplugged",
+                "motion": "stationary",
+                "steps": 24,
+                "distance_m": "19.277064",
+                "altitude": "-0.044922",
+                "signal": null
+              }
+            },
+            {
+              "ref": "historical:turn:8:event:25",
+              "timestamp": "2026-08-05T01:08:37.835871+00:00",
+              "type": "location",
+              "data": {
+                "lat": 36.31385,
+                "lng": -77.93146,
+                "accuracy_m": 3.8668842365547875,
+                "speed": null,
+                "heading": null
+              }
+            },
+            {
+              "ref": "historical:turn:8:event:26",
+              "timestamp": "2026-08-05T01:09:07.852909+00:00",
+              "type": "location",
+              "data": {
+                "lat": 36.313854,
+                "lng": -77.931459,
+                "accuracy_m": 3.733083926767293,
+                "speed": null,
+                "heading": null
+              }
+            },
+            {
+              "ref": "historical:turn:8:event:27",
+              "timestamp": "2026-08-05T01:09:36.436005+00:00",
+              "type": "telemetry",
+              "data": {
+                "battery": 0.30000001192092896,
+                "battery_state": "unplugged",
+                "motion": "stationary",
+                "steps": 24,
+                "distance_m": "19.277064",
+                "altitude": "-0.153252",
+                "signal": null
+              }
+            },
+            {
+              "ref": "historical:turn:8:event:28",
+              "timestamp": "2026-08-05T01:09:38.164521+00:00",
+              "type": "location",
+              "data": {
+                "lat": 36.313859,
+                "lng": -77.931458,
+                "accuracy_m": 3.558024278274136,
+                "speed": null,
+                "heading": null
+              }
+            },
+            {
+              "ref": "historical:turn:8:event:29",
+              "timestamp": "2026-08-05T01:10:04.276192+00:00",
+              "type": "telemetry",
+              "data": {
+                "battery": 0.30000001192092896,
+                "battery_state": "unplugged",
+                "motion": "stationary",
+                "steps": 24,
+                "distance_m": "19.277064",
+                "altitude": "-0.293297",
+                "signal": null
+              }
+            },
+            {
+              "ref": "historical:turn:8:event:30",
+              "timestamp": "2026-08-05T01:10:08.315166+00:00",
+              "type": "location",
+              "data": {
+                "lat": 36.313862,
+                "lng": -77.931457,
+                "accuracy_m": 3.4539437498173466,
+                "speed": null,
+                "heading": null
+              }
+            },
+            {
+              "ref": "historical:turn:8:event:31",
+              "timestamp": "2026-08-05T01:10:38.149990+00:00",
+              "type": "telemetry",
+              "data": {
+                "battery": 0.30000001192092896,
+                "battery_state": "unplugged",
+                "motion": "stationary",
+                "steps": 24,
+                "distance_m": "19.277064",
+                "altitude": "-0.002647",
+                "signal": null
+              }
+            },
+            {
+              "ref": "historical:turn:8:event:32",
+              "timestamp": "2026-08-05T01:10:39.587601+00:00",
+              "type": "location",
+              "data": {
+                "lat": 36.313865,
+                "lng": -77.931457,
+                "accuracy_m": 3.3950139999999998,
+                "speed": null,
+                "heading": null
+              }
+            },
+            {
+              "ref": "historical:turn:8:event:33",
+              "timestamp": "2026-08-05T01:11:08.788306+00:00",
+              "type": "location",
+              "data": {
+                "lat": 36.313868,
+                "lng": -77.931456,
+                "accuracy_m": 3.2317674853152223,
+                "speed": null,
+                "heading": null
+              }
+            },
+            {
+              "ref": "historical:turn:8:event:34",
+              "timestamp": "2026-08-05T01:11:35.066962+00:00",
+              "type": "telemetry",
+              "data": {
+                "battery": 0.30000001192092896,
+                "battery_state": "unplugged",
+                "motion": "stationary",
+                "steps": 24,
+                "distance_m": "19.277064",
+                "altitude": "0.190247",
+                "signal": null
+              }
+            },
+            {
+              "ref": "historical:turn:8:event:35",
+              "timestamp": "2026-08-05T01:11:39.019970+00:00",
+              "type": "location",
+              "data": {
+                "lat": 36.31387,
+                "lng": -77.931455,
+                "accuracy_m": 3.119141465233116,
+                "speed": null,
+                "heading": null
+              }
+            },
+            {
+              "ref": "historical:turn:8:event:36",
+              "timestamp": "2026-08-05T01:12:09.488149+00:00",
+              "type": "location",
+              "data": {
+                "lat": 36.313872,
+                "lng": -77.931455,
+                "accuracy_m": 3.049892399127083,
+                "speed": null,
+                "heading": null
+              }
+            },
+            {
+              "ref": "historical:turn:8:event:37",
+              "timestamp": "2026-08-05T01:12:35.465126+00:00",
+              "type": "telemetry",
+              "data": {
+                "battery": 0.30000001192092896,
+                "battery_state": "unplugged",
+                "motion": "stationary",
+                "steps": 24,
+                "distance_m": "19.277064",
+                "altitude": "0.142685",
+                "signal": null
+              }
+            },
+            {
+              "ref": "historical:turn:8:event:38",
+              "timestamp": "2026-08-05T01:12:39.936900+00:00",
+              "type": "location",
+              "data": {
+                "lat": 36.313874,
+                "lng": -77.931455,
+                "accuracy_m": 2.9562329914727585,
+                "speed": null,
+                "heading": null
+              }
+            },
+            {
+              "ref": "historical:turn:8:event:39",
+              "timestamp": "2026-08-05T01:13:04.114337+00:00",
+              "type": "telemetry",
+              "data": {
+                "battery": 0.30000001192092896,
+                "battery_state": "unplugged",
+                "motion": "stationary",
+                "steps": 24,
+                "distance_m": "19.277064",
+                "altitude": "-0.005287",
+                "signal": null
+              }
+            },
+            {
+              "ref": "historical:turn:8:event:40",
+              "timestamp": "2026-08-05T01:13:10.072329+00:00",
+              "type": "location",
+              "data": {
+                "lat": 36.313876,
+                "lng": -77.931454,
+                "accuracy_m": 2.8978952025285296,
+                "speed": null,
+                "heading": null
+              }
+            },
+            {
+              "ref": "historical:turn:8:event:41",
+              "timestamp": "2026-08-05T01:13:35.629058+00:00",
+              "type": "telemetry",
+              "data": {
+                "battery": 0.30000001192092896,
+                "battery_state": "unplugged",
+                "motion": "stationary",
+                "steps": 24,
+                "distance_m": "19.277064",
+                "altitude": "-0.132118",
+                "signal": null
+              }
+            },
+            {
+              "ref": "historical:turn:8:event:42",
+              "timestamp": "2026-08-05T01:13:40.296657+00:00",
+              "type": "location",
+              "data": {
+                "lat": 36.313878,
+                "lng": -77.931454,
+                "accuracy_m": 2.8185612713934627,
+                "speed": null,
+                "heading": null
+              }
+            },
+            {
+              "ref": "historical:turn:8:event:43",
+              "timestamp": "2026-08-05T01:14:10.911196+00:00",
+              "type": "location",
+              "data": {
+                "lat": 36.313879,
+                "lng": -77.931454,
+                "accuracy_m": 2.768614376694279,
+                "speed": null,
+                "heading": null
+              }
+            },
+            {
+              "ref": "historical:turn:8:event:44",
+              "timestamp": "2026-08-05T01:14:36.083571+00:00",
+              "type": "telemetry",
+              "data": {
+                "battery": 0.30000001192092896,
+                "battery_state": "unplugged",
+                "motion": "stationary",
+                "steps": 24,
+                "distance_m": "19.277064",
+                "altitude": "0.029068",
+                "signal": null
+              }
+            },
+            {
+              "ref": "historical:turn:8:event:45",
+              "timestamp": "2026-08-05T01:14:41.278083+00:00",
+              "type": "location",
+              "data": {
+                "lat": 36.31388,
+                "lng": -77.931453,
+                "accuracy_m": 2.7005758306888863,
+                "speed": null,
+                "heading": null
+              }
+            },
+            {
+              "ref": "historical:turn:8:event:46",
+              "timestamp": "2026-08-05T01:15:11.669659+00:00",
+              "type": "location",
+              "data": {
+                "lat": 36.313881,
+                "lng": -77.931453,
+                "accuracy_m": 2.6572457750029286,
+                "speed": null,
+                "heading": null
+              }
+            },
+            {
+              "ref": "historical:turn:8:event:47",
+              "timestamp": "2026-08-05T01:15:36.450093+00:00",
+              "type": "telemetry",
+              "data": {
+                "battery": 0.25,
+                "battery_state": "unplugged",
+                "motion": "stationary",
+                "steps": 24,
+                "distance_m": "19.277064",
+                "altitude": "-0.150612",
+                "signal": null
+              }
+            },
+            {
+              "ref": "historical:turn:8:event:48",
+              "timestamp": "2026-08-05T01:15:42.091981+00:00",
+              "type": "location",
+              "data": {
+                "lat": 36.313882,
+                "lng": -77.931453,
+                "accuracy_m": 2.5982068641319893,
+                "speed": null,
+                "heading": null
+              }
+            },
+            {
+              "ref": "historical:turn:8:event:49",
+              "timestamp": "2026-08-05T01:16:12.370519+00:00",
+              "type": "location",
+              "data": {
+                "lat": 36.313883,
+                "lng": -77.931453,
+                "accuracy_m": 2.5602531870924565,
+                "speed": null,
+                "heading": null
+              }
+            },
+            {
+              "ref": "historical:turn:8:event:50",
+              "timestamp": "2026-08-05T01:16:39.230024+00:00",
+              "type": "telemetry",
+              "data": {
+                "battery": 0.25,
+                "battery_state": "unplugged",
+                "motion": "stationary",
+                "steps": 24,
+                "distance_m": "19.277064",
+                "altitude": "-0.169106",
+                "signal": null
+              }
+            },
+            {
+              "ref": "historical:turn:8:event:51",
+              "timestamp": "2026-08-05T01:16:42.561279+00:00",
+              "type": "location",
+              "data": {
+                "lat": 36.313884,
+                "lng": -77.931452,
+                "accuracy_m": 2.5085177782855603,
+                "speed": null,
+                "heading": null
+              }
+            },
+            {
+              "ref": "historical:turn:8:event:52",
+              "timestamp": "2026-08-05T01:17:13.277588+00:00",
+              "type": "location",
+              "data": {
+                "lat": 36.313885,
+                "lng": -77.931452,
+                "accuracy_m": 2.4750142477858237,
+                "speed": null,
+                "heading": null
+              }
+            },
+            {
+              "ref": "historical:turn:8:event:53",
+              "timestamp": "2026-08-05T01:17:36.064858+00:00",
+              "type": "telemetry",
+              "data": {
+                "battery": 0.25,
+                "battery_state": "unplugged",
+                "motion": "stationary",
+                "steps": 24,
+                "distance_m": "19.277064",
+                "altitude": "-0.108337",
+                "signal": null
+              }
+            },
+            {
+              "ref": "historical:turn:8:event:54",
+              "timestamp": "2026-08-05T01:17:43.552734+00:00",
+              "type": "location",
+              "data": {
+                "lat": 36.313886,
+                "lng": -77.931452,
+                "accuracy_m": 2.4293258550628196,
+                "speed": null,
+                "heading": null
+              }
+            },
+            {
+              "ref": "historical:turn:8:event:55",
+              "timestamp": "2026-08-05T01:18:19.219057+00:00",
+              "type": "location",
+              "data": {
+                "lat": 36.313887,
+                "lng": -77.931452,
+                "accuracy_m": 2.3994062908415765,
+                "speed": null,
+                "heading": null
+              }
+            },
+            {
+              "ref": "historical:turn:8:event:56",
+              "timestamp": "2026-08-05T01:18:35.756237+00:00",
+              "type": "telemetry",
+              "data": {
+                "battery": 0.25,
+                "battery_state": "unplugged",
+                "motion": "stationary",
+                "steps": 24,
+                "distance_m": "19.277064",
+                "altitude": "-0.010574",
+                "signal": null
+              }
+            },
+            {
+              "ref": "historical:turn:8:event:57",
+              "timestamp": "2026-08-05T01:18:49.037326+00:00",
+              "type": "location",
+              "data": {
+                "lat": 36.313887,
+                "lng": -77.931452,
+                "accuracy_m": 2.358771461752024,
+                "speed": null,
+                "heading": null
+              }
+            },
+            {
+              "ref": "historical:turn:8:event:58",
+              "timestamp": "2026-08-05T01:19:19.060971+00:00",
+              "type": "location",
+              "data": {
+                "lat": 36.313895,
+                "lng": -77.93145,
+                "accuracy_m": 11.584976533000294,
+                "speed": null,
+                "heading": null
+              }
+            },
+            {
+              "ref": "historical:turn:8:event:59",
+              "timestamp": "2026-08-05T01:19:52.886081+00:00",
+              "type": "telemetry",
+              "data": {
+                "battery": 0.25,
+                "battery_state": "unplugged",
+                "motion": "unknown",
+                "steps": null,
+                "distance_m": null,
+                "altitude": null,
+                "signal": null
+              }
+            }
+          ],
+          "guardReplies": [],
+          "copilotMessages": [
+            {
+              "ref": "historical:turn:8:message:0",
+              "timestamp": "2026-08-05T02:01:01.385661+00:00",
+              "text": "Post your first patrol report—what'd you see at the rear yard and that fence line? Any activity, damage, or anything to flag?"
+            }
+          ],
+          "actions": [],
+          "silent": false,
+          "skipped": false
+        },
+        {
+          "ref": "historical:turn:9",
+          "turn": 9,
+          "trigger": "guard_message",
+          "timestamp": "2026-08-05T02:02:41.719042+00:00",
+          "events": [
+            {
+              "ref": "historical:turn:9:event:0",
+              "timestamp": "2026-08-05T02:01:08.170277+00:00",
+              "type": "telemetry",
+              "data": {
+                "battery": 0.5,
+                "battery_state": "charging",
+                "motion": "unknown",
+                "steps": null,
+                "distance_m": null,
+                "altitude": null,
+                "signal": null
+              }
+            },
+            {
+              "ref": "historical:turn:9:event:1",
+              "timestamp": "2026-08-05T02:01:12.151021+00:00",
+              "type": "location",
+              "data": {
+                "lat": 36.313788,
+                "lng": -77.931475,
+                "accuracy_m": 6.262798598567445,
+                "speed": 0,
+                "heading": null
+              }
+            },
+            {
+              "ref": "historical:turn:9:event:2",
+              "timestamp": "2026-08-05T02:01:37.559281+00:00",
+              "type": "telemetry",
+              "data": {
+                "battery": 0.5,
+                "battery_state": "charging",
+                "motion": "unknown",
+                "steps": null,
+                "distance_m": null,
+                "altitude": "0.100410",
+                "signal": null
+              }
+            },
+            {
+              "ref": "historical:turn:9:event:3",
+              "timestamp": "2026-08-05T02:01:58.937756+00:00",
+              "type": "guard_message",
+              "data": {
+                "text": "There was nothing to report and there was nothing damage or any activity",
+                "image": null,
+                "audio_transcription": null
+              }
+            },
+            {
+              "ref": "historical:turn:9:event:4",
+              "timestamp": "2026-08-05T02:02:07.440633+00:00",
+              "type": "location",
+              "data": {
+                "lat": 36.313752,
+                "lng": -77.931502,
+                "accuracy_m": 3.5445099633607273,
+                "speed": 0,
+                "heading": null
+              }
+            },
+            {
+              "ref": "historical:turn:9:event:5",
+              "timestamp": "2026-08-05T02:02:38.568580+00:00",
+              "type": "location",
+              "data": {
+                "lat": 36.313821,
+                "lng": -77.931453,
+                "accuracy_m": 4.748651530191761,
+                "speed": 0,
+                "heading": null
+              }
+            }
+          ],
+          "guardReplies": [
+            {
+              "ref": "historical:turn:9:guard-reply:0",
+              "timestamp": "2026-08-05T02:02:41.719042+00:00",
+              "message": "There was nothing to report and there was nothing damage or any activity",
+              "source": "historical",
+              "historicalMessage": "There was nothing to report and there was nothing damage or any activity"
+            }
+          ],
+          "copilotMessages": [
+            {
+              "ref": "historical:turn:9:message:0",
+              "timestamp": "2026-08-05T02:02:41.719042+00:00",
+              "text": "Good, rear area's clear. Did you get around the full perimeter and check both buildings, or just the rear? Want to make sure you've walked the whole site."
+            }
+          ],
+          "actions": [],
+          "silent": false,
+          "skipped": false
+        },
+        {
+          "ref": "historical:turn:10",
+          "turn": 10,
+          "trigger": "guard_message",
+          "timestamp": "2026-08-05T02:03:51.791566+00:00",
+          "events": [
+            {
+              "ref": "historical:turn:10:event:0",
+              "timestamp": "2026-08-05T02:02:52.229439+00:00",
+              "type": "telemetry",
+              "data": {
+                "battery": 0.550000011920929,
+                "battery_state": "charging",
+                "motion": "unknown",
+                "steps": null,
+                "distance_m": null,
+                "altitude": "0.052849",
+                "signal": null
+              }
+            },
+            {
+              "ref": "historical:turn:10:event:1",
+              "timestamp": "2026-08-05T02:03:22.191247+00:00",
+              "type": "location",
+              "data": {
+                "lat": 36.313767,
+                "lng": -77.931555,
+                "accuracy_m": 15.960513492327506,
+                "speed": 0,
+                "heading": null
+              }
+            },
+            {
+              "ref": "historical:turn:10:event:2",
+              "timestamp": "2026-08-05T02:03:28.102686+00:00",
+              "type": "guard_message",
+              "data": {
+                "text": "Yes I walk the whole site and I check the rear and there was no activity",
+                "image": null,
+                "audio_transcription": null
+              }
+            },
+            {
+              "ref": "historical:turn:10:event:3",
+              "timestamp": "2026-08-05T02:03:37.341414+00:00",
+              "type": "telemetry",
+              "data": {
+                "battery": 0.550000011920929,
+                "battery_state": "charging",
+                "motion": "stationary",
+                "steps": null,
+                "distance_m": null,
+                "altitude": "-0.298576",
+                "signal": null
+              }
+            }
+          ],
+          "guardReplies": [
+            {
+              "ref": "historical:turn:10:guard-reply:0",
+              "timestamp": "2026-08-05T02:03:51.791566+00:00",
+              "message": "Yes I walk the whole site and I check the rear and there was no activity",
+              "source": "historical",
+              "historicalMessage": "Yes I walk the whole site and I check the rear and there was no activity"
+            }
+          ],
+          "copilotMessages": [
+            {
+              "ref": "historical:turn:10:message:0",
+              "timestamp": "2026-08-05T02:03:51.791566+00:00",
+              "text": "Copy that. Just to make sure we're aligned—the job calls for walking the full perimeter and both buildings, not staying in one spot. My telemetry shows you've been in a tight area all shift. Can you do a full loop right now? Hit the front, sides, rear, and both buildings. This one's important."
+            }
+          ],
+          "actions": [
+            {
+              "ref": "historical:turn:10:action:0",
+              "timestamp": "2026-08-05T02:03:51.791566+00:00",
+              "tool": "flag_copilot_guard",
+              "input": {
+                "reason": "Guard reports completing full perimeter patrol and building checks at 10:03 PM with all-clear status. However, location telemetry shows continuous stationary positioning in single tight cluster (35.8258/-78.7715 area, ~50-80m spread) from 8:46 PM through 10:03 PM—over 1 hour 15 minutes—with no significant movement to other areas of property. Job requires roaming foot patrol of full perimeter and both buildings at irregular intervals. Reported patrol activity does not align with movement data. Requires verification of actual patrol completion.\",\n<parameter name=\"severity\">medium",
+                "category": "compliance",
+                "guard_id": 9674,
+                "session_id": "16e10cc0-7f46-41c5-83e0-15c49e07deff"
+              }
+            }
+          ],
+          "silent": false,
+          "skipped": false
+        },
+        {
+          "ref": "historical:turn:11",
+          "turn": 11,
+          "trigger": "guard_message",
+          "timestamp": "2026-08-05T02:05:46.777284+00:00",
+          "events": [
+            {
+              "ref": "historical:turn:11:event:0",
+              "timestamp": "2026-08-05T02:04:06.825514+00:00",
+              "type": "location",
+              "data": {
+                "lat": 36.313813,
+                "lng": -77.931464,
+                "accuracy_m": 14.295808275965387,
+                "speed": 0,
+                "heading": null
+              }
+            },
+            {
+              "ref": "historical:turn:11:event:1",
+              "timestamp": "2026-08-05T02:04:38.159912+00:00",
+              "type": "location",
+              "data": {
+                "lat": 36.31381,
+                "lng": -77.931496,
+                "accuracy_m": 15.961067813562948,
+                "speed": 0.4334766911490357,
+                "heading": null
+              }
+            },
+            {
+              "ref": "historical:turn:11:event:2",
+              "timestamp": "2026-08-05T02:04:38.570167+00:00",
+              "type": "telemetry",
+              "data": {
+                "battery": 0.550000011920929,
+                "battery_state": "charging",
+                "motion": "unknown",
+                "steps": null,
+                "distance_m": null,
+                "altitude": "0.385773",
+                "signal": null
+              }
+            },
+            {
+              "ref": "historical:turn:11:event:3",
+              "timestamp": "2026-08-05T02:05:07.438094+00:00",
+              "type": "location",
+              "data": {
+                "lat": 36.313801,
+                "lng": -77.931508,
+                "accuracy_m": 17.274939954167426,
+                "speed": 0.14083124339270395,
+                "heading": null
+              }
+            },
+            {
+              "ref": "historical:turn:11:event:4",
+              "timestamp": "2026-08-05T02:05:14.329120+00:00",
+              "type": "guard_message",
+              "data": {
+                "text": "Ok I going to need to leave my phone in my car so that I won’t get distracted from the internet",
+                "image": null,
+                "audio_transcription": null
+              }
+            },
+            {
+              "ref": "historical:turn:11:event:5",
+              "timestamp": "2026-08-05T02:05:37.329267+00:00",
+              "type": "telemetry",
+              "data": {
+                "battery": 0.550000011920929,
+                "battery_state": "charging",
+                "motion": "unknown",
+                "steps": null,
+                "distance_m": null,
+                "altitude": "-0.221954",
+                "signal": null
+              }
+            },
+            {
+              "ref": "historical:turn:11:event:6",
+              "timestamp": "2026-08-05T02:05:37.487049+00:00",
+              "type": "location",
+              "data": {
+                "lat": 36.313804,
+                "lng": -77.931483,
+                "accuracy_m": 13.428441037895283,
+                "speed": 0,
+                "heading": null
+              }
+            }
+          ],
+          "guardReplies": [
+            {
+              "ref": "historical:turn:11:guard-reply:0",
+              "timestamp": "2026-08-05T02:05:46.777284+00:00",
+              "message": "Ok I going to need to leave my phone in my car so that I won’t get distracted from the internet",
+              "source": "historical",
+              "historicalMessage": "Ok I going to need to leave my phone in my car so that I won’t get distracted from the internet"
+            }
+          ],
+          "copilotMessages": [
+            {
+              "ref": "historical:turn:11:message:0",
+              "timestamp": "2026-08-05T02:05:46.777284+00:00",
+              "text": "Hold up—I can't have the post dark. The app needs to stay with you or we lose contact and location. I'm looping ops in now. They'll reach out to sort this out. For right now, keep the phone on you and do that full loop. We'll work out the distraction piece with your supervisor."
+            }
+          ],
+          "actions": [
+            {
+              "ref": "historical:turn:11:action:0",
+              "timestamp": "2026-08-05T02:05:46.777284+00:00",
+              "tool": "escalate_to_human",
+              "input": {
+                "details": "Hector Nguyen (ID 9674) just messaged: \"Ok I going to need to leave my phone in my car so that I won't get distracted from the internet.\" This signals intent to disconnect from the app and lose location telemetry during shift. Context: (1) Guard has been stationary in single tight cluster for 1h 17m despite two explicit patrol requests; (2) Just received direct instruction to do full perimeter loop immediately; (3) Now announcing intent to leave phone behind, which would disable both app communication and location tracking. Post is scheduled 7 PM–6 AM with only one guard (Larkspur, ID 9674). If he disconnects, there is no visibility or contact for remainder of shift. Requires immediate ops intervention to clarify expectations and address the underlying compliance/engagement issue.\",\n<parameter name=\"guard_id\">9674",
+                "summary": "Guard signaling intent to leave phone in vehicle and disconnect from app/telemetry during active shift. Post would go dark. Compliance issue also active (guard has not executed full perimeter patrol despite direct instruction). Coverage gap risk.",
+                "severity": "critical",
+                "session_id": "16e10cc0-7f46-41c5-83e0-15c49e07deff"
+              }
+            }
+          ],
+          "silent": false,
+          "skipped": false
+        }
+      ]
+    },
+    "old": {
+      "name": "old",
+      "turns": [
+        {
+          "ref": "old:turn:8",
+          "turn": 8,
+          "trigger": "scheduled_check_in",
+          "timestamp": "2026-08-05T02:01:01.385661+00:00",
+          "events": [
+            {
+              "ref": "old:turn:8:event:0",
+              "timestamp": "2026-08-05T01:01:15.038457+00:00",
+              "type": "telemetry",
+              "data": {
+                "battery": 0.3499999940395355,
+                "battery_state": "unplugged",
+                "motion": "stationary",
+                "steps": 13,
+                "distance_m": "9.490000",
+                "altitude": "-0.121552",
+                "signal": null
+              }
+            },
+            {
+              "ref": "old:turn:8:event:1",
+              "timestamp": "2026-08-05T01:01:31.911602+00:00",
+              "type": "location",
+              "data": {
+                "lat": 36.313777,
+                "lng": -77.931622,
+                "accuracy_m": 25.59184341422926,
+                "speed": 0,
+                "heading": null
+              }
+            },
+            {
+              "ref": "old:turn:8:event:2",
+              "timestamp": "2026-08-05T01:01:44.691978+00:00",
+              "type": "telemetry",
+              "data": {
+                "battery": 0.3499999940395355,
+                "battery_state": "unplugged",
+                "motion": "stationary",
+                "steps": 13,
+                "distance_m": "9.490000",
+                "altitude": "0.219307",
+                "signal": null
+              }
+            },
+            {
+              "ref": "old:turn:8:event:3",
+              "timestamp": "2026-08-05T01:02:02.234449+00:00",
+              "type": "location",
+              "data": {
+                "lat": 36.313777,
+                "lng": -77.931622,
+                "accuracy_m": 24.384757754143436,
+                "speed": 0,
+                "heading": null
+              }
+            },
+            {
+              "ref": "old:turn:8:event:4",
+              "timestamp": "2026-08-05T01:02:32.539232+00:00",
+              "type": "location",
+              "data": {
+                "lat": 36.31387,
+                "lng": -77.931656,
+                "accuracy_m": 22.86966591541151,
+                "speed": 0.4745468672962132,
+                "heading": null
+              }
+            },
+            {
+              "ref": "old:turn:8:event:5",
+              "timestamp": "2026-08-05T01:02:55.386507+00:00",
+              "type": "telemetry",
+              "data": {
+                "battery": 0.3499999940395355,
+                "battery_state": "unplugged",
+                "motion": "unknown",
+                "steps": 18,
+                "distance_m": "15.110000",
+                "altitude": "-0.956520",
+                "signal": null
+              }
+            },
+            {
+              "ref": "old:turn:8:event:6",
+              "timestamp": "2026-08-05T01:03:03.060614+00:00",
+              "type": "location",
+              "data": {
+                "lat": 36.313796,
+                "lng": -77.931544,
+                "accuracy_m": 19.066410496160266,
+                "speed": 0,
+                "heading": null
+              }
+            },
+            {
+              "ref": "old:turn:8:event:7",
+              "timestamp": "2026-08-05T01:03:03.370659+00:00",
+              "type": "telemetry",
+              "data": {
+                "battery": 0.3499999940395355,
+                "battery_state": "unplugged",
+                "motion": "stationary",
+                "steps": 24,
+                "distance_m": "19.277064",
+                "altitude": "-1.249817",
+                "signal": null
+              }
+            },
+            {
+              "ref": "old:turn:8:event:8",
+              "timestamp": "2026-08-05T01:03:33.627405+00:00",
+              "type": "location",
+              "data": {
+                "lat": 36.313794,
+                "lng": -77.931494,
+                "accuracy_m": 23.22388053440115,
+                "speed": 0,
+                "heading": null
+              }
+            },
+            {
+              "ref": "old:turn:8:event:9",
+              "timestamp": "2026-08-05T01:03:34.226602+00:00",
+              "type": "telemetry",
+              "data": {
+                "battery": 0.3499999940395355,
+                "battery_state": "unplugged",
+                "motion": "stationary",
+                "steps": 24,
+                "distance_m": "19.277064",
+                "altitude": "0.338219",
+                "signal": null
+              }
+            },
+            {
+              "ref": "old:turn:8:event:10",
+              "timestamp": "2026-08-05T01:04:04.464934+00:00",
+              "type": "location",
+              "data": {
+                "lat": 36.3138,
+                "lng": -77.931458,
+                "accuracy_m": 23.163524082028427,
+                "speed": 0,
+                "heading": null
+              }
+            },
+            {
+              "ref": "old:turn:8:event:11",
+              "timestamp": "2026-08-05T01:04:34.492702+00:00",
+              "type": "telemetry",
+              "data": {
+                "battery": 0.3499999940395355,
+                "battery_state": "unplugged",
+                "motion": "stationary",
+                "steps": 24,
+                "distance_m": "19.277064",
+                "altitude": "-0.023781",
+                "signal": null
+              }
+            },
+            {
+              "ref": "old:turn:8:event:12",
+              "timestamp": "2026-08-05T01:04:35.737133+00:00",
+              "type": "location",
+              "data": {
+                "lat": 36.313809,
+                "lng": -77.931464,
+                "accuracy_m": 16.26706259529742,
+                "speed": 0,
+                "heading": null
+              }
+            },
+            {
+              "ref": "old:turn:8:event:13",
+              "timestamp": "2026-08-05T01:05:04.462159+00:00",
+              "type": "telemetry",
+              "data": {
+                "battery": 0.3499999940395355,
+                "battery_state": "unplugged",
+                "motion": "stationary",
+                "steps": 24,
+                "distance_m": "19.277064",
+                "altitude": "0.002640",
+                "signal": null
+              }
+            },
+            {
+              "ref": "old:turn:8:event:14",
+              "timestamp": "2026-08-05T01:05:06.180866+00:00",
+              "type": "location",
+              "data": {
+                "lat": 36.313809,
+                "lng": -77.931464,
+                "accuracy_m": 15.375501281773806,
+                "speed": 0,
+                "heading": null
+              }
+            },
+            {
+              "ref": "old:turn:8:event:15",
+              "timestamp": "2026-08-05T01:05:34.713353+00:00",
+              "type": "telemetry",
+              "data": {
+                "battery": 0.30000001192092896,
+                "battery_state": "unplugged",
+                "motion": "stationary",
+                "steps": 24,
+                "distance_m": "19.277064",
+                "altitude": "-0.126831",
+                "signal": null
+              }
+            },
+            {
+              "ref": "old:turn:8:event:16",
+              "timestamp": "2026-08-05T01:05:36.426036+00:00",
+              "type": "location",
+              "data": {
+                "lat": 36.313809,
+                "lng": -77.931464,
+                "accuracy_m": 15.225207953692566,
+                "speed": 0,
+                "heading": null
+              }
+            },
+            {
+              "ref": "old:turn:8:event:17",
+              "timestamp": "2026-08-05T01:06:06.756246+00:00",
+              "type": "location",
+              "data": {
+                "lat": 36.313809,
+                "lng": -77.931464,
+                "accuracy_m": 14.776618912627344,
+                "speed": 0,
+                "heading": null
+              }
+            },
+            {
+              "ref": "old:turn:8:event:18",
+              "timestamp": "2026-08-05T01:06:34.183521+00:00",
+              "type": "telemetry",
+              "data": {
+                "battery": 0.30000001192092896,
+                "battery_state": "unplugged",
+                "motion": "stationary",
+                "steps": 24,
+                "distance_m": "19.277064",
+                "altitude": "-0.044914",
+                "signal": null
+              }
+            },
+            {
+              "ref": "old:turn:8:event:19",
+              "timestamp": "2026-08-05T01:06:37.556289+00:00",
+              "type": "location",
+              "data": {
+                "lat": 36.313809,
+                "lng": -77.931464,
+                "accuracy_m": 14.706156013482973,
+                "speed": 0,
+                "heading": null
+              }
+            },
+            {
+              "ref": "old:turn:8:event:20",
+              "timestamp": "2026-08-05T01:07:07.435903+00:00",
+              "type": "location",
+              "data": {
+                "lat": 36.313826,
+                "lng": -77.931466,
+                "accuracy_m": 4.599644536369067,
+                "speed": null,
+                "heading": null
+              }
+            },
+            {
+              "ref": "old:turn:8:event:21",
+              "timestamp": "2026-08-05T01:07:36.163129+00:00",
+              "type": "telemetry",
+              "data": {
+                "battery": 0.30000001192092896,
+                "battery_state": "unplugged",
+                "motion": "stationary",
+                "steps": 24,
+                "distance_m": "19.277064",
+                "altitude": "0.171745",
+                "signal": null
+              }
+            },
+            {
+              "ref": "old:turn:8:event:22",
+              "timestamp": "2026-08-05T01:07:37.764564+00:00",
+              "type": "location",
+              "data": {
+                "lat": 36.313833,
+                "lng": -77.931464,
+                "accuracy_m": 4.376692408616062,
+                "speed": null,
+                "heading": null
+              }
+            },
+            {
+              "ref": "old:turn:8:event:23",
+              "timestamp": "2026-08-05T01:08:07.794554+00:00",
+              "type": "location",
+              "data": {
+                "lat": 36.313843,
+                "lng": -77.931462,
+                "accuracy_m": 4.097404541071105,
+                "speed": null,
+                "heading": null
+              }
+            },
+            {
+              "ref": "old:turn:8:event:24",
+              "timestamp": "2026-08-05T01:08:36.902483+00:00",
+              "type": "telemetry",
+              "data": {
+                "battery": 0.30000001192092896,
+                "battery_state": "unplugged",
+                "motion": "stationary",
+                "steps": 24,
+                "distance_m": "19.277064",
+                "altitude": "-0.044922",
+                "signal": null
+              }
+            },
+            {
+              "ref": "old:turn:8:event:25",
+              "timestamp": "2026-08-05T01:08:37.835871+00:00",
+              "type": "location",
+              "data": {
+                "lat": 36.31385,
+                "lng": -77.93146,
+                "accuracy_m": 3.8668842365547875,
+                "speed": null,
+                "heading": null
+              }
+            },
+            {
+              "ref": "old:turn:8:event:26",
+              "timestamp": "2026-08-05T01:09:07.852909+00:00",
+              "type": "location",
+              "data": {
+                "lat": 36.313854,
+                "lng": -77.931459,
+                "accuracy_m": 3.733083926767293,
+                "speed": null,
+                "heading": null
+              }
+            },
+            {
+              "ref": "old:turn:8:event:27",
+              "timestamp": "2026-08-05T01:09:36.436005+00:00",
+              "type": "telemetry",
+              "data": {
+                "battery": 0.30000001192092896,
+                "battery_state": "unplugged",
+                "motion": "stationary",
+                "steps": 24,
+                "distance_m": "19.277064",
+                "altitude": "-0.153252",
+                "signal": null
+              }
+            },
+            {
+              "ref": "old:turn:8:event:28",
+              "timestamp": "2026-08-05T01:09:38.164521+00:00",
+              "type": "location",
+              "data": {
+                "lat": 36.313859,
+                "lng": -77.931458,
+                "accuracy_m": 3.558024278274136,
+                "speed": null,
+                "heading": null
+              }
+            },
+            {
+              "ref": "old:turn:8:event:29",
+              "timestamp": "2026-08-05T01:10:04.276192+00:00",
+              "type": "telemetry",
+              "data": {
+                "battery": 0.30000001192092896,
+                "battery_state": "unplugged",
+                "motion": "stationary",
+                "steps": 24,
+                "distance_m": "19.277064",
+                "altitude": "-0.293297",
+                "signal": null
+              }
+            },
+            {
+              "ref": "old:turn:8:event:30",
+              "timestamp": "2026-08-05T01:10:08.315166+00:00",
+              "type": "location",
+              "data": {
+                "lat": 36.313862,
+                "lng": -77.931457,
+                "accuracy_m": 3.4539437498173466,
+                "speed": null,
+                "heading": null
+              }
+            },
+            {
+              "ref": "old:turn:8:event:31",
+              "timestamp": "2026-08-05T01:10:38.149990+00:00",
+              "type": "telemetry",
+              "data": {
+                "battery": 0.30000001192092896,
+                "battery_state": "unplugged",
+                "motion": "stationary",
+                "steps": 24,
+                "distance_m": "19.277064",
+                "altitude": "-0.002647",
+                "signal": null
+              }
+            },
+            {
+              "ref": "old:turn:8:event:32",
+              "timestamp": "2026-08-05T01:10:39.587601+00:00",
+              "type": "location",
+              "data": {
+                "lat": 36.313865,
+                "lng": -77.931457,
+                "accuracy_m": 3.3950139999999998,
+                "speed": null,
+                "heading": null
+              }
+            },
+            {
+              "ref": "old:turn:8:event:33",
+              "timestamp": "2026-08-05T01:11:08.788306+00:00",
+              "type": "location",
+              "data": {
+                "lat": 36.313868,
+                "lng": -77.931456,
+                "accuracy_m": 3.2317674853152223,
+                "speed": null,
+                "heading": null
+              }
+            },
+            {
+              "ref": "old:turn:8:event:34",
+              "timestamp": "2026-08-05T01:11:35.066962+00:00",
+              "type": "telemetry",
+              "data": {
+                "battery": 0.30000001192092896,
+                "battery_state": "unplugged",
+                "motion": "stationary",
+                "steps": 24,
+                "distance_m": "19.277064",
+                "altitude": "0.190247",
+                "signal": null
+              }
+            },
+            {
+              "ref": "old:turn:8:event:35",
+              "timestamp": "2026-08-05T01:11:39.019970+00:00",
+              "type": "location",
+              "data": {
+                "lat": 36.31387,
+                "lng": -77.931455,
+                "accuracy_m": 3.119141465233116,
+                "speed": null,
+                "heading": null
+              }
+            },
+            {
+              "ref": "old:turn:8:event:36",
+              "timestamp": "2026-08-05T01:12:09.488149+00:00",
+              "type": "location",
+              "data": {
+                "lat": 36.313872,
+                "lng": -77.931455,
+                "accuracy_m": 3.049892399127083,
+                "speed": null,
+                "heading": null
+              }
+            },
+            {
+              "ref": "old:turn:8:event:37",
+              "timestamp": "2026-08-05T01:12:35.465126+00:00",
+              "type": "telemetry",
+              "data": {
+                "battery": 0.30000001192092896,
+                "battery_state": "unplugged",
+                "motion": "stationary",
+                "steps": 24,
+                "distance_m": "19.277064",
+                "altitude": "0.142685",
+                "signal": null
+              }
+            },
+            {
+              "ref": "old:turn:8:event:38",
+              "timestamp": "2026-08-05T01:12:39.936900+00:00",
+              "type": "location",
+              "data": {
+                "lat": 36.313874,
+                "lng": -77.931455,
+                "accuracy_m": 2.9562329914727585,
+                "speed": null,
+                "heading": null
+              }
+            },
+            {
+              "ref": "old:turn:8:event:39",
+              "timestamp": "2026-08-05T01:13:04.114337+00:00",
+              "type": "telemetry",
+              "data": {
+                "battery": 0.30000001192092896,
+                "battery_state": "unplugged",
+                "motion": "stationary",
+                "steps": 24,
+                "distance_m": "19.277064",
+                "altitude": "-0.005287",
+                "signal": null
+              }
+            },
+            {
+              "ref": "old:turn:8:event:40",
+              "timestamp": "2026-08-05T01:13:10.072329+00:00",
+              "type": "location",
+              "data": {
+                "lat": 36.313876,
+                "lng": -77.931454,
+                "accuracy_m": 2.8978952025285296,
+                "speed": null,
+                "heading": null
+              }
+            },
+            {
+              "ref": "old:turn:8:event:41",
+              "timestamp": "2026-08-05T01:13:35.629058+00:00",
+              "type": "telemetry",
+              "data": {
+                "battery": 0.30000001192092896,
+                "battery_state": "unplugged",
+                "motion": "stationary",
+                "steps": 24,
+                "distance_m": "19.277064",
+                "altitude": "-0.132118",
+                "signal": null
+              }
+            },
+            {
+              "ref": "old:turn:8:event:42",
+              "timestamp": "2026-08-05T01:13:40.296657+00:00",
+              "type": "location",
+              "data": {
+                "lat": 36.313878,
+                "lng": -77.931454,
+                "accuracy_m": 2.8185612713934627,
+                "speed": null,
+                "heading": null
+              }
+            },
+            {
+              "ref": "old:turn:8:event:43",
+              "timestamp": "2026-08-05T01:14:10.911196+00:00",
+              "type": "location",
+              "data": {
+                "lat": 36.313879,
+                "lng": -77.931454,
+                "accuracy_m": 2.768614376694279,
+                "speed": null,
+                "heading": null
+              }
+            },
+            {
+              "ref": "old:turn:8:event:44",
+              "timestamp": "2026-08-05T01:14:36.083571+00:00",
+              "type": "telemetry",
+              "data": {
+                "battery": 0.30000001192092896,
+                "battery_state": "unplugged",
+                "motion": "stationary",
+                "steps": 24,
+                "distance_m": "19.277064",
+                "altitude": "0.029068",
+                "signal": null
+              }
+            },
+            {
+              "ref": "old:turn:8:event:45",
+              "timestamp": "2026-08-05T01:14:41.278083+00:00",
+              "type": "location",
+              "data": {
+                "lat": 36.31388,
+                "lng": -77.931453,
+                "accuracy_m": 2.7005758306888863,
+                "speed": null,
+                "heading": null
+              }
+            },
+            {
+              "ref": "old:turn:8:event:46",
+              "timestamp": "2026-08-05T01:15:11.669659+00:00",
+              "type": "location",
+              "data": {
+                "lat": 36.313881,
+                "lng": -77.931453,
+                "accuracy_m": 2.6572457750029286,
+                "speed": null,
+                "heading": null
+              }
+            },
+            {
+              "ref": "old:turn:8:event:47",
+              "timestamp": "2026-08-05T01:15:36.450093+00:00",
+              "type": "telemetry",
+              "data": {
+                "battery": 0.25,
+                "battery_state": "unplugged",
+                "motion": "stationary",
+                "steps": 24,
+                "distance_m": "19.277064",
+                "altitude": "-0.150612",
+                "signal": null
+              }
+            },
+            {
+              "ref": "old:turn:8:event:48",
+              "timestamp": "2026-08-05T01:15:42.091981+00:00",
+              "type": "location",
+              "data": {
+                "lat": 36.313882,
+                "lng": -77.931453,
+                "accuracy_m": 2.5982068641319893,
+                "speed": null,
+                "heading": null
+              }
+            },
+            {
+              "ref": "old:turn:8:event:49",
+              "timestamp": "2026-08-05T01:16:12.370519+00:00",
+              "type": "location",
+              "data": {
+                "lat": 36.313883,
+                "lng": -77.931453,
+                "accuracy_m": 2.5602531870924565,
+                "speed": null,
+                "heading": null
+              }
+            },
+            {
+              "ref": "old:turn:8:event:50",
+              "timestamp": "2026-08-05T01:16:39.230024+00:00",
+              "type": "telemetry",
+              "data": {
+                "battery": 0.25,
+                "battery_state": "unplugged",
+                "motion": "stationary",
+                "steps": 24,
+                "distance_m": "19.277064",
+                "altitude": "-0.169106",
+                "signal": null
+              }
+            },
+            {
+              "ref": "old:turn:8:event:51",
+              "timestamp": "2026-08-05T01:16:42.561279+00:00",
+              "type": "location",
+              "data": {
+                "lat": 36.313884,
+                "lng": -77.931452,
+                "accuracy_m": 2.5085177782855603,
+                "speed": null,
+                "heading": null
+              }
+            },
+            {
+              "ref": "old:turn:8:event:52",
+              "timestamp": "2026-08-05T01:17:13.277588+00:00",
+              "type": "location",
+              "data": {
+                "lat": 36.313885,
+                "lng": -77.931452,
+                "accuracy_m": 2.4750142477858237,
+                "speed": null,
+                "heading": null
+              }
+            },
+            {
+              "ref": "old:turn:8:event:53",
+              "timestamp": "2026-08-05T01:17:36.064858+00:00",
+              "type": "telemetry",
+              "data": {
+                "battery": 0.25,
+                "battery_state": "unplugged",
+                "motion": "stationary",
+                "steps": 24,
+                "distance_m": "19.277064",
+                "altitude": "-0.108337",
+                "signal": null
+              }
+            },
+            {
+              "ref": "old:turn:8:event:54",
+              "timestamp": "2026-08-05T01:17:43.552734+00:00",
+              "type": "location",
+              "data": {
+                "lat": 36.313886,
+                "lng": -77.931452,
+                "accuracy_m": 2.4293258550628196,
+                "speed": null,
+                "heading": null
+              }
+            },
+            {
+              "ref": "old:turn:8:event:55",
+              "timestamp": "2026-08-05T01:18:19.219057+00:00",
+              "type": "location",
+              "data": {
+                "lat": 36.313887,
+                "lng": -77.931452,
+                "accuracy_m": 2.3994062908415765,
+                "speed": null,
+                "heading": null
+              }
+            },
+            {
+              "ref": "old:turn:8:event:56",
+              "timestamp": "2026-08-05T01:18:35.756237+00:00",
+              "type": "telemetry",
+              "data": {
+                "battery": 0.25,
+                "battery_state": "unplugged",
+                "motion": "stationary",
+                "steps": 24,
+                "distance_m": "19.277064",
+                "altitude": "-0.010574",
+                "signal": null
+              }
+            },
+            {
+              "ref": "old:turn:8:event:57",
+              "timestamp": "2026-08-05T01:18:49.037326+00:00",
+              "type": "location",
+              "data": {
+                "lat": 36.313887,
+                "lng": -77.931452,
+                "accuracy_m": 2.358771461752024,
+                "speed": null,
+                "heading": null
+              }
+            },
+            {
+              "ref": "old:turn:8:event:58",
+              "timestamp": "2026-08-05T01:19:19.060971+00:00",
+              "type": "location",
+              "data": {
+                "lat": 36.313895,
+                "lng": -77.93145,
+                "accuracy_m": 11.584976533000294,
+                "speed": null,
+                "heading": null
+              }
+            },
+            {
+              "ref": "old:turn:8:event:59",
+              "timestamp": "2026-08-05T01:19:52.886081+00:00",
+              "type": "telemetry",
+              "data": {
+                "battery": 0.25,
+                "battery_state": "unplugged",
+                "motion": "unknown",
+                "steps": null,
+                "distance_m": null,
+                "altitude": null,
+                "signal": null
+              }
+            }
+          ],
+          "guardReplies": [],
+          "copilotMessages": [],
+          "actions": [],
+          "silent": true,
+          "skipped": false
+        },
+        {
+          "ref": "old:turn:9",
+          "turn": 9,
+          "trigger": "guard_message",
+          "timestamp": "2026-08-05T02:02:41.719042+00:00",
+          "events": [
+            {
+              "ref": "old:turn:9:event:0",
+              "timestamp": "2026-08-05T02:01:08.170277+00:00",
+              "type": "telemetry",
+              "data": {
+                "battery": 0.5,
+                "battery_state": "charging",
+                "motion": "unknown",
+                "steps": null,
+                "distance_m": null,
+                "altitude": null,
+                "signal": null
+              }
+            },
+            {
+              "ref": "old:turn:9:event:1",
+              "timestamp": "2026-08-05T02:01:12.151021+00:00",
+              "type": "location",
+              "data": {
+                "lat": 36.313788,
+                "lng": -77.931475,
+                "accuracy_m": 6.262798598567445,
+                "speed": 0,
+                "heading": null
+              }
+            },
+            {
+              "ref": "old:turn:9:event:2",
+              "timestamp": "2026-08-05T02:01:37.559281+00:00",
+              "type": "telemetry",
+              "data": {
+                "battery": 0.5,
+                "battery_state": "charging",
+                "motion": "unknown",
+                "steps": null,
+                "distance_m": null,
+                "altitude": "0.100410",
+                "signal": null
+              }
+            },
+            {
+              "ref": "old:turn:9:event:3",
+              "timestamp": "2026-08-05T02:01:58.937756+00:00",
+              "type": "guard_message",
+              "data": {
+                "text": "There was nothing to report and there was nothing damage or any activity",
+                "image": null,
+                "audio_transcription": null
+              }
+            },
+            {
+              "ref": "old:turn:9:event:4",
+              "timestamp": "2026-08-05T02:02:07.440633+00:00",
+              "type": "location",
+              "data": {
+                "lat": 36.313752,
+                "lng": -77.931502,
+                "accuracy_m": 3.5445099633607273,
+                "speed": 0,
+                "heading": null
+              }
+            },
+            {
+              "ref": "old:turn:9:event:5",
+              "timestamp": "2026-08-05T02:02:38.568580+00:00",
+              "type": "location",
+              "data": {
+                "lat": 36.313821,
+                "lng": -77.931453,
+                "accuracy_m": 4.748651530191761,
+                "speed": 0,
+                "heading": null
+              }
+            }
+          ],
+          "guardReplies": [
+            {
+              "ref": "old:turn:9:guard-reply:0",
+              "timestamp": "2026-08-05T02:02:41.719042+00:00",
+              "message": "There was nothing to report and there was nothing damage or any activity",
+              "source": "historical",
+              "historicalMessage": "There was nothing to report and there was nothing damage or any activity"
+            }
+          ],
+          "copilotMessages": [
+            {
+              "ref": "old:turn:9:message:0",
+              "timestamp": "2026-08-05T02:02:41.719042+00:00",
+              "text": "Copy — logged your perimeter check: no damage, no activity; rear fence and staged materials intact. Keep doing irregular loops and weight patrols to the rear gap. Check the three rear-entry cameras between rounds. If you see movement, don’t approach: call 911 first, then Priya. I’ve got this logged as your first perimeter check."
+            }
+          ],
+          "actions": [],
+          "silent": false,
+          "skipped": false
+        },
+        {
+          "ref": "old:turn:10",
+          "turn": 10,
+          "trigger": "guard_message",
+          "timestamp": "2026-08-05T02:03:51.791566+00:00",
+          "events": [
+            {
+              "ref": "old:turn:10:event:0",
+              "timestamp": "2026-08-05T02:02:52.229439+00:00",
+              "type": "telemetry",
+              "data": {
+                "battery": 0.550000011920929,
+                "battery_state": "charging",
+                "motion": "unknown",
+                "steps": null,
+                "distance_m": null,
+                "altitude": "0.052849",
+                "signal": null
+              }
+            },
+            {
+              "ref": "old:turn:10:event:1",
+              "timestamp": "2026-08-05T02:03:22.191247+00:00",
+              "type": "location",
+              "data": {
+                "lat": 36.313767,
+                "lng": -77.931555,
+                "accuracy_m": 15.960513492327506,
+                "speed": 0,
+                "heading": null
+              }
+            },
+            {
+              "ref": "old:turn:10:event:2",
+              "timestamp": "2026-08-05T02:03:28.102686+00:00",
+              "type": "guard_message",
+              "data": {
+                "text": "Yes I walk the whole site and I check the rear and there was no activity",
+                "image": null,
+                "audio_transcription": null
+              }
+            },
+            {
+              "ref": "old:turn:10:event:3",
+              "timestamp": "2026-08-05T02:03:37.341414+00:00",
+              "type": "telemetry",
+              "data": {
+                "battery": 0.550000011920929,
+                "battery_state": "charging",
+                "motion": "stationary",
+                "steps": null,
+                "distance_m": null,
+                "altitude": "-0.298576",
+                "signal": null
+              }
+            }
+          ],
+          "guardReplies": [
+            {
+              "ref": "old:turn:10:guard-reply:0",
+              "timestamp": "2026-08-05T02:03:51.791566+00:00",
+              "message": "Yes I walk the whole site and I check the rear and there was no activity",
+              "source": "historical",
+              "historicalMessage": "Yes I walk the whole site and I check the rear and there was no activity"
+            }
+          ],
+          "copilotMessages": [
+            {
+              "ref": "old:turn:10:message:0",
+              "timestamp": "2026-08-05T02:03:51.791566+00:00",
+              "text": "Copy — I logged your full perimeter walk at 10:03 PM. Rear gap and staged materials intact, no activity or damage. Keep doing irregular loops and check the three rear-entry cameras between rounds. If anything shows, call 911 first, then Priya. I've added this to the shift notes."
+            }
+          ],
+          "actions": [
+            {
+              "ref": "old:turn:10:action:0",
+              "timestamp": "2026-08-05T02:03:51.791566+00:00",
+              "tool": "add_copilot_note",
+              "input": {
+                "session_id": "16e10cc0-7f46-41c5-83e0-15c49e07deff",
+                "note_text": "Perimeter check logged: Hector Nguyen completed a full perimeter walk at Tue Aug 4, 10:03 PM EDT. Rear perimeter gap and staged materials inspected; no activity observed, no damage noted. Rear fence reported intact.",
+                "entity_type": "job",
+                "entity_id": 56370,
+                "guard_id": 9674
+              }
+            }
+          ],
+          "silent": false,
+          "skipped": false
+        },
+        {
+          "ref": "old:turn:11",
+          "turn": 11,
+          "trigger": "guard_message",
+          "timestamp": "2026-08-05T02:05:46.777284+00:00",
+          "events": [
+            {
+              "ref": "old:turn:11:event:0",
+              "timestamp": "2026-08-05T02:04:06.825514+00:00",
+              "type": "location",
+              "data": {
+                "lat": 36.313813,
+                "lng": -77.931464,
+                "accuracy_m": 14.295808275965387,
+                "speed": 0,
+                "heading": null
+              }
+            },
+            {
+              "ref": "old:turn:11:event:1",
+              "timestamp": "2026-08-05T02:04:38.159912+00:00",
+              "type": "location",
+              "data": {
+                "lat": 36.31381,
+                "lng": -77.931496,
+                "accuracy_m": 15.961067813562948,
+                "speed": 0.4334766911490357,
+                "heading": null
+              }
+            },
+            {
+              "ref": "old:turn:11:event:2",
+              "timestamp": "2026-08-05T02:04:38.570167+00:00",
+              "type": "telemetry",
+              "data": {
+                "battery": 0.550000011920929,
+                "battery_state": "charging",
+                "motion": "unknown",
+                "steps": null,
+                "distance_m": null,
+                "altitude": "0.385773",
+                "signal": null
+              }
+            },
+            {
+              "ref": "old:turn:11:event:3",
+              "timestamp": "2026-08-05T02:05:07.438094+00:00",
+              "type": "location",
+              "data": {
+                "lat": 36.313801,
+                "lng": -77.931508,
+                "accuracy_m": 17.274939954167426,
+                "speed": 0.14083124339270395,
+                "heading": null
+              }
+            },
+            {
+              "ref": "old:turn:11:event:4",
+              "timestamp": "2026-08-05T02:05:14.329120+00:00",
+              "type": "guard_message",
+              "data": {
+                "text": "Ok I going to need to leave my phone in my car so that I won’t get distracted from the internet",
+                "image": null,
+                "audio_transcription": null
+              }
+            },
+            {
+              "ref": "old:turn:11:event:5",
+              "timestamp": "2026-08-05T02:05:37.329267+00:00",
+              "type": "telemetry",
+              "data": {
+                "battery": 0.550000011920929,
+                "battery_state": "charging",
+                "motion": "unknown",
+                "steps": null,
+                "distance_m": null,
+                "altitude": "-0.221954",
+                "signal": null
+              }
+            },
+            {
+              "ref": "old:turn:11:event:6",
+              "timestamp": "2026-08-05T02:05:37.487049+00:00",
+              "type": "location",
+              "data": {
+                "lat": 36.313804,
+                "lng": -77.931483,
+                "accuracy_m": 13.428441037895283,
+                "speed": 0,
+                "heading": null
+              }
+            }
+          ],
+          "guardReplies": [
+            {
+              "ref": "old:turn:11:guard-reply:0",
+              "timestamp": "2026-08-05T02:05:46.777284+00:00",
+              "message": "Ok I going to need to leave my phone in my car so that I won’t get distracted from the internet",
+              "source": "historical",
+              "historicalMessage": "Ok I going to need to leave my phone in my car so that I won’t get distracted from the internet"
+            }
+          ],
+          "copilotMessages": [
+            {
+              "ref": "old:turn:11:message:0",
+              "timestamp": "2026-08-05T02:05:46.777284+00:00",
+              "text": "Copy. I get wanting to avoid distractions. Quick confirm so the post stays covered: will you be staying on site while your phone is in the car, and can you still call 911 immediately if needed (radio/site phone/keep it within reach)? If you can’t call 911 quickly, keep the phone on you. Tell me where you’ll park so I can note it."
+            }
+          ],
+          "actions": [],
+          "silent": false,
+          "skipped": false
+        }
+      ]
+    },
+    "candidate": {
+      "name": "candidate",
+      "turns": [
+        {
+          "ref": "candidate:turn:8",
+          "turn": 8,
+          "trigger": "scheduled_check_in",
+          "timestamp": "2026-08-05T02:01:01.385661+00:00",
+          "events": [
+            {
+              "ref": "candidate:turn:8:event:0",
+              "timestamp": "2026-08-05T01:01:15.038457+00:00",
+              "type": "telemetry",
+              "data": {
+                "battery": 0.3499999940395355,
+                "battery_state": "unplugged",
+                "motion": "stationary",
+                "steps": 13,
+                "distance_m": "9.490000",
+                "altitude": "-0.121552",
+                "signal": null
+              }
+            },
+            {
+              "ref": "candidate:turn:8:event:1",
+              "timestamp": "2026-08-05T01:01:31.911602+00:00",
+              "type": "location",
+              "data": {
+                "lat": 36.313777,
+                "lng": -77.931622,
+                "accuracy_m": 25.59184341422926,
+                "speed": 0,
+                "heading": null
+              }
+            },
+            {
+              "ref": "candidate:turn:8:event:2",
+              "timestamp": "2026-08-05T01:01:44.691978+00:00",
+              "type": "telemetry",
+              "data": {
+                "battery": 0.3499999940395355,
+                "battery_state": "unplugged",
+                "motion": "stationary",
+                "steps": 13,
+                "distance_m": "9.490000",
+                "altitude": "0.219307",
+                "signal": null
+              }
+            },
+            {
+              "ref": "candidate:turn:8:event:3",
+              "timestamp": "2026-08-05T01:02:02.234449+00:00",
+              "type": "location",
+              "data": {
+                "lat": 36.313777,
+                "lng": -77.931622,
+                "accuracy_m": 24.384757754143436,
+                "speed": 0,
+                "heading": null
+              }
+            },
+            {
+              "ref": "candidate:turn:8:event:4",
+              "timestamp": "2026-08-05T01:02:32.539232+00:00",
+              "type": "location",
+              "data": {
+                "lat": 36.31387,
+                "lng": -77.931656,
+                "accuracy_m": 22.86966591541151,
+                "speed": 0.4745468672962132,
+                "heading": null
+              }
+            },
+            {
+              "ref": "candidate:turn:8:event:5",
+              "timestamp": "2026-08-05T01:02:55.386507+00:00",
+              "type": "telemetry",
+              "data": {
+                "battery": 0.3499999940395355,
+                "battery_state": "unplugged",
+                "motion": "unknown",
+                "steps": 18,
+                "distance_m": "15.110000",
+                "altitude": "-0.956520",
+                "signal": null
+              }
+            },
+            {
+              "ref": "candidate:turn:8:event:6",
+              "timestamp": "2026-08-05T01:03:03.060614+00:00",
+              "type": "location",
+              "data": {
+                "lat": 36.313796,
+                "lng": -77.931544,
+                "accuracy_m": 19.066410496160266,
+                "speed": 0,
+                "heading": null
+              }
+            },
+            {
+              "ref": "candidate:turn:8:event:7",
+              "timestamp": "2026-08-05T01:03:03.370659+00:00",
+              "type": "telemetry",
+              "data": {
+                "battery": 0.3499999940395355,
+                "battery_state": "unplugged",
+                "motion": "stationary",
+                "steps": 24,
+                "distance_m": "19.277064",
+                "altitude": "-1.249817",
+                "signal": null
+              }
+            },
+            {
+              "ref": "candidate:turn:8:event:8",
+              "timestamp": "2026-08-05T01:03:33.627405+00:00",
+              "type": "location",
+              "data": {
+                "lat": 36.313794,
+                "lng": -77.931494,
+                "accuracy_m": 23.22388053440115,
+                "speed": 0,
+                "heading": null
+              }
+            },
+            {
+              "ref": "candidate:turn:8:event:9",
+              "timestamp": "2026-08-05T01:03:34.226602+00:00",
+              "type": "telemetry",
+              "data": {
+                "battery": 0.3499999940395355,
+                "battery_state": "unplugged",
+                "motion": "stationary",
+                "steps": 24,
+                "distance_m": "19.277064",
+                "altitude": "0.338219",
+                "signal": null
+              }
+            },
+            {
+              "ref": "candidate:turn:8:event:10",
+              "timestamp": "2026-08-05T01:04:04.464934+00:00",
+              "type": "location",
+              "data": {
+                "lat": 36.3138,
+                "lng": -77.931458,
+                "accuracy_m": 23.163524082028427,
+                "speed": 0,
+                "heading": null
+              }
+            },
+            {
+              "ref": "candidate:turn:8:event:11",
+              "timestamp": "2026-08-05T01:04:34.492702+00:00",
+              "type": "telemetry",
+              "data": {
+                "battery": 0.3499999940395355,
+                "battery_state": "unplugged",
+                "motion": "stationary",
+                "steps": 24,
+                "distance_m": "19.277064",
+                "altitude": "-0.023781",
+                "signal": null
+              }
+            },
+            {
+              "ref": "candidate:turn:8:event:12",
+              "timestamp": "2026-08-05T01:04:35.737133+00:00",
+              "type": "location",
+              "data": {
+                "lat": 36.313809,
+                "lng": -77.931464,
+                "accuracy_m": 16.26706259529742,
+                "speed": 0,
+                "heading": null
+              }
+            },
+            {
+              "ref": "candidate:turn:8:event:13",
+              "timestamp": "2026-08-05T01:05:04.462159+00:00",
+              "type": "telemetry",
+              "data": {
+                "battery": 0.3499999940395355,
+                "battery_state": "unplugged",
+                "motion": "stationary",
+                "steps": 24,
+                "distance_m": "19.277064",
+                "altitude": "0.002640",
+                "signal": null
+              }
+            },
+            {
+              "ref": "candidate:turn:8:event:14",
+              "timestamp": "2026-08-05T01:05:06.180866+00:00",
+              "type": "location",
+              "data": {
+                "lat": 36.313809,
+                "lng": -77.931464,
+                "accuracy_m": 15.375501281773806,
+                "speed": 0,
+                "heading": null
+              }
+            },
+            {
+              "ref": "candidate:turn:8:event:15",
+              "timestamp": "2026-08-05T01:05:34.713353+00:00",
+              "type": "telemetry",
+              "data": {
+                "battery": 0.30000001192092896,
+                "battery_state": "unplugged",
+                "motion": "stationary",
+                "steps": 24,
+                "distance_m": "19.277064",
+                "altitude": "-0.126831",
+                "signal": null
+              }
+            },
+            {
+              "ref": "candidate:turn:8:event:16",
+              "timestamp": "2026-08-05T01:05:36.426036+00:00",
+              "type": "location",
+              "data": {
+                "lat": 36.313809,
+                "lng": -77.931464,
+                "accuracy_m": 15.225207953692566,
+                "speed": 0,
+                "heading": null
+              }
+            },
+            {
+              "ref": "candidate:turn:8:event:17",
+              "timestamp": "2026-08-05T01:06:06.756246+00:00",
+              "type": "location",
+              "data": {
+                "lat": 36.313809,
+                "lng": -77.931464,
+                "accuracy_m": 14.776618912627344,
+                "speed": 0,
+                "heading": null
+              }
+            },
+            {
+              "ref": "candidate:turn:8:event:18",
+              "timestamp": "2026-08-05T01:06:34.183521+00:00",
+              "type": "telemetry",
+              "data": {
+                "battery": 0.30000001192092896,
+                "battery_state": "unplugged",
+                "motion": "stationary",
+                "steps": 24,
+                "distance_m": "19.277064",
+                "altitude": "-0.044914",
+                "signal": null
+              }
+            },
+            {
+              "ref": "candidate:turn:8:event:19",
+              "timestamp": "2026-08-05T01:06:37.556289+00:00",
+              "type": "location",
+              "data": {
+                "lat": 36.313809,
+                "lng": -77.931464,
+                "accuracy_m": 14.706156013482973,
+                "speed": 0,
+                "heading": null
+              }
+            },
+            {
+              "ref": "candidate:turn:8:event:20",
+              "timestamp": "2026-08-05T01:07:07.435903+00:00",
+              "type": "location",
+              "data": {
+                "lat": 36.313826,
+                "lng": -77.931466,
+                "accuracy_m": 4.599644536369067,
+                "speed": null,
+                "heading": null
+              }
+            },
+            {
+              "ref": "candidate:turn:8:event:21",
+              "timestamp": "2026-08-05T01:07:36.163129+00:00",
+              "type": "telemetry",
+              "data": {
+                "battery": 0.30000001192092896,
+                "battery_state": "unplugged",
+                "motion": "stationary",
+                "steps": 24,
+                "distance_m": "19.277064",
+                "altitude": "0.171745",
+                "signal": null
+              }
+            },
+            {
+              "ref": "candidate:turn:8:event:22",
+              "timestamp": "2026-08-05T01:07:37.764564+00:00",
+              "type": "location",
+              "data": {
+                "lat": 36.313833,
+                "lng": -77.931464,
+                "accuracy_m": 4.376692408616062,
+                "speed": null,
+                "heading": null
+              }
+            },
+            {
+              "ref": "candidate:turn:8:event:23",
+              "timestamp": "2026-08-05T01:08:07.794554+00:00",
+              "type": "location",
+              "data": {
+                "lat": 36.313843,
+                "lng": -77.931462,
+                "accuracy_m": 4.097404541071105,
+                "speed": null,
+                "heading": null
+              }
+            },
+            {
+              "ref": "candidate:turn:8:event:24",
+              "timestamp": "2026-08-05T01:08:36.902483+00:00",
+              "type": "telemetry",
+              "data": {
+                "battery": 0.30000001192092896,
+                "battery_state": "unplugged",
+                "motion": "stationary",
+                "steps": 24,
+                "distance_m": "19.277064",
+                "altitude": "-0.044922",
+                "signal": null
+              }
+            },
+            {
+              "ref": "candidate:turn:8:event:25",
+              "timestamp": "2026-08-05T01:08:37.835871+00:00",
+              "type": "location",
+              "data": {
+                "lat": 36.31385,
+                "lng": -77.93146,
+                "accuracy_m": 3.8668842365547875,
+                "speed": null,
+                "heading": null
+              }
+            },
+            {
+              "ref": "candidate:turn:8:event:26",
+              "timestamp": "2026-08-05T01:09:07.852909+00:00",
+              "type": "location",
+              "data": {
+                "lat": 36.313854,
+                "lng": -77.931459,
+                "accuracy_m": 3.733083926767293,
+                "speed": null,
+                "heading": null
+              }
+            },
+            {
+              "ref": "candidate:turn:8:event:27",
+              "timestamp": "2026-08-05T01:09:36.436005+00:00",
+              "type": "telemetry",
+              "data": {
+                "battery": 0.30000001192092896,
+                "battery_state": "unplugged",
+                "motion": "stationary",
+                "steps": 24,
+                "distance_m": "19.277064",
+                "altitude": "-0.153252",
+                "signal": null
+              }
+            },
+            {
+              "ref": "candidate:turn:8:event:28",
+              "timestamp": "2026-08-05T01:09:38.164521+00:00",
+              "type": "location",
+              "data": {
+                "lat": 36.313859,
+                "lng": -77.931458,
+                "accuracy_m": 3.558024278274136,
+                "speed": null,
+                "heading": null
+              }
+            },
+            {
+              "ref": "candidate:turn:8:event:29",
+              "timestamp": "2026-08-05T01:10:04.276192+00:00",
+              "type": "telemetry",
+              "data": {
+                "battery": 0.30000001192092896,
+                "battery_state": "unplugged",
+                "motion": "stationary",
+                "steps": 24,
+                "distance_m": "19.277064",
+                "altitude": "-0.293297",
+                "signal": null
+              }
+            },
+            {
+              "ref": "candidate:turn:8:event:30",
+              "timestamp": "2026-08-05T01:10:08.315166+00:00",
+              "type": "location",
+              "data": {
+                "lat": 36.313862,
+                "lng": -77.931457,
+                "accuracy_m": 3.4539437498173466,
+                "speed": null,
+                "heading": null
+              }
+            },
+            {
+              "ref": "candidate:turn:8:event:31",
+              "timestamp": "2026-08-05T01:10:38.149990+00:00",
+              "type": "telemetry",
+              "data": {
+                "battery": 0.30000001192092896,
+                "battery_state": "unplugged",
+                "motion": "stationary",
+                "steps": 24,
+                "distance_m": "19.277064",
+                "altitude": "-0.002647",
+                "signal": null
+              }
+            },
+            {
+              "ref": "candidate:turn:8:event:32",
+              "timestamp": "2026-08-05T01:10:39.587601+00:00",
+              "type": "location",
+              "data": {
+                "lat": 36.313865,
+                "lng": -77.931457,
+                "accuracy_m": 3.3950139999999998,
+                "speed": null,
+                "heading": null
+              }
+            },
+            {
+              "ref": "candidate:turn:8:event:33",
+              "timestamp": "2026-08-05T01:11:08.788306+00:00",
+              "type": "location",
+              "data": {
+                "lat": 36.313868,
+                "lng": -77.931456,
+                "accuracy_m": 3.2317674853152223,
+                "speed": null,
+                "heading": null
+              }
+            },
+            {
+              "ref": "candidate:turn:8:event:34",
+              "timestamp": "2026-08-05T01:11:35.066962+00:00",
+              "type": "telemetry",
+              "data": {
+                "battery": 0.30000001192092896,
+                "battery_state": "unplugged",
+                "motion": "stationary",
+                "steps": 24,
+                "distance_m": "19.277064",
+                "altitude": "0.190247",
+                "signal": null
+              }
+            },
+            {
+              "ref": "candidate:turn:8:event:35",
+              "timestamp": "2026-08-05T01:11:39.019970+00:00",
+              "type": "location",
+              "data": {
+                "lat": 36.31387,
+                "lng": -77.931455,
+                "accuracy_m": 3.119141465233116,
+                "speed": null,
+                "heading": null
+              }
+            },
+            {
+              "ref": "candidate:turn:8:event:36",
+              "timestamp": "2026-08-05T01:12:09.488149+00:00",
+              "type": "location",
+              "data": {
+                "lat": 36.313872,
+                "lng": -77.931455,
+                "accuracy_m": 3.049892399127083,
+                "speed": null,
+                "heading": null
+              }
+            },
+            {
+              "ref": "candidate:turn:8:event:37",
+              "timestamp": "2026-08-05T01:12:35.465126+00:00",
+              "type": "telemetry",
+              "data": {
+                "battery": 0.30000001192092896,
+                "battery_state": "unplugged",
+                "motion": "stationary",
+                "steps": 24,
+                "distance_m": "19.277064",
+                "altitude": "0.142685",
+                "signal": null
+              }
+            },
+            {
+              "ref": "candidate:turn:8:event:38",
+              "timestamp": "2026-08-05T01:12:39.936900+00:00",
+              "type": "location",
+              "data": {
+                "lat": 36.313874,
+                "lng": -77.931455,
+                "accuracy_m": 2.9562329914727585,
+                "speed": null,
+                "heading": null
+              }
+            },
+            {
+              "ref": "candidate:turn:8:event:39",
+              "timestamp": "2026-08-05T01:13:04.114337+00:00",
+              "type": "telemetry",
+              "data": {
+                "battery": 0.30000001192092896,
+                "battery_state": "unplugged",
+                "motion": "stationary",
+                "steps": 24,
+                "distance_m": "19.277064",
+                "altitude": "-0.005287",
+                "signal": null
+              }
+            },
+            {
+              "ref": "candidate:turn:8:event:40",
+              "timestamp": "2026-08-05T01:13:10.072329+00:00",
+              "type": "location",
+              "data": {
+                "lat": 36.313876,
+                "lng": -77.931454,
+                "accuracy_m": 2.8978952025285296,
+                "speed": null,
+                "heading": null
+              }
+            },
+            {
+              "ref": "candidate:turn:8:event:41",
+              "timestamp": "2026-08-05T01:13:35.629058+00:00",
+              "type": "telemetry",
+              "data": {
+                "battery": 0.30000001192092896,
+                "battery_state": "unplugged",
+                "motion": "stationary",
+                "steps": 24,
+                "distance_m": "19.277064",
+                "altitude": "-0.132118",
+                "signal": null
+              }
+            },
+            {
+              "ref": "candidate:turn:8:event:42",
+              "timestamp": "2026-08-05T01:13:40.296657+00:00",
+              "type": "location",
+              "data": {
+                "lat": 36.313878,
+                "lng": -77.931454,
+                "accuracy_m": 2.8185612713934627,
+                "speed": null,
+                "heading": null
+              }
+            },
+            {
+              "ref": "candidate:turn:8:event:43",
+              "timestamp": "2026-08-05T01:14:10.911196+00:00",
+              "type": "location",
+              "data": {
+                "lat": 36.313879,
+                "lng": -77.931454,
+                "accuracy_m": 2.768614376694279,
+                "speed": null,
+                "heading": null
+              }
+            },
+            {
+              "ref": "candidate:turn:8:event:44",
+              "timestamp": "2026-08-05T01:14:36.083571+00:00",
+              "type": "telemetry",
+              "data": {
+                "battery": 0.30000001192092896,
+                "battery_state": "unplugged",
+                "motion": "stationary",
+                "steps": 24,
+                "distance_m": "19.277064",
+                "altitude": "0.029068",
+                "signal": null
+              }
+            },
+            {
+              "ref": "candidate:turn:8:event:45",
+              "timestamp": "2026-08-05T01:14:41.278083+00:00",
+              "type": "location",
+              "data": {
+                "lat": 36.31388,
+                "lng": -77.931453,
+                "accuracy_m": 2.7005758306888863,
+                "speed": null,
+                "heading": null
+              }
+            },
+            {
+              "ref": "candidate:turn:8:event:46",
+              "timestamp": "2026-08-05T01:15:11.669659+00:00",
+              "type": "location",
+              "data": {
+                "lat": 36.313881,
+                "lng": -77.931453,
+                "accuracy_m": 2.6572457750029286,
+                "speed": null,
+                "heading": null
+              }
+            },
+            {
+              "ref": "candidate:turn:8:event:47",
+              "timestamp": "2026-08-05T01:15:36.450093+00:00",
+              "type": "telemetry",
+              "data": {
+                "battery": 0.25,
+                "battery_state": "unplugged",
+                "motion": "stationary",
+                "steps": 24,
+                "distance_m": "19.277064",
+                "altitude": "-0.150612",
+                "signal": null
+              }
+            },
+            {
+              "ref": "candidate:turn:8:event:48",
+              "timestamp": "2026-08-05T01:15:42.091981+00:00",
+              "type": "location",
+              "data": {
+                "lat": 36.313882,
+                "lng": -77.931453,
+                "accuracy_m": 2.5982068641319893,
+                "speed": null,
+                "heading": null
+              }
+            },
+            {
+              "ref": "candidate:turn:8:event:49",
+              "timestamp": "2026-08-05T01:16:12.370519+00:00",
+              "type": "location",
+              "data": {
+                "lat": 36.313883,
+                "lng": -77.931453,
+                "accuracy_m": 2.5602531870924565,
+                "speed": null,
+                "heading": null
+              }
+            },
+            {
+              "ref": "candidate:turn:8:event:50",
+              "timestamp": "2026-08-05T01:16:39.230024+00:00",
+              "type": "telemetry",
+              "data": {
+                "battery": 0.25,
+                "battery_state": "unplugged",
+                "motion": "stationary",
+                "steps": 24,
+                "distance_m": "19.277064",
+                "altitude": "-0.169106",
+                "signal": null
+              }
+            },
+            {
+              "ref": "candidate:turn:8:event:51",
+              "timestamp": "2026-08-05T01:16:42.561279+00:00",
+              "type": "location",
+              "data": {
+                "lat": 36.313884,
+                "lng": -77.931452,
+                "accuracy_m": 2.5085177782855603,
+                "speed": null,
+                "heading": null
+              }
+            },
+            {
+              "ref": "candidate:turn:8:event:52",
+              "timestamp": "2026-08-05T01:17:13.277588+00:00",
+              "type": "location",
+              "data": {
+                "lat": 36.313885,
+                "lng": -77.931452,
+                "accuracy_m": 2.4750142477858237,
+                "speed": null,
+                "heading": null
+              }
+            },
+            {
+              "ref": "candidate:turn:8:event:53",
+              "timestamp": "2026-08-05T01:17:36.064858+00:00",
+              "type": "telemetry",
+              "data": {
+                "battery": 0.25,
+                "battery_state": "unplugged",
+                "motion": "stationary",
+                "steps": 24,
+                "distance_m": "19.277064",
+                "altitude": "-0.108337",
+                "signal": null
+              }
+            },
+            {
+              "ref": "candidate:turn:8:event:54",
+              "timestamp": "2026-08-05T01:17:43.552734+00:00",
+              "type": "location",
+              "data": {
+                "lat": 36.313886,
+                "lng": -77.931452,
+                "accuracy_m": 2.4293258550628196,
+                "speed": null,
+                "heading": null
+              }
+            },
+            {
+              "ref": "candidate:turn:8:event:55",
+              "timestamp": "2026-08-05T01:18:19.219057+00:00",
+              "type": "location",
+              "data": {
+                "lat": 36.313887,
+                "lng": -77.931452,
+                "accuracy_m": 2.3994062908415765,
+                "speed": null,
+                "heading": null
+              }
+            },
+            {
+              "ref": "candidate:turn:8:event:56",
+              "timestamp": "2026-08-05T01:18:35.756237+00:00",
+              "type": "telemetry",
+              "data": {
+                "battery": 0.25,
+                "battery_state": "unplugged",
+                "motion": "stationary",
+                "steps": 24,
+                "distance_m": "19.277064",
+                "altitude": "-0.010574",
+                "signal": null
+              }
+            },
+            {
+              "ref": "candidate:turn:8:event:57",
+              "timestamp": "2026-08-05T01:18:49.037326+00:00",
+              "type": "location",
+              "data": {
+                "lat": 36.313887,
+                "lng": -77.931452,
+                "accuracy_m": 2.358771461752024,
+                "speed": null,
+                "heading": null
+              }
+            },
+            {
+              "ref": "candidate:turn:8:event:58",
+              "timestamp": "2026-08-05T01:19:19.060971+00:00",
+              "type": "location",
+              "data": {
+                "lat": 36.313895,
+                "lng": -77.93145,
+                "accuracy_m": 11.584976533000294,
+                "speed": null,
+                "heading": null
+              }
+            },
+            {
+              "ref": "candidate:turn:8:event:59",
+              "timestamp": "2026-08-05T01:19:52.886081+00:00",
+              "type": "telemetry",
+              "data": {
+                "battery": 0.25,
+                "battery_state": "unplugged",
+                "motion": "unknown",
+                "steps": null,
+                "distance_m": null,
+                "altitude": null,
+                "signal": null
+              }
+            }
+          ],
+          "guardReplies": [],
+          "copilotMessages": [],
+          "actions": [],
+          "silent": true,
+          "skipped": false
+        },
+        {
+          "ref": "candidate:turn:9",
+          "turn": 9,
+          "trigger": "guard_message",
+          "timestamp": "2026-08-05T02:02:41.719042+00:00",
+          "events": [
+            {
+              "ref": "candidate:turn:9:event:0",
+              "timestamp": "2026-08-05T02:01:08.170277+00:00",
+              "type": "telemetry",
+              "data": {
+                "battery": 0.5,
+                "battery_state": "charging",
+                "motion": "unknown",
+                "steps": null,
+                "distance_m": null,
+                "altitude": null,
+                "signal": null
+              }
+            },
+            {
+              "ref": "candidate:turn:9:event:1",
+              "timestamp": "2026-08-05T02:01:12.151021+00:00",
+              "type": "location",
+              "data": {
+                "lat": 36.313788,
+                "lng": -77.931475,
+                "accuracy_m": 6.262798598567445,
+                "speed": 0,
+                "heading": null
+              }
+            },
+            {
+              "ref": "candidate:turn:9:event:2",
+              "timestamp": "2026-08-05T02:01:37.559281+00:00",
+              "type": "telemetry",
+              "data": {
+                "battery": 0.5,
+                "battery_state": "charging",
+                "motion": "unknown",
+                "steps": null,
+                "distance_m": null,
+                "altitude": "0.100410",
+                "signal": null
+              }
+            },
+            {
+              "ref": "candidate:turn:9:event:3",
+              "timestamp": "2026-08-05T02:01:58.937756+00:00",
+              "type": "guard_message",
+              "data": {
+                "text": "There was nothing to report and there was nothing damage or any activity",
+                "image": null,
+                "audio_transcription": null
+              }
+            },
+            {
+              "ref": "candidate:turn:9:event:4",
+              "timestamp": "2026-08-05T02:02:07.440633+00:00",
+              "type": "location",
+              "data": {
+                "lat": 36.313752,
+                "lng": -77.931502,
+                "accuracy_m": 3.5445099633607273,
+                "speed": 0,
+                "heading": null
+              }
+            },
+            {
+              "ref": "candidate:turn:9:event:5",
+              "timestamp": "2026-08-05T02:02:38.568580+00:00",
+              "type": "location",
+              "data": {
+                "lat": 36.313821,
+                "lng": -77.931453,
+                "accuracy_m": 4.748651530191761,
+                "speed": 0,
+                "heading": null
+              }
+            }
+          ],
+          "guardReplies": [
+            {
+              "ref": "candidate:turn:9:guard-reply:0",
+              "timestamp": "2026-08-05T02:02:41.719042+00:00",
+              "message": "There was nothing to report and there was nothing damage or any activity",
+              "source": "historical",
+              "historicalMessage": "There was nothing to report and there was nothing damage or any activity"
+            }
+          ],
+          "copilotMessages": [
+            {
+              "ref": "candidate:turn:9:message:0",
+              "timestamp": "2026-08-05T02:02:41.719042+00:00",
+              "text": "Got it, thanks — logged. Quick check: did you walk the rear perimeter and is the orange temporary fence holding? Any movement on the rear cameras?"
+            }
+          ],
+          "actions": [
+            {
+              "ref": "candidate:turn:9:action:0",
+              "timestamp": "2026-08-05T02:02:41.719042+00:00",
+              "tool": "add_copilot_note",
+              "input": {
+                "session_id": "16e10cc0-7f46-41c5-83e0-15c49e07deff",
+                "note_text": "Hector (9674) reports: \"There was nothing to report and there was nothing damage or any activity.\" Logged as guard report. Asked guard to confirm rear perimeter check and whether the orange temporary fence is holding; also asked whether rear cameras showed any movement.",
+                "entity_type": "job",
+                "entity_id": 56370,
+                "guard_id": 9674
+              }
+            }
+          ],
+          "silent": false,
+          "skipped": false
+        },
+        {
+          "ref": "candidate:turn:10",
+          "turn": 10,
+          "trigger": "guard_message",
+          "timestamp": "2026-08-05T02:03:51.791566+00:00",
+          "events": [
+            {
+              "ref": "candidate:turn:10:event:0",
+              "timestamp": "2026-08-05T02:02:52.229439+00:00",
+              "type": "telemetry",
+              "data": {
+                "battery": 0.550000011920929,
+                "battery_state": "charging",
+                "motion": "unknown",
+                "steps": null,
+                "distance_m": null,
+                "altitude": "0.052849",
+                "signal": null
+              }
+            },
+            {
+              "ref": "candidate:turn:10:event:1",
+              "timestamp": "2026-08-05T02:03:22.191247+00:00",
+              "type": "location",
+              "data": {
+                "lat": 36.313767,
+                "lng": -77.931555,
+                "accuracy_m": 15.960513492327506,
+                "speed": 0,
+                "heading": null
+              }
+            },
+            {
+              "ref": "candidate:turn:10:event:2",
+              "timestamp": "2026-08-05T02:03:28.102686+00:00",
+              "type": "guard_message",
+              "data": {
+                "text": "Yes I walk the whole site and I check the rear and there was no activity",
+                "image": null,
+                "audio_transcription": null
+              }
+            },
+            {
+              "ref": "candidate:turn:10:event:3",
+              "timestamp": "2026-08-05T02:03:37.341414+00:00",
+              "type": "telemetry",
+              "data": {
+                "battery": 0.550000011920929,
+                "battery_state": "charging",
+                "motion": "stationary",
+                "steps": null,
+                "distance_m": null,
+                "altitude": "-0.298576",
+                "signal": null
+              }
+            }
+          ],
+          "guardReplies": [
+            {
+              "ref": "candidate:turn:10:guard-reply:0",
+              "timestamp": "2026-08-05T02:03:51.791566+00:00",
+              "message": "Yes I walk the whole site and I check the rear and there was no activity",
+              "source": "historical",
+              "historicalMessage": "Yes I walk the whole site and I check the rear and there was no activity"
+            }
+          ],
+          "copilotMessages": [
+            {
+              "ref": "candidate:turn:10:message:0",
+              "timestamp": "2026-08-05T02:03:51.791566+00:00",
+              "text": "Thanks, logged. Quick confirm: is the orange temporary fence at the rear holding, and did you see movement on the rear cameras?"
+            }
+          ],
+          "actions": [
+            {
+              "ref": "candidate:turn:10:action:0",
+              "timestamp": "2026-08-05T02:03:51.791566+00:00",
+              "tool": "add_copilot_note",
+              "input": {
+                "session_id": "16e10cc0-7f46-41c5-83e0-15c49e07deff",
+                "note_text": "Hector (9674) confirms: walked the full site and checked the rear; reports no activity and no damage observed. Logged as guard report.",
+                "entity_type": "job",
+                "entity_id": 56370,
+                "guard_id": 9674
+              }
+            }
+          ],
+          "silent": false,
+          "skipped": false
+        },
+        {
+          "ref": "candidate:turn:11",
+          "turn": 11,
+          "trigger": "guard_message",
+          "timestamp": "2026-08-05T02:05:46.777284+00:00",
+          "events": [
+            {
+              "ref": "candidate:turn:11:event:0",
+              "timestamp": "2026-08-05T02:04:06.825514+00:00",
+              "type": "location",
+              "data": {
+                "lat": 36.313813,
+                "lng": -77.931464,
+                "accuracy_m": 14.295808275965387,
+                "speed": 0,
+                "heading": null
+              }
+            },
+            {
+              "ref": "candidate:turn:11:event:1",
+              "timestamp": "2026-08-05T02:04:38.159912+00:00",
+              "type": "location",
+              "data": {
+                "lat": 36.31381,
+                "lng": -77.931496,
+                "accuracy_m": 15.961067813562948,
+                "speed": 0.4334766911490357,
+                "heading": null
+              }
+            },
+            {
+              "ref": "candidate:turn:11:event:2",
+              "timestamp": "2026-08-05T02:04:38.570167+00:00",
+              "type": "telemetry",
+              "data": {
+                "battery": 0.550000011920929,
+                "battery_state": "charging",
+                "motion": "unknown",
+                "steps": null,
+                "distance_m": null,
+                "altitude": "0.385773",
+                "signal": null
+              }
+            },
+            {
+              "ref": "candidate:turn:11:event:3",
+              "timestamp": "2026-08-05T02:05:07.438094+00:00",
+              "type": "location",
+              "data": {
+                "lat": 36.313801,
+                "lng": -77.931508,
+                "accuracy_m": 17.274939954167426,
+                "speed": 0.14083124339270395,
+                "heading": null
+              }
+            },
+            {
+              "ref": "candidate:turn:11:event:4",
+              "timestamp": "2026-08-05T02:05:14.329120+00:00",
+              "type": "guard_message",
+              "data": {
+                "text": "Ok I going to need to leave my phone in my car so that I won’t get distracted from the internet",
+                "image": null,
+                "audio_transcription": null
+              }
+            },
+            {
+              "ref": "candidate:turn:11:event:5",
+              "timestamp": "2026-08-05T02:05:37.329267+00:00",
+              "type": "telemetry",
+              "data": {
+                "battery": 0.550000011920929,
+                "battery_state": "charging",
+                "motion": "unknown",
+                "steps": null,
+                "distance_m": null,
+                "altitude": "-0.221954",
+                "signal": null
+              }
+            },
+            {
+              "ref": "candidate:turn:11:event:6",
+              "timestamp": "2026-08-05T02:05:37.487049+00:00",
+              "type": "location",
+              "data": {
+                "lat": 36.313804,
+                "lng": -77.931483,
+                "accuracy_m": 13.428441037895283,
+                "speed": 0,
+                "heading": null
+              }
+            }
+          ],
+          "guardReplies": [
+            {
+              "ref": "candidate:turn:11:guard-reply:0",
+              "timestamp": "2026-08-05T02:05:46.777284+00:00",
+              "message": "Ok I going to need to leave my phone in my car so that I won’t get distracted from the internet",
+              "source": "historical",
+              "historicalMessage": "Ok I going to need to leave my phone in my car so that I won’t get distracted from the internet"
+            }
+          ],
+          "copilotMessages": [
+            {
+              "ref": "candidate:turn:11:message:0",
+              "timestamp": "2026-08-05T02:05:46.777284+00:00",
+              "text": "Okay. Quick confirm: are you staying on site and able to take emergency calls and check the cameras while the phone’s in your car? If not, I need to loop ops so we don’t leave the post unreachable. (If you want fewer distractions, DND and keep the phone with you instead.)"
+            }
+          ],
+          "actions": [
+            {
+              "ref": "candidate:turn:11:action:0",
+              "timestamp": "2026-08-05T02:05:46.777284+00:00",
+              "tool": "add_copilot_note",
+              "input": {
+                "session_id": "16e10cc0-7f46-41c5-83e0-15c49e07deff",
+                "note_text": "Hector (9674) reports he will leave his phone in his car to avoid distractions from the internet. Logged as guard communication.",
+                "entity_type": "job",
+                "entity_id": 56370,
+                "guard_id": 9674
+              }
+            }
+          ],
+          "silent": false,
+          "skipped": false
+        }
+      ]
+    }
+  },
+  "warnings": [
+    "Full replay context parity could not be independently verified because one or both replay responses omit debug context."
+  ]
+}

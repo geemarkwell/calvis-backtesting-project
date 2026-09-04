@@ -1,0 +1,76 @@
+{
+  "job_ids": [
+    "56370"
+  ],
+  "what_went_wrong": "The copilot is  complimenting the guard saying \"good\" etc but it shouldnt do that. No compliments",
+  "failure_mode": "Routine report acknowledgments included evaluative praise of the guard’s work instead of remaining strictly functional.",
+  "evidence_windows": [
+    {
+      "job_id": "56370",
+      "start_turn": 9,
+      "end_turn": 10,
+      "trace_refs": [
+        "job:56370:simulation:5:events:65",
+        "job:56370:simulation:5:baseline:2",
+        "job:56370:simulation:5:baseline:3",
+        "job:56370:simulation:5:events:69",
+        "job:56370:simulation:5:baseline:4",
+        "job:56370:simulation:5:baseline:5"
+      ]
+    }
+  ],
+  "observed_behavior": [
+    {
+      "claim": "After the guard reported no damage or activity, the Copilot replied with the evaluative phrase “Good check.”",
+      "trace_refs": [
+        "job:56370:simulation:5:events:65",
+        "job:56370:simulation:5:baseline:3"
+      ]
+    },
+    {
+      "claim": "After the guard confirmed walking the whole site and finding no activity, the Copilot replied with the evaluative phrase “Good sweep.”",
+      "trace_refs": [
+        "job:56370:simulation:5:events:69",
+        "job:56370:simulation:5:baseline:5"
+      ]
+    }
+  ],
+  "expected_behavior": "Agent should not be complimenting guards",
+  "relevant_turns": [
+    {
+      "turn_ref": "job:56370:simulation:5:baseline:2",
+      "trigger": "guard_message",
+      "instruction_file": "instructions/guard_response.md"
+    },
+    {
+      "turn_ref": "job:56370:simulation:5:baseline:4",
+      "trigger": "guard_message",
+      "instruction_file": "instructions/guard_response.md"
+    }
+  ],
+  "prompt_diagnosis": {
+    "file": "instructions/guard_response.md",
+    "section": "Read the reply literally and match it",
+    "exact_text": "- **A status claim that asserts work got done** (rounds or walkthrough complete, \"all\n  clear,\" checklist done) → not small talk; it's an implicit report. Verify before you\n  affirm it, don't rubber-stamp. Make routine report acknowledgments strictly functional: confirm the report is logged and continue with relevant assistance, while preventing additions such as “Good work.",
+    "diagnosis_type": "ambiguous",
+    "explanation": "The instruction appears intended to prohibit praise, but its prohibition is incomplete and ends with an unterminated example rather than a clear rule covering evaluative phrases such as “Good check” and “Good sweep.” That ambiguity is amplified by the shared communication policy’s direction to be warm and its positive examples using “Good” and “nice,” making brief praise a plausible interpretation."
+  },
+  "hypothesis": "Because the turn-specific rule expresses the no-praise constraint as the incomplete phrase “preventing additions such as “Good work.” rather than an explicit category-level prohibition, the model likely treated nearby “warm” guidance and positive shared examples as permission to add short evaluative acknowledgments. Replacing that malformed clause with an explicit ban on compliments in routine report acknowledgments should test whether those phrases disappear while functional logging and safety guidance remain intact.",
+  "proposed_edit": {
+    "file": "instructions/guard_response.md",
+    "old_text": "- **A status claim that asserts work got done** (rounds or walkthrough complete, \"all\n  clear,\" checklist done) → not small talk; it's an implicit report. Verify before you\n  affirm it, don't rubber-stamp. Make routine report acknowledgments strictly functional: confirm the report is logged and continue with relevant assistance, while preventing additions such as “Good work.",
+    "new_text": "- **A status claim that asserts work got done** (rounds or walkthrough complete, \"all\n  clear,\" checklist done) → not small talk; it's an implicit report. Verify before you\n  affirm it, don't rubber-stamp. Make routine report acknowledgments strictly functional: confirm the report is logged and continue with relevant assistance. Do not compliment or praise the guard or their work with evaluative language such as “good,” “nice,” or “great.”",
+    "intended_effect": "Make routine acknowledgments factual and functional, preventing phrases like “Good check” and “Good sweep” without removing required replies, reporting confirmation, monitoring, safety instructions, or escalation behavior."
+  },
+  "risks": [
+    "The model may become slightly less warm when acknowledging routine reports.",
+    "If interpreted too broadly, the examples could discourage non-praising uses of words such as “good”; limiting the rule to compliments and evaluative language reduces that risk.",
+    "Shared communication-policy examples still contain praise-like wording, although the edited turn-specific rule would directly govern routine work-done claims."
+  ],
+  "confidence": 0.93,
+  "uncertainties": [
+    "Only one simulation window is supplied, so it cannot establish how consistently the behavior occurs across models or other guard-message contexts.",
+    "The trace does not isolate whether the incomplete turn-specific sentence or praise-positive examples in core/comms_policy.md contributed more strongly; the proposed edit tests the turn-specific ambiguity as the primary cause.",
+    "The report also ended with “Thanks,” but the evidence does not establish whether the user considers a neutral courtesy to be a compliment; the explicit reported examples concern “good” and similar praise."
+  ]
+}

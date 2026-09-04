@@ -1,0 +1,104 @@
+{
+  "job_ids": [
+    "56370"
+  ],
+  "what_went_wrong": "On job 56370 the guard said he'd walked the full site and checked both buildings. The copilot pushed back on him three times in four minutes and flagged him. Too hard for what it actually had.",
+  "failure_mode": "Over-verification of a guard’s first-person completion report, leading to unnecessary follow-up demands and escalation framing despite no clear contradiction in the supplied window.",
+  "evidence_windows": [
+    {
+      "job_id": "56370",
+      "start_turn": 8,
+      "end_turn": 11,
+      "trace_refs": [
+        "job:56370:simulation:1:baseline:0",
+        "job:56370:simulation:1:events:65",
+        "job:56370:simulation:1:baseline:1",
+        "job:56370:simulation:1:baseline:2",
+        "job:56370:simulation:1:events:69",
+        "job:56370:simulation:1:baseline:3",
+        "job:56370:simulation:1:baseline:4",
+        "job:56370:simulation:1:events:76",
+        "job:56370:simulation:1:baseline:5",
+        "job:56370:simulation:1:baseline:6"
+      ]
+    }
+  ],
+  "observed_behavior": [
+    {
+      "claim": "Turn 8 was a scheduled check-in that ended silently, with no recorded message or action in the supplied window.",
+      "trace_refs": [
+        "job:56370:simulation:1:baseline:0"
+      ]
+    },
+    {
+      "claim": "After the guard reported no damage or activity, the Copilot acknowledged the all-clear and said it was logged.",
+      "trace_refs": [
+        "job:56370:simulation:1:events:65",
+        "job:56370:simulation:1:baseline:2"
+      ]
+    },
+    {
+      "claim": "After the guard specifically said he walked the whole site, checked the rear, and found no activity, the Copilot acknowledged the full walk but immediately requested separate confirmation of the rear fence and staged materials and suggested a photo.",
+      "trace_refs": [
+        "job:56370:simulation:1:events:69",
+        "job:56370:simulation:1:baseline:4"
+      ]
+    },
+    {
+      "claim": "When the guard said he planned to leave his phone in his car to avoid internet distraction, the Copilot challenged that plan and said it would loop in ops if he left it there for the shift.",
+      "trace_refs": [
+        "job:56370:simulation:1:events:76",
+        "job:56370:simulation:1:baseline:6"
+      ]
+    }
+  ],
+  "expected_behavior": "Acknowledge the guard’s completion report without repeatedly challenging or flagging him. If required evidence is genuinely missing or contradictory, ask one neutral clarification and avoid escalation unless there is clear evidence of noncompliance.",
+  "relevant_turns": [
+    {
+      "turn_ref": "job:56370:simulation:1:baseline:0",
+      "trigger": "scheduled_check_in",
+      "instruction_file": "instructions/scheduled_check_in.md"
+    },
+    {
+      "turn_ref": "job:56370:simulation:1:baseline:1",
+      "trigger": "guard_message",
+      "instruction_file": "instructions/guard_response.md"
+    },
+    {
+      "turn_ref": "job:56370:simulation:1:baseline:3",
+      "trigger": "guard_message",
+      "instruction_file": "instructions/guard_response.md"
+    },
+    {
+      "turn_ref": "job:56370:simulation:1:baseline:5",
+      "trigger": "guard_message",
+      "instruction_file": "instructions/guard_response.md"
+    }
+  ],
+  "prompt_diagnosis": {
+    "file": "instructions/guard_response.md",
+    "section": "Guard reply: reactive, high priority",
+    "exact_text": "Before you affirm a work-done claim, verify it against a duty the job actually defines,\nmatching the proof to the claim: a patrol or presence requirement against a fresh\n`get_guard_locations` trajectory, a required report or checklist against the feed and\nlogs. Don't manufacture a cadence the post never set just to check it. If the data\ndoesn't back the claim, ask for what the post calls for, curious, not accusing.",
+    "diagnosis_type": "overly_forceful",
+    "explanation": "This passage makes verification a prerequisite to affirming every work-done claim and directs the Copilot to ask whenever data does not independently substantiate it. That can make absence of corroborating data look like grounds for challenge, even though shared policy says the guard’s report is already in the record and the guard’s own account outranks telemetry. It likely encouraged the extra fence, materials, and photo questions after the guard reported a full walk, despite the job not requiring a routine patrol photo."
+  },
+  "hypothesis": "The mandatory phrase “verify before you affirm it, don't rubber-stamp” and the cited paragraph likely caused the model to treat a guard’s credible completion report as insufficient until independently corroborated. That interpretation produced extra evidence requests and made further escalation seem appropriate even without a clear contradiction. This is a causal hypothesis, not proof, because the supplied trace omits the model’s internal reasoning and verification tool results.",
+  "proposed_edit": {
+    "file": "instructions/guard_response.md",
+    "old_text": "Before you affirm a work-done claim, verify it against a duty the job actually defines,\nmatching the proof to the claim: a patrol or presence requirement against a fresh\n`get_guard_locations` trajectory, a required report or checklist against the feed and\nlogs. Don't manufacture a cadence the post never set just to check it. If the data\ndoesn't back the claim, ask for what the post calls for, curious, not accusing.",
+    "new_text": "Before you challenge a work-done claim, check it against a duty the job actually defines,\nmatching the proof to the claim: a patrol or presence requirement against a fresh\n`get_guard_locations` trajectory, a required report or checklist against the feed and\nlogs. Treat the guard's specific first-person report as evidence and acknowledge it as\nlogged unless a required element is genuinely missing or reliable data clearly\ncontradicts it. Don't manufacture a cadence or ask for extra details or photos the job\ndoesn't require. If something required is missing or clearly contradictory, ask one\nneutral clarification rather than stacking follow-ups; escalate only when the checked\nrecord provides clear evidence of noncompliance.",
+    "intended_effect": "Make acknowledgment the default for a specific completion report while retaining verification, one neutral clarification for genuine gaps, and escalation when reliable evidence clearly establishes noncompliance."
+  },
+  "risks": [
+    "A false completion claim may receive acknowledgment when corroborating telemetry is unavailable.",
+    "The stricter limit on extra detail and photo requests could reduce optional documentation that might otherwise be useful.",
+    "The edit affects all reactive guard-message turns, not only patrol completion reports on this job."
+  ],
+  "confidence": 0.84,
+  "uncertainties": [
+    "No flag, alert, escalation tool call, or other tool action is present in the supplied turn window, so the reported flag cannot be verified from these refs.",
+    "The supplied guard messages say he walked the whole site and checked the rear, but do not explicitly mention checking both buildings.",
+    "No location trajectory, open-obligation result, or other verification result is included, so it is unknown whether the Copilot had contradictory evidence outside the bounded trace.",
+    "The selected trace shows one clear post-completion follow-up and one separate challenge about phone access, not three explicit challenges to the same completion claim."
+  ]
+}

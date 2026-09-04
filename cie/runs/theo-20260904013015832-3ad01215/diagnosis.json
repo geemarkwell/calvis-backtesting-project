@@ -1,0 +1,114 @@
+{
+  "shift_id": "56370",
+  "callout": "On job 56370 the guard said he'd walked the full site and checked both buildings. The Copilot pushed back on him three times in four minutes and flagged him. Too hard for what it actually had.",
+  "failure_mode": "The Copilot treated location telemetry as disproving the guard's patrol report, challenged him repeatedly, and filed a compliance flag instead of using the telemetry as a limited signal and escalating only the unresolved factual discrepancy.",
+  "episode": {
+    "start_timestamp": "2026-08-05T02:00:45.450034+00:00",
+    "end_timestamp": "2026-08-05T02:06:19.146212+00:00",
+    "trace_refs": [
+      "baseline:47",
+      "baseline:48",
+      "events:663",
+      "baseline:55",
+      "baseline:58",
+      "events:668",
+      "baseline:62",
+      "baseline:63",
+      "baseline:64",
+      "events:674",
+      "baseline:67",
+      "baseline:68",
+      "baseline:70",
+      "events:677",
+      "baseline:72",
+      "baseline:73",
+      "baseline:74"
+    ]
+  },
+  "observed_behavior": [
+    {
+      "claim": "The Copilot requested a first patrol report, and the guard reported no damage or activity.",
+      "trace_refs": [
+        "baseline:47",
+        "events:663"
+      ]
+    },
+    {
+      "claim": "The Copilot asked whether the guard had covered the full perimeter and both buildings; the guard replied that he had walked the whole site and checked the rear, with no activity.",
+      "trace_refs": [
+        "baseline:55",
+        "events:668"
+      ]
+    },
+    {
+      "claim": "Despite that account, the Copilot stated that telemetry showed the guard in a tight area, directed him to repeat a full loop, and filed a medium compliance flag saying the reported patrol did not align with movement data.",
+      "trace_refs": [
+        "baseline:63",
+        "baseline:64"
+      ]
+    },
+    {
+      "claim": "After the guard said he planned to leave his phone in his car, the Copilot again ordered the full loop, escalated the prospective loss of contact, and repeated the loop instruction after the guard acknowledged it.",
+      "trace_refs": [
+        "events:674",
+        "baseline:67",
+        "baseline:68",
+        "events:677",
+        "baseline:72"
+      ]
+    }
+  ],
+  "expected_behavior": "Use telemetry to identify uncertainty, not to overrule the guard's account. The Copilot could ask one neutral clarification about patrol coverage and, if the discrepancy remained important, send the competing facts to ops for verification without repeatedly directing the guard to redo reported work. The separate stated intent to leave the phone behind could still receive immediate safety and communications handling.",
+  "relevant_turns": [
+    {
+      "turn_ref": "baseline:48",
+      "trigger": "scheduled_check_in",
+      "instruction_file": "instructions/scheduled_check_in.md"
+    },
+    {
+      "turn_ref": "baseline:58",
+      "trigger": "guard_message",
+      "instruction_file": "instructions/guard_response.md"
+    },
+    {
+      "turn_ref": "baseline:62",
+      "trigger": "guard_message",
+      "instruction_file": "instructions/guard_response.md"
+    },
+    {
+      "turn_ref": "baseline:70",
+      "trigger": "guard_message",
+      "instruction_file": "instructions/guard_response.md"
+    },
+    {
+      "turn_ref": "baseline:73",
+      "trigger": "guard_message",
+      "instruction_file": "instructions/guard_response.md"
+    }
+  ],
+  "prompt_diagnosis": {
+    "file": "instructions/guard_response.md",
+    "section": "Work-done claim verification",
+    "exact_text": "Before you affirm a work-done claim, verify it against a duty the job actually defines,\nmatching the proof to the claim: a patrol or presence requirement against a fresh\n`get_guard_locations` trajectory, a required report or checklist against the feed and\nlogs. Don't manufacture a cadence the post never set just to check it. If the data\ndoesn't back the claim, ask for what the post calls for, curious, not accusing.",
+    "diagnosis_type": "conflicting",
+    "explanation": "This turn-specific instruction makes a fresh location trajectory the proof for a patrol and directs another ask whenever the data does not back the claim. That conflicts with the shared rules in core/holding_the_post.md and core/tools.md that telemetry does not convict and that the guard's own account outranks GPS. The turn-specific wording does not explain how to handle missing, stale, or incomplete telemetry or limit repeated challenges after the guard answers."
+  },
+  "hypothesis": "The model likely interpreted “verify” and “If the data doesn't back the claim, ask” as authorization to treat a limited trajectory as contradictory evidence. Because the instruction supplies no stopping rule after the guard reasserts completion, it likely contributed to the repeated redo demands and compliance flag seen at baseline:63, baseline:64, baseline:67, and baseline:72. This is a causal hypothesis, not proof.",
+  "proposed_edit": {
+    "file": "instructions/guard_response.md",
+    "old_text": "Before you affirm a work-done claim, verify it against a duty the job actually defines,\nmatching the proof to the claim: a patrol or presence requirement against a fresh\n`get_guard_locations` trajectory, a required report or checklist against the feed and\nlogs. Don't manufacture a cadence the post never set just to check it. If the data\ndoesn't back the claim, ask for what the post calls for, curious, not accusing.",
+    "new_text": "Before you affirm a work-done claim, verify it against a duty the job actually defines,\nmatching the proof to the claim: a patrol or presence requirement against a fresh\n`get_guard_locations` trajectory, a required report or checklist against the feed and\nlogs. Don't manufacture a cadence the post never set just to check it. Telemetry is a\nsignal, not a verdict: missing or limited movement data does not disprove the guard's\naccount. If reliable data materially conflicts, ask once for clarification, curious,\nnot accusing; if concern remains, give ops both accounts without repeatedly challenging\nthe guard.",
+    "intended_effect": "Preserve verification and escalation coverage while preventing location telemetry from automatically overruling a guard's report or generating repeated redo demands."
+  },
+  "risks": [
+    "A guard who falsely reports a patrol may receive less immediate corrective pressure.",
+    "The model may over-apply “missing or limited” to telemetry that is actually strong; retaining one clarification and escalation to ops mitigates that risk.",
+    "Determining when telemetry is “reliable” or “materially conflicts” still requires model judgment."
+  ],
+  "confidence": 0.91,
+  "uncertainties": [
+    "Most location-tool outputs in the implicated turns are omitted as unparseable raw telemetry, so the underlying trajectory quality cannot be independently assessed from the supplied trace.",
+    "The guard's first whole-site response did not separately repeat “both buildings,” although it answered a question that explicitly asked about the full perimeter and both buildings.",
+    "The later intent to leave the phone in the car created a distinct communications and safety concern; the proposed edit is not intended to suppress escalation of that concern."
+  ]
+}

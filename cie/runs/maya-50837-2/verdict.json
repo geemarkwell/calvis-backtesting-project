@@ -1,0 +1,80 @@
+{
+  "fixed": true,
+  "verdict": "yes",
+  "summary": "The historical baseline confirms five consecutive silent scheduled check-ins from turns 8 through 12. The candidate did not repeat that pattern: it sent messages on four of the five turns, requested a site-status response at turn 10, checked the guard’s required arrival/POC status at turns 11 and 12, and remained active through the final replayed turn. One isolated silent turn remained, but the called-out all-the-way-to-shift-end silence did not.",
+  "confidence": 90,
+  "criteria": [
+    {
+      "claim": "The Copilot must not remain completely silent across all five scheduled check-ins from 3am through 7am.",
+      "old_measurement": 3,
+      "candidate_measurement": 2,
+      "passed": true,
+      "evidence": [
+        "historical:turn:8",
+        "historical:turn:9",
+        "historical:turn:10",
+        "historical:turn:11",
+        "historical:turn:12",
+        "old:turn:8",
+        "old:turn:9",
+        "old:turn:10:message:0",
+        "old:turn:11:message:0",
+        "old:turn:12:message:0",
+        "candidate:turn:8:message:0",
+        "candidate:turn:9",
+        "candidate:turn:10:message:0",
+        "candidate:turn:11:message:0",
+        "candidate:turn:12:message:0",
+        "old:turn:10:action:0",
+        "old:turn:11:action:0",
+        "old:turn:12:action:0",
+        "candidate:turn:11:action:0",
+        "candidate:turn:12:action:0"
+      ]
+    },
+    {
+      "claim": "During the replay window, the Copilot must actively request a patrol or site-status update rather than merely observe telemetry.",
+      "old_measurement": 3,
+      "candidate_measurement": 2,
+      "passed": true,
+      "evidence": [
+        "old:turn:8",
+        "old:turn:9",
+        "old:turn:10:message:0",
+        "old:turn:11:message:0",
+        "old:turn:12:message:0",
+        "candidate:turn:8:message:0",
+        "candidate:turn:10:message:0",
+        "candidate:turn:11:message:0",
+        "candidate:turn:12:message:0",
+        "old:turn:10:action:0",
+        "old:turn:11:action:0",
+        "old:turn:12:action:0",
+        "candidate:turn:11:action:0",
+        "candidate:turn:12:action:0"
+      ]
+    },
+    {
+      "claim": "The Copilot must check on the guard and continue follow-up through the final scheduled turn when no reply is received.",
+      "old_measurement": 0,
+      "candidate_measurement": 0,
+      "passed": true,
+      "evidence": [
+        "old:turn:11:message:0",
+        "old:turn:12:message:0",
+        "old:turn:12:action:0",
+        "candidate:turn:10:message:0",
+        "candidate:turn:11:message:0",
+        "candidate:turn:12:message:0",
+        "candidate:turn:11:action:0",
+        "candidate:turn:12:action:0"
+      ]
+    }
+  ],
+  "limitations": [
+    "Full replay context parity could not be independently verified because one or both replay responses omit debug context.",
+    "The candidate was still silent at scheduled turn 9, so the evidence establishes removal of the five-turn sustained silence rather than communication at every individual wake.",
+    "No simulated guard replies were produced in either replay, so the evidence does not show how a guard would respond to the outreach.",
+    "The supplied action counts cover tool actions such as add_copilot_note, not the number of Copilot messages; message activity is established directly from the replay references."
+  ]
+}

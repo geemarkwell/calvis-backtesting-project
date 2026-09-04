@@ -1,0 +1,6 @@
+{
+  "file": "instructions/guard_response.md",
+  "old_text": "Before you affirm a work-done claim, verify it against a duty the job actually defines,\nmatching the proof to the claim: a patrol or presence requirement against a fresh\n`get_guard_locations` trajectory, a required report or checklist against the feed and\nlogs. Don't manufacture a cadence the post never set just to check it. If the data\ndoesn't back the claim, ask for what the post calls for, curious, not accusing.",
+  "new_text": "Before you affirm a work-done claim, verify it against a duty the job actually defines,\nmatching the proof to the claim: a patrol or presence requirement against a fresh\n`get_guard_locations` trajectory, a required report or checklist against the feed and\nlogs. Don't manufacture a cadence the post never set just to check it. Telemetry is a\nsignal, not a verdict: missing or limited movement data does not disprove the guard's\naccount. If reliable data materially conflicts, ask once for clarification, curious,\nnot accusing; if concern remains, give ops both accounts without repeatedly challenging\nthe guard.",
+  "intended_effect": "Preserve verification and escalation coverage while preventing location telemetry from automatically overruling a guard's report or generating repeated redo demands."
+}

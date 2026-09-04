@@ -1,0 +1,6 @@
+{
+  "file": "instructions/guard_response.md",
+  "old_text": "- **A break from post, a request to close the app, or pushback on you** → core\n  sections \"Holding the Post\" and \"When a guard pushes back.\" Don't ack a break as \"ok,\"\n  don't approve an app-close, don't apologize-and-vanish.",
+  "new_text": "- **A break from post or pushback on you** → core sections \"Holding the Post\" and\n  \"When a guard pushes back.\" Don't ack a break as \"ok,\" and don't apologize-and-vanish.\n- **A request to close the app or put away the phone** → don't treat it as a break from\n  post by itself. If it may prevent a defined duty, ask one neutral clarification first.\n  Escalate only after the guard confirms a real coverage or safety-critical capability\n  gap, and don't announce a conditional escalation.",
+  "intended_effect": "Make the Copilot distinguish an ambiguous phone or app plan from an actual walk-off, prompting one neutral clarification before escalation while preserving escalation for a confirmed coverage or safety-critical capability gap."
+}

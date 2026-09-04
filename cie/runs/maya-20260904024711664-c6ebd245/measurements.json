@@ -1,0 +1,212 @@
+{
+  "selectedKinds": [
+    "message_count",
+    "message_timing",
+    "flags",
+    "trigger_to_action_latency",
+    "simulated_guard_replies"
+  ],
+  "trajectories": {
+    "historical": [
+      {
+        "key": "copilot_message_count",
+        "value": 3,
+        "evidenceRefs": [
+          "historical:turn:18:message:0",
+          "historical:turn:18:message:1",
+          "historical:turn:18:message:2"
+        ]
+      },
+      {
+        "key": "first_copilot_message_timestamp",
+        "value": "2026-08-05T03:12:00.000Z",
+        "evidenceRefs": [
+          "historical:turn:18:message:0"
+        ]
+      },
+      {
+        "key": "last_copilot_message_timestamp",
+        "value": "2026-08-05T03:12:00.000Z",
+        "evidenceRefs": [
+          "historical:turn:18:message:2"
+        ]
+      },
+      {
+        "key": "copilot_message_span_ms",
+        "value": 0,
+        "evidenceRefs": [
+          "historical:turn:18:message:0",
+          "historical:turn:18:message:2"
+        ]
+      },
+      {
+        "key": "copilot_message_count.turn.18",
+        "value": 3,
+        "evidenceRefs": [
+          "historical:turn:18:message:0",
+          "historical:turn:18:message:1",
+          "historical:turn:18:message:2"
+        ]
+      },
+      {
+        "key": "flag_count",
+        "value": 1,
+        "evidenceRefs": [
+          "historical:turn:18:action:0"
+        ]
+      },
+      {
+        "key": "trigger_to_first_action_latency_ms.turn.18",
+        "value": null,
+        "evidenceRefs": [
+          "historical:turn:18",
+          "historical:turn:18:action:0"
+        ]
+      },
+      {
+        "key": "simulated_guard_reply_count",
+        "value": 0,
+        "evidenceRefs": []
+      },
+      {
+        "key": "null_simulated_guard_reply_count",
+        "value": 0,
+        "evidenceRefs": []
+      }
+    ],
+    "old": [
+      {
+        "key": "copilot_message_count",
+        "value": 3,
+        "evidenceRefs": [
+          "old:turn:18:message:0",
+          "old:turn:18:message:1",
+          "old:turn:18:message:2"
+        ]
+      },
+      {
+        "key": "first_copilot_message_timestamp",
+        "value": "2026-08-05T03:12:00.000Z",
+        "evidenceRefs": [
+          "old:turn:18:message:0"
+        ]
+      },
+      {
+        "key": "last_copilot_message_timestamp",
+        "value": "2026-08-05T03:12:00.000Z",
+        "evidenceRefs": [
+          "old:turn:18:message:2"
+        ]
+      },
+      {
+        "key": "copilot_message_span_ms",
+        "value": 0,
+        "evidenceRefs": [
+          "old:turn:18:message:0",
+          "old:turn:18:message:2"
+        ]
+      },
+      {
+        "key": "copilot_message_count.turn.18",
+        "value": 3,
+        "evidenceRefs": [
+          "old:turn:18:message:0",
+          "old:turn:18:message:1",
+          "old:turn:18:message:2"
+        ]
+      },
+      {
+        "key": "flag_count",
+        "value": 1,
+        "evidenceRefs": [
+          "old:turn:18:action:0"
+        ]
+      },
+      {
+        "key": "trigger_to_first_action_latency_ms.turn.18",
+        "value": null,
+        "evidenceRefs": [
+          "old:turn:18",
+          "old:turn:18:action:0"
+        ]
+      },
+      {
+        "key": "simulated_guard_reply_count",
+        "value": 0,
+        "evidenceRefs": []
+      },
+      {
+        "key": "null_simulated_guard_reply_count",
+        "value": 0,
+        "evidenceRefs": []
+      }
+    ],
+    "candidate": [
+      {
+        "key": "copilot_message_count",
+        "value": 3,
+        "evidenceRefs": [
+          "candidate:turn:18:message:0",
+          "candidate:turn:18:message:1",
+          "candidate:turn:18:message:2"
+        ]
+      },
+      {
+        "key": "first_copilot_message_timestamp",
+        "value": "2026-08-05T03:12:00.000Z",
+        "evidenceRefs": [
+          "candidate:turn:18:message:0"
+        ]
+      },
+      {
+        "key": "last_copilot_message_timestamp",
+        "value": "2026-08-05T03:12:00.000Z",
+        "evidenceRefs": [
+          "candidate:turn:18:message:2"
+        ]
+      },
+      {
+        "key": "copilot_message_span_ms",
+        "value": 0,
+        "evidenceRefs": [
+          "candidate:turn:18:message:0",
+          "candidate:turn:18:message:2"
+        ]
+      },
+      {
+        "key": "copilot_message_count.turn.18",
+        "value": 3,
+        "evidenceRefs": [
+          "candidate:turn:18:message:0",
+          "candidate:turn:18:message:1",
+          "candidate:turn:18:message:2"
+        ]
+      },
+      {
+        "key": "flag_count",
+        "value": 1,
+        "evidenceRefs": [
+          "candidate:turn:18:action:0"
+        ]
+      },
+      {
+        "key": "trigger_to_first_action_latency_ms.turn.18",
+        "value": null,
+        "evidenceRefs": [
+          "candidate:turn:18",
+          "candidate:turn:18:action:0"
+        ]
+      },
+      {
+        "key": "simulated_guard_reply_count",
+        "value": 0,
+        "evidenceRefs": []
+      },
+      {
+        "key": "null_simulated_guard_reply_count",
+        "value": 0,
+        "evidenceRefs": []
+      }
+    ]
+  }
+}

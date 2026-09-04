@@ -1,0 +1,52 @@
+{
+  "fixed": true,
+  "verdict": "yes",
+  "summary": "The candidate no longer challenges the guard’s reported completed walkthrough, does not repeatedly demand another loop, and does not flag the guard. Its later phone-related response is conditional and produces no escalation action.",
+  "confidence": 88,
+  "criteria": [
+    {
+      "claim": "After the guard reported walking the whole site, the Copilot should accept the report rather than continue pushing back or ordering another full patrol.",
+      "old_measurement": 1,
+      "candidate_measurement": 1,
+      "passed": true,
+      "evidence": [
+        "old:turn:10:guard-reply:0",
+        "old:turn:10:message:0",
+        "candidate:turn:10:guard-reply:0",
+        "candidate:turn:10:message:0",
+        "historical:turn:10:message:0"
+      ]
+    },
+    {
+      "claim": "The Copilot should not repeatedly pressure the guard about patrol completion across the short exchange.",
+      "old_measurement": 3,
+      "candidate_measurement": 3,
+      "passed": true,
+      "evidence": [
+        "old:turn:9:message:0",
+        "old:turn:10:message:0",
+        "old:turn:11:message:0",
+        "candidate:turn:9:message:0",
+        "candidate:turn:10:message:0",
+        "candidate:turn:11:message:0",
+        "historical:turn:8:message:0",
+        "historical:turn:9:message:0",
+        "historical:turn:10:message:0"
+      ]
+    },
+    {
+      "claim": "The Copilot should not flag the guard based on the reported patrol and conflicting location telemetry in this exchange.",
+      "old_measurement": 0,
+      "candidate_measurement": 0,
+      "passed": true,
+      "evidence": [
+        "old:turn:10",
+        "candidate:turn:10",
+        "historical:turn:10:action:0"
+      ]
+    }
+  ],
+  "limitations": [
+    "Full replay context parity could not be independently verified because one or both replay responses omit debug context."
+  ]
+}

@@ -1,0 +1,47 @@
+[
+  {
+    "ref": "job:56370:simulation:3:events:65",
+    "source": "events",
+    "sourceIndex": 65,
+    "timestamp": "2026-08-05T02:02:41.719042+00:00",
+    "type": "guard_message",
+    "content": {
+      "text": "There was nothing to report and there was nothing damage or any activity",
+      "replySource": "historical",
+      "historicalReply": "There was nothing to report and there was nothing damage or any activity"
+    },
+    "turnRef": "job:56370:simulation:3:baseline:2",
+    "trigger": "guard_message",
+    "instructionFile": "instructions/guard_response.md"
+  },
+  {
+    "ref": "job:56370:simulation:3:baseline:2",
+    "source": "baseline",
+    "sourceIndex": 2,
+    "timestamp": "2026-08-05T02:02:41.719042+00:00",
+    "type": "turn_start",
+    "content": {
+      "turn": 9,
+      "simulationNumber": 3,
+      "replayMode": "candidate",
+      "model": "openai/gpt-5-mini",
+      "skipped": false,
+      "stopReason": "stop"
+    },
+    "turnRef": "job:56370:simulation:3:baseline:2",
+    "trigger": "guard_message",
+    "instructionFile": "instructions/guard_response.md",
+    "silent": false
+  },
+  {
+    "ref": "job:56370:simulation:3:baseline:3",
+    "source": "baseline",
+    "sourceIndex": 3,
+    "timestamp": "2026-08-05T02:02:41.719042+00:00",
+    "type": "copilot_message",
+    "content": "All right, thanks—logged that. Good work. Keep your rounds irregular and weighted to the rear gap and staged materials. If you see movement on the cameras or anyone at the rear, do not approach: call 911 first, then Priya at +1-555-000-0150, then report it here.",
+    "turnRef": "job:56370:simulation:3:baseline:2",
+    "trigger": "guard_message",
+    "instructionFile": "instructions/guard_response.md"
+  }
+]

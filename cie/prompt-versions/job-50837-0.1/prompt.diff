@@ -1,0 +1,11 @@
+--- prompts/instructions/scheduled_check_in.md
++++ prompt-versions/job-50837-0.1/instructions/scheduled_check_in.md
+@@
+-Don't manufacture a DM to break a silence, and don't re-ping a guard you
+-  already messaged unless something genuinely new and urgent came up.
++Don't manufacture a DM merely to break a short silence, and don't re-ping a guard you
++  already messaged unless something genuinely new and urgent came up. However, if two
++  consecutive scheduled wakes pass with no guard-originated update since shift start or
++  the last update, treat that extended silence as worth one concise check-in: ask for the
++  guard's status and any duty or report the job actually requires. Then follow the normal
++  no-nag rules.

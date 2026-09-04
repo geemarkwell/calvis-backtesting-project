@@ -1,0 +1,13 @@
+{
+  "jobId": "56370",
+  "version": "0.1",
+  "createdAt": "2026-09-04T08:34:54.425Z",
+  "sourceVersion": "original",
+  "runId": "theo-20260904083419695-c250acec",
+  "changedFile": "instructions/guard_response.md",
+  "oldText": "Before you affirm a work-done claim, verify it against a duty the job actually defines,\nmatching the proof to the claim: a patrol or presence requirement against a fresh\n`get_guard_locations` trajectory, a required report or checklist against the feed and\nlogs. Don't manufacture a cadence the post never set just to check it. If the data\ndoesn't back the claim, ask for what the post calls for, curious, not accusing.",
+  "newText": "Before you challenge a work-done claim, check it against a duty the job actually defines,\nmatching the proof to the claim: a patrol or presence requirement against a fresh\n`get_guard_locations` trajectory, a required report or checklist against the feed and\nlogs. Treat the guard's specific first-person report as evidence and acknowledge it as\nlogged unless a required element is genuinely missing or reliable data clearly\ncontradicts it. Don't manufacture a cadence or ask for extra details or photos the job\ndoesn't require. If something required is missing or clearly contradictory, ask one\nneutral clarification rather than stacking follow-ups; escalate only when the checked\nrecord provides clear evidence of noncompliance.",
+  "intendedEffect": "Make acknowledgment the default for a specific completion report while retaining verification, one neutral clarification for genuine gaps, and escalation when reliable evidence clearly establishes noncompliance.",
+  "sourceFileHash": "28456c31b9266d01d727dff26a0dbb24c72b7cc2881ff5a11664548de3729590",
+  "candidateFileHash": "8b74f6c769f05f9155f8916ef04b7a159d0c15a1ade5766f363386118ee98ca8"
+}

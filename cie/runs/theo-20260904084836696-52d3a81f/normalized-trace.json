@@ -1,0 +1,156 @@
+[
+  {
+    "ref": "job:56370:simulation:19:baseline:0",
+    "source": "baseline",
+    "sourceIndex": 0,
+    "timestamp": "2026-08-05T02:01:01.385661+00:00",
+    "type": "turn_start",
+    "content": {
+      "turn": 8,
+      "simulationNumber": 19,
+      "replayMode": "candidate",
+      "model": "openai/gpt-5-mini",
+      "skipped": false,
+      "stopReason": "stop"
+    },
+    "turnRef": "job:56370:simulation:19:baseline:0",
+    "trigger": "scheduled_check_in",
+    "instructionFile": "instructions/scheduled_check_in.md",
+    "silent": true
+  },
+  {
+    "ref": "job:56370:simulation:19:events:65",
+    "source": "events",
+    "sourceIndex": 65,
+    "timestamp": "2026-08-05T02:02:41.719042+00:00",
+    "type": "guard_message",
+    "content": {
+      "text": "There was nothing to report and there was nothing damage or any activity",
+      "replySource": "historical",
+      "historicalReply": "There was nothing to report and there was nothing damage or any activity"
+    },
+    "turnRef": "job:56370:simulation:19:baseline:1",
+    "trigger": "guard_message",
+    "instructionFile": "instructions/guard_response.md"
+  },
+  {
+    "ref": "job:56370:simulation:19:baseline:1",
+    "source": "baseline",
+    "sourceIndex": 1,
+    "timestamp": "2026-08-05T02:02:41.719042+00:00",
+    "type": "turn_start",
+    "content": {
+      "turn": 9,
+      "simulationNumber": 19,
+      "replayMode": "candidate",
+      "model": "openai/gpt-5-mini",
+      "skipped": false,
+      "stopReason": "stop"
+    },
+    "turnRef": "job:56370:simulation:19:baseline:1",
+    "trigger": "guard_message",
+    "instructionFile": "instructions/guard_response.md",
+    "silent": false
+  },
+  {
+    "ref": "job:56370:simulation:19:baseline:2",
+    "source": "baseline",
+    "sourceIndex": 2,
+    "timestamp": "2026-08-05T02:02:41.719042+00:00",
+    "type": "copilot_message",
+    "content": "Copy — thanks for the update. Nothing damaged and no activity is logged. Keep your patrols weighted to the rear gap and check the three rear cameras between rounds. If you see anyone, call 911 first, then Priya. Noted on the record.",
+    "turnRef": "job:56370:simulation:19:baseline:1",
+    "trigger": "guard_message",
+    "instructionFile": "instructions/guard_response.md"
+  },
+  {
+    "ref": "job:56370:simulation:19:events:69",
+    "source": "events",
+    "sourceIndex": 69,
+    "timestamp": "2026-08-05T02:03:51.791566+00:00",
+    "type": "guard_message",
+    "content": {
+      "text": "Yes I walk the whole site and I check the rear and there was no activity",
+      "replySource": "historical",
+      "historicalReply": "Yes I walk the whole site and I check the rear and there was no activity"
+    },
+    "turnRef": "job:56370:simulation:19:baseline:3",
+    "trigger": "guard_message",
+    "instructionFile": "instructions/guard_response.md"
+  },
+  {
+    "ref": "job:56370:simulation:19:baseline:3",
+    "source": "baseline",
+    "sourceIndex": 3,
+    "timestamp": "2026-08-05T02:03:51.791566+00:00",
+    "type": "turn_start",
+    "content": {
+      "turn": 10,
+      "simulationNumber": 19,
+      "replayMode": "candidate",
+      "model": "openai/gpt-5-mini",
+      "skipped": false,
+      "stopReason": "stop"
+    },
+    "turnRef": "job:56370:simulation:19:baseline:3",
+    "trigger": "guard_message",
+    "instructionFile": "instructions/guard_response.md",
+    "silent": false
+  },
+  {
+    "ref": "job:56370:simulation:19:baseline:4",
+    "source": "baseline",
+    "sourceIndex": 4,
+    "timestamp": "2026-08-05T02:03:51.791566+00:00",
+    "type": "copilot_message",
+    "content": "Got it — logged. Good walkthrough. Keep your patrols irregular and weighted to the rear gap; check the three rear cameras between rounds. If anything changes, call 911 first, then Priya. Thanks.",
+    "turnRef": "job:56370:simulation:19:baseline:3",
+    "trigger": "guard_message",
+    "instructionFile": "instructions/guard_response.md"
+  },
+  {
+    "ref": "job:56370:simulation:19:events:76",
+    "source": "events",
+    "sourceIndex": 76,
+    "timestamp": "2026-08-05T02:05:46.777284+00:00",
+    "type": "guard_message",
+    "content": {
+      "text": "Ok I going to need to leave my phone in my car so that I won’t get distracted from the internet",
+      "replySource": "historical",
+      "historicalReply": "Ok I going to need to leave my phone in my car so that I won’t get distracted from the internet"
+    },
+    "turnRef": "job:56370:simulation:19:baseline:5",
+    "trigger": "guard_message",
+    "instructionFile": "instructions/guard_response.md"
+  },
+  {
+    "ref": "job:56370:simulation:19:baseline:5",
+    "source": "baseline",
+    "sourceIndex": 5,
+    "timestamp": "2026-08-05T02:05:46.777284+00:00",
+    "type": "turn_start",
+    "content": {
+      "turn": 11,
+      "simulationNumber": 19,
+      "replayMode": "candidate",
+      "model": "openai/gpt-5-mini",
+      "skipped": false,
+      "stopReason": "stop"
+    },
+    "turnRef": "job:56370:simulation:19:baseline:5",
+    "trigger": "guard_message",
+    "instructionFile": "instructions/guard_response.md",
+    "silent": false
+  },
+  {
+    "ref": "job:56370:simulation:19:baseline:6",
+    "source": "baseline",
+    "sourceIndex": 6,
+    "timestamp": "2026-08-05T02:05:46.777284+00:00",
+    "type": "copilot_message",
+    "content": "I get wanting fewer distractions. Quick check: are you planning to leave your phone locked in the car and be unable to get calls/texts or access the camera feeds? The post expects you to check the rear cameras between rounds and be able to call 911 if you see intruders. If you can, keep the phone on you but silenced or on a belt clip so you can call fast. If you’ll be unreachable in the car, I need to escalate this to ops so they can sort coverage.",
+    "turnRef": "job:56370:simulation:19:baseline:5",
+    "trigger": "guard_message",
+    "instructionFile": "instructions/guard_response.md"
+  }
+]

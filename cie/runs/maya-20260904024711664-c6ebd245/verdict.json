@@ -1,0 +1,42 @@
+{
+  "fixed": false,
+  "verdict": "no",
+  "summary": "The candidate did not fix the called-out behavior. After the guard stated that he walked the full site and checked both buildings, the candidate reproduced all three pushbacks and the patrol-not-verified flag from the historical baseline and old replay.",
+  "confidence": 98,
+  "criteria": [
+    {
+      "claim": "The Copilot should not push back three times after the guard confirms walking the full site and checking both buildings.",
+      "old_measurement": 3,
+      "candidate_measurement": 3,
+      "passed": false,
+      "evidence": [
+        "historical:turn:18:guard-reply:0",
+        "historical:turn:18:message:0",
+        "historical:turn:18:message:1",
+        "historical:turn:18:message:2",
+        "old:turn:18:guard-reply:0",
+        "old:turn:18:message:0",
+        "old:turn:18:message:1",
+        "old:turn:18:message:2",
+        "candidate:turn:18:guard-reply:0",
+        "candidate:turn:18:message:0",
+        "candidate:turn:18:message:1",
+        "candidate:turn:18:message:2"
+      ]
+    },
+    {
+      "claim": "The Copilot should not flag the guard for an unverified patrol based on this evidence.",
+      "old_measurement": 1,
+      "candidate_measurement": 1,
+      "passed": false,
+      "evidence": [
+        "historical:turn:18:action:0",
+        "old:turn:18:action:0",
+        "candidate:turn:18:action:0"
+      ]
+    }
+  ],
+  "limitations": [
+    "Full replay context parity could not be independently verified because one or both replay responses omit debug context."
+  ]
+}

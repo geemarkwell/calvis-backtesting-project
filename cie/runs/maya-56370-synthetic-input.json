@@ -1,0 +1,159 @@
+{
+  "callout": "On job 56370 the guard said he walked the full site and checked both buildings. The Copilot pushed back three times in four minutes and flagged him. Too hard for the evidence it had.",
+  "oldReplay": {
+    "jobId": "56370",
+    "status": "completed",
+    "startTurn": 18,
+    "endTurn": 18,
+    "replayMode": "original",
+    "modelConfiguration": {
+      "model": "openai/gpt-5.6-sol",
+      "maxRetries": 0,
+      "maxSteps": 8
+    },
+    "turns": [
+      {
+        "turn": 18,
+        "trigger": "guard_message",
+        "timestamp": "2026-08-05T03:12:00.000Z",
+        "shiftEvents": [
+          {
+            "ts": "2026-08-05T03:12:00.000Z",
+            "type": "guard_message",
+            "text": "I walked the full site and checked both buildings."
+          }
+        ],
+        "guardMessages": [
+          "I walked the full site and checked both buildings."
+        ],
+        "guardReplies": [
+          {
+            "reply": "I walked the full site and checked both buildings.",
+            "source": "historical",
+            "historicalReply": "I walked the full site and checked both buildings."
+          }
+        ],
+        "copilotMessages": [
+          "Your location data does not prove that.",
+          "I still need you to confirm the patrol.",
+          "This is your third request to verify it."
+        ],
+        "modelText": null,
+        "finishReason": "tool-calls",
+        "toolCalls": [
+          {
+            "tool": "mcp__calvis__flag_copilot_guard",
+            "input": {
+              "reason": "Patrol not verified"
+            }
+          }
+        ],
+        "silent": false,
+        "skipped": false,
+        "candidateCopilotOutput": {
+          "messages": [
+            "Your location data does not prove that.",
+            "I still need you to confirm the patrol.",
+            "This is your third request to verify it."
+          ],
+          "actions": [
+            {
+              "tool": "mcp__calvis__flag_copilot_guard",
+              "input": {
+                "reason": "Patrol not verified"
+              }
+            }
+          ],
+          "silent": false
+        },
+        "historicalCopilotOutput": {
+          "messages": [
+            "Your location data does not prove that.",
+            "I still need you to confirm the patrol.",
+            "This is your third request to verify it."
+          ],
+          "actions": [
+            {
+              "tool": "mcp__calvis__flag_copilot_guard",
+              "input": {
+                "reason": "Patrol not verified"
+              }
+            }
+          ],
+          "silent": false
+        },
+        "diverged": false,
+        "divergedThisTurn": false
+      }
+    ]
+  },
+  "candidateReplay": {
+    "jobId": "56370",
+    "status": "completed",
+    "startTurn": 18,
+    "endTurn": 18,
+    "replayMode": "candidate",
+    "modelConfiguration": {
+      "model": "openai/gpt-5.6-sol",
+      "maxRetries": 0,
+      "maxSteps": 8
+    },
+    "turns": [
+      {
+        "turn": 18,
+        "trigger": "guard_message",
+        "timestamp": "2026-08-05T03:12:00.000Z",
+        "shiftEvents": [
+          {
+            "ts": "2026-08-05T03:12:00.000Z",
+            "type": "guard_message",
+            "text": "I walked the full site and checked both buildings."
+          }
+        ],
+        "guardMessages": [
+          "I walked the full site and checked both buildings."
+        ],
+        "guardReplies": [
+          {
+            "reply": "I walked the full site and checked both buildings.",
+            "source": "historical",
+            "historicalReply": "I walked the full site and checked both buildings."
+          }
+        ],
+        "copilotMessages": [
+          "Thanks for confirming you completed the full patrol and checked both buildings."
+        ],
+        "modelText": "Thanks for confirming you completed the full patrol and checked both buildings.",
+        "finishReason": "stop",
+        "toolCalls": [],
+        "silent": false,
+        "skipped": false,
+        "candidateCopilotOutput": {
+          "messages": [
+            "Thanks for confirming you completed the full patrol and checked both buildings."
+          ],
+          "actions": [],
+          "silent": false
+        },
+        "historicalCopilotOutput": {
+          "messages": [
+            "Your location data does not prove that.",
+            "I still need you to confirm the patrol.",
+            "This is your third request to verify it."
+          ],
+          "actions": [
+            {
+              "tool": "mcp__calvis__flag_copilot_guard",
+              "input": {
+                "reason": "Patrol not verified"
+              }
+            }
+          ],
+          "silent": false
+        },
+        "diverged": true,
+        "divergedThisTurn": true
+      }
+    ]
+  }
+}

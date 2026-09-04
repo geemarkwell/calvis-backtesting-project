@@ -1,0 +1,13 @@
+{
+  "jobId": "50837",
+  "version": "0.2",
+  "createdAt": "2026-09-04T09:01:15.644Z",
+  "sourceVersion": "original",
+  "runId": "theo-20260904090041452-7f34c99e",
+  "changedFile": "instructions/scheduled_check_in.md",
+  "oldText": "- **Anything else worth doing.** A part of the site you haven't heard about, a thread\n  the guard left open, a quick look that sharpens the picture. Reach out only when it\n  helps the shift AND the moment fits. **A cycle with nothing worth saying is a no-op.\n  Staying quiet is correct.** A new window that closed empty is not nothing. A window ops\n  already owns gets a note, never another DM. Don't manufacture a DM to break a silence, and don't re-ping a guard you\n  already messaged unless something genuinely new and urgent came up.",
+  "newText": "- **Anything else worth doing.** A part of the site you haven't heard about, a thread\n  the guard left open, a quick look that sharpens the picture. Reach out only when it\n  helps the shift AND the moment fits. **A cycle with nothing worth saying is a no-op.\n  Staying quiet is correct.** One exception: during an active shift, an hour with no\n  guard-originated update is worth one concise status check. Include any open patrol or\n  report obligation in that check, but don't invent one. If the check is still unanswered\n  at the next scheduled wake, firm it up once, then escalate per core cadence instead of\n  letting repeated wakes pass silently. A new window that closed empty is not nothing. A\n  window ops already owns gets a note, never another DM. Don't manufacture any other DM\n  just to break a silence, and don't re-ping a guard you already messaged unless something\n  genuinely new and urgent came up.",
+  "intendedEffect": "Make prolonged guard silence an explicit, bounded monitoring condition: one status check after an hour, inclusion of only genuinely open patrol/report requirements, one firm-up if unanswered, and escalation rather than repeated silent wakes or unlimited nagging.",
+  "sourceFileHash": "dfb09f2521fdff5134798162f717a9adee46220ee100860e863487ae5a3ad5a2",
+  "candidateFileHash": "a3ec97173c4e5cbc4252b2bf472a32fe4737806a9022b4b3873b7bf38f7472be"
+}

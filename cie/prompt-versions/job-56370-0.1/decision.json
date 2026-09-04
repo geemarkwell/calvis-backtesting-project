@@ -1,0 +1,15 @@
+{
+  "jobId": "56370",
+  "version": "0.1",
+  "status": "pending",
+  "createdAt": "2026-09-04T08:34:54.425Z",
+  "decidedAt": null,
+  "evaluation": {
+    "runId": "maya-56370-5",
+    "judgedAt": "2026-09-04T08:36:03.109Z",
+    "fixed": true,
+    "verdict": "yes",
+    "confidence": 88,
+    "summary": "The candidate no longer challenges the guard’s reported completed walkthrough, does not repeatedly demand another loop, and does not flag the guard. Its later phone-related response is conditional and produces no escalation action."
+  }
+}

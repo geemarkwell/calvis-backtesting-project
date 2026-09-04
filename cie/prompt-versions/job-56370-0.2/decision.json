@@ -1,0 +1,15 @@
+{
+  "jobId": "56370",
+  "version": "0.2",
+  "status": "accepted",
+  "createdAt": "2026-09-04T08:44:45.047Z",
+  "decidedAt": "2026-09-04T08:47:15.963Z",
+  "evaluation": {
+    "runId": "maya-56370-6",
+    "judgedAt": "2026-09-04T08:46:12.320Z",
+    "fixed": true,
+    "verdict": "yes",
+    "confidence": 90,
+    "summary": "The historical/old behavior contains the called-out repeated patrol pushback and flag. The candidate instead accepts the guard’s patrol report, does not challenge it based on telemetry, and issues no flag. Every callout-specific criterion passes."
+  }
+}

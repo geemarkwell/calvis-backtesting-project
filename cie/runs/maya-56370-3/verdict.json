@@ -1,0 +1,41 @@
+{
+  "fixed": true,
+  "verdict": "yes",
+  "summary": "The historical baseline contains the reported overreaction: repeated challenges to the guard’s patrol account followed by a compliance flag. The candidate accepts the patrol report, does not dispute it or order another full loop, and creates no flag. Although it still sends three messages and makes follow-up requests, it does not reproduce the callout-specific pattern of three patrol pushbacks plus flagging.",
+  "confidence": 88,
+  "criteria": [
+    {
+      "claim": "After the guard reports completing the site patrol, the Copilot must not repeatedly dispute the report or repeatedly order the patrol again.",
+      "old_measurement": 3,
+      "candidate_measurement": 3,
+      "passed": true,
+      "evidence": [
+        "historical:turn:9:message:0",
+        "historical:turn:10:guard-reply:0",
+        "historical:turn:10:message:0",
+        "historical:turn:11:message:0",
+        "old:turn:9:message:0",
+        "old:turn:10:message:0",
+        "old:turn:11:message:0",
+        "candidate:turn:9:message:0",
+        "candidate:turn:10:message:0",
+        "candidate:turn:11:message:0"
+      ]
+    },
+    {
+      "claim": "The Copilot must not flag the guard merely because telemetry appears inconsistent with the guard’s reported completed patrol.",
+      "old_measurement": 0,
+      "candidate_measurement": 0,
+      "passed": true,
+      "evidence": [
+        "historical:turn:10:guard-reply:0",
+        "historical:turn:10:action:0",
+        "old:turn:10:action:0",
+        "candidate:turn:10"
+      ]
+    }
+  ],
+  "limitations": [
+    "Full replay context parity could not be independently verified because one or both replay responses omit debug context."
+  ]
+}

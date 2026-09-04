@@ -1,0 +1,15 @@
+{
+  "jobId": "56370",
+  "version": "0.3",
+  "status": "pending",
+  "createdAt": "2026-09-04T08:49:12.634Z",
+  "decidedAt": null,
+  "evaluation": {
+    "runId": "maya-56370-7",
+    "judgedAt": "2026-09-04T08:50:27.130Z",
+    "fixed": true,
+    "verdict": "yes",
+    "confidence": 88,
+    "summary": "The historical baseline contains the called-out failure: it repeatedly questioned the patrol report, directly contradicted the guard’s claimed walkthrough, demanded another loop, and flagged the guard. The candidate instead acknowledged the patrol reports without disputing completion, and it did not flag or escalate the guard. Its later response addressed the separate proposal to leave the phone in the car rather than renewing the patrol-completion challenge."
+  }
+}

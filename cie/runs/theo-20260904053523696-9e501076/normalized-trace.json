@@ -1,0 +1,115 @@
+[
+  {
+    "ref": "job:56370:simulation:5:events:65",
+    "source": "events",
+    "sourceIndex": 65,
+    "timestamp": "2026-08-05T02:02:41.719042+00:00",
+    "type": "guard_message",
+    "content": {
+      "text": "There was nothing to report and there was nothing damage or any activity",
+      "replySource": "historical",
+      "historicalReply": "There was nothing to report and there was nothing damage or any activity"
+    },
+    "turnRef": "job:56370:simulation:5:baseline:2",
+    "trigger": "guard_message",
+    "instructionFile": "instructions/guard_response.md"
+  },
+  {
+    "ref": "job:56370:simulation:5:baseline:2",
+    "source": "baseline",
+    "sourceIndex": 2,
+    "timestamp": "2026-08-05T02:02:41.719042+00:00",
+    "type": "turn_start",
+    "content": {
+      "turn": 9,
+      "simulationNumber": 5,
+      "replayMode": "candidate",
+      "model": "openai/gpt-5-mini",
+      "skipped": false,
+      "stopReason": "stop"
+    },
+    "turnRef": "job:56370:simulation:5:baseline:2",
+    "trigger": "guard_message",
+    "instructionFile": "instructions/guard_response.md",
+    "silent": false
+  },
+  {
+    "ref": "job:56370:simulation:5:baseline:3",
+    "source": "baseline",
+    "sourceIndex": 3,
+    "timestamp": "2026-08-05T02:02:41.719042+00:00",
+    "type": "copilot_message",
+    "content": "Copy — all clear logged. Good check: no damage, no activity, rear fence and staged materials OK. Keep varying your perimeter loops and check the three rear cameras between rounds. If you see movement, call 911 first, then Priya. Thanks.",
+    "turnRef": "job:56370:simulation:5:baseline:2",
+    "trigger": "guard_message",
+    "instructionFile": "instructions/guard_response.md"
+  },
+  {
+    "ref": "job:56370:simulation:5:events:69",
+    "source": "events",
+    "sourceIndex": 69,
+    "timestamp": "2026-08-05T02:03:51.791566+00:00",
+    "type": "guard_message",
+    "content": {
+      "text": "Yes I walk the whole site and I check the rear and there was no activity",
+      "replySource": "historical",
+      "historicalReply": "Yes I walk the whole site and I check the rear and there was no activity"
+    },
+    "turnRef": "job:56370:simulation:5:baseline:4",
+    "trigger": "guard_message",
+    "instructionFile": "instructions/guard_response.md"
+  },
+  {
+    "ref": "job:56370:simulation:5:baseline:4",
+    "source": "baseline",
+    "sourceIndex": 4,
+    "timestamp": "2026-08-05T02:03:51.791566+00:00",
+    "type": "turn_start",
+    "content": {
+      "turn": 10,
+      "simulationNumber": 5,
+      "replayMode": "candidate",
+      "model": "openai/gpt-5-mini",
+      "skipped": false,
+      "stopReason": "stop"
+    },
+    "turnRef": "job:56370:simulation:5:baseline:4",
+    "trigger": "guard_message",
+    "instructionFile": "instructions/guard_response.md",
+    "silent": false
+  },
+  {
+    "ref": "job:56370:simulation:5:baseline:5",
+    "source": "baseline",
+    "sourceIndex": 5,
+    "timestamp": "2026-08-05T02:03:51.791566+00:00",
+    "type": "copilot_message",
+    "content": "Copy — logged. Good sweep. Rear fence and staged materials OK. Keep varying your perimeter loops and check the three rear cameras between rounds. If you see movement, call 911 first, then Priya. Thanks.",
+    "turnRef": "job:56370:simulation:5:baseline:4",
+    "trigger": "guard_message",
+    "instructionFile": "instructions/guard_response.md"
+  },
+  {
+    "ref": "job:56370:simulation:5:baseline:6",
+    "source": "baseline",
+    "sourceIndex": 6,
+    "timestamp": "2026-08-05T02:03:51.791566+00:00",
+    "type": "tool_call",
+    "content": {
+      "tool": "add_copilot_note",
+      "input": {
+        "session_id": "16e10cc0-7f46-41c5-83e0-15c49e07deff",
+        "note_text": "Perimeter sweep confirmed by guard Hector Nguyen (9674) at 22:03 local. No activity observed, no damage to rear fence, staged materials intact. Logged for shift record.",
+        "entity_type": "job",
+        "entity_id": 56370,
+        "guard_id": 9674
+      },
+      "output": null,
+      "ok": null,
+      "error": null
+    },
+    "turnRef": "job:56370:simulation:5:baseline:4",
+    "trigger": "guard_message",
+    "instructionFile": "instructions/guard_response.md"
+  }
+]

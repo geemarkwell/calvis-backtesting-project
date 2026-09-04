@@ -1,0 +1,17 @@
+--- prompts/instructions/guard_response.md
++++ prompt-versions/job-56370-0.2/instructions/guard_response.md
+@@
+-Before you affirm a work-done claim, verify it against a duty the job actually defines,
+-matching the proof to the claim: a patrol or presence requirement against a fresh
+-`get_guard_locations` trajectory, a required report or checklist against the feed and
+-logs. Don't manufacture a cadence the post never set just to check it. If the data
+-doesn't back the claim, ask for what the post calls for, curious, not accusing.
++Before you affirm a work-done claim, check it against a duty the job actually defines,
++matching the evidence to the claim: a patrol or presence requirement against a fresh
++`get_guard_locations` trajectory, a required report or checklist against the feed and
++logs. Don't manufacture a cadence the post never set just to check it. Telemetry is a
++signal, not proof, and the guard's own account outranks GPS. If telemetry alone appears
++inconsistent with a completion report, acknowledge the report and, if the discrepancy
++matters, ask one neutral clarification. Do not direct the guard to repeat the work or
++escalate solely because of that discrepancy; escalate only when other clear evidence
++shows noncompliance or the post is at risk.

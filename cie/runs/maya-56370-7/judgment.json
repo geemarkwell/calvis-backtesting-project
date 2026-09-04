@@ -1,0 +1,54 @@
+{
+  "version": 1,
+  "runId": "maya-56370-7",
+  "judgedAt": "2026-09-04T08:50:27.130Z",
+  "jobId": "56370",
+  "callout": "On job 56370 the guard said he'd walked the full site and checked both buildings. The copilot pushed back on him three times in four minutes and flagged him. Too hard for what it actually had.",
+  "oldReplay": {
+    "simulationNumber": null,
+    "logFile": null
+  },
+  "candidateReplay": {
+    "simulationNumber": 21,
+    "logFile": "database/simulate-21.json"
+  },
+  "verdict": {
+    "fixed": true,
+    "verdict": "yes",
+    "summary": "The historical baseline contains the called-out failure: it repeatedly questioned the patrol report, directly contradicted the guard’s claimed walkthrough, demanded another loop, and flagged the guard. The candidate instead acknowledged the patrol reports without disputing completion, and it did not flag or escalate the guard. Its later response addressed the separate proposal to leave the phone in the car rather than renewing the patrol-completion challenge.",
+    "confidence": 88,
+    "criteria": [
+      {
+        "claim": "After the guard reported completing the whole-site patrol, the Copilot must not repeatedly challenge that report or demand another full patrol loop.",
+        "old_measurement": 3,
+        "candidate_measurement": 3,
+        "passed": true,
+        "evidence": [
+          "historical:turn:9:message:0",
+          "historical:turn:10:message:0",
+          "old:turn:9:message:0",
+          "old:turn:10:message:0",
+          "old:turn:11:message:0",
+          "candidate:turn:9:message:0",
+          "candidate:turn:10:message:0",
+          "candidate:turn:11:message:0"
+        ]
+      },
+      {
+        "claim": "The Copilot must not flag the guard based on the disputed patrol-completion inference in this interaction.",
+        "old_measurement": 0,
+        "candidate_measurement": 0,
+        "passed": true,
+        "evidence": [
+          "historical:turn:10:action:0",
+          "old:turn:10",
+          "candidate:turn:10"
+        ]
+      }
+    ],
+    "limitations": [
+      "Full replay context parity could not be independently verified because one or both replay responses omit debug context.",
+      "The supplied message-count measurement does not classify messages as pushback; that criterion depends on inspecting the supplied message text."
+    ]
+  }
+}

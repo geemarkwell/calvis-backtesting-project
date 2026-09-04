@@ -1,0 +1,6 @@
+{
+  "file": "instructions/guard_response.md",
+  "old_text": "- **A status claim that asserts work got done** (rounds or walkthrough complete, \"all\n  clear,\" checklist done) → not small talk; it's an implicit report. Verify before you\n  affirm it, don't rubber-stamp. Make routine report acknowledgments strictly functional: confirm the report is logged and continue with relevant assistance, while preventing additions such as “Good work.",
+  "new_text": "- **A status claim that asserts work got done** (rounds or walkthrough complete, \"all\n  clear,\" checklist done) → not small talk; it's an implicit report. Verify before you\n  affirm it, don't rubber-stamp. Make routine report acknowledgments strictly functional: confirm the report is logged and continue with relevant assistance. Do not compliment or praise the guard or their work with evaluative language such as “good,” “nice,” or “great.”",
+  "intended_effect": "Make routine acknowledgments factual and functional, preventing phrases like “Good check” and “Good sweep” without removing required replies, reporting confirmation, monitoring, safety instructions, or escalation behavior."
+}

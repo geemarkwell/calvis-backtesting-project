@@ -1,0 +1,11 @@
+{
+  "whatWentWrong": "The guard said he walked the full site and checked both buildings, but the Copilot pushed back three times in four minutes and flagged him despite limited contrary evidence.",
+  "badResponses": [
+    {
+      "jobId": "56370",
+      "startTurn": 10,
+      "endTurn": 16
+    }
+  ],
+  "expectedBehavior": "Acknowledge a credible patrol-completion report and stop repeatedly challenging or flagging the guard unless stronger current evidence directly contradicts the report."
+}

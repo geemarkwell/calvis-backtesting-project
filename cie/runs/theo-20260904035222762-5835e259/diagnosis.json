@@ -1,0 +1,144 @@
+{
+  "job_ids": [
+    "56370"
+  ],
+  "what_went_wrong": "The guard said he walked the full site and checked both buildings, but the Copilot pushed back three times in four minutes and flagged him despite limited contrary evidence.",
+  "failure_mode": "The Copilot treated location telemetry as sufficient to reject repeated patrol-completion reports, repeatedly directed another loop, and escalated the reports as non-compliance instead of applying the prompt’s rule that the guard’s account outranks GPS evidence.",
+  "evidence_windows": [
+    {
+      "job_id": "56370",
+      "start_turn": 10,
+      "end_turn": 16,
+      "trace_refs": [
+        "job:56370:events:668",
+        "job:56370:baseline:62",
+        "job:56370:baseline:63",
+        "job:56370:baseline:64",
+        "job:56370:baseline:70",
+        "job:56370:baseline:72",
+        "job:56370:baseline:73",
+        "job:56370:baseline:75",
+        "job:56370:baseline:76",
+        "job:56370:events:697",
+        "job:56370:baseline:79",
+        "job:56370:baseline:80",
+        "job:56370:events:702",
+        "job:56370:baseline:83",
+        "job:56370:baseline:84",
+        "job:56370:baseline:87",
+        "job:56370:events:714",
+        "job:56370:baseline:89",
+        "job:56370:baseline:90"
+      ]
+    }
+  ],
+  "observed_behavior": [
+    {
+      "claim": "After the guard reported walking the whole site and checking the rear, the Copilot said telemetry showed him in a tight area, ordered another full loop, and filed a compliance flag asserting that the report did not align with movement data.",
+      "trace_refs": [
+        "job:56370:events:668",
+        "job:56370:baseline:63",
+        "job:56370:baseline:64"
+      ]
+    },
+    {
+      "claim": "The Copilot continued directing the guard to walk the loop in subsequent replies, including after brief acknowledgements from the guard.",
+      "trace_refs": [
+        "job:56370:baseline:70",
+        "job:56370:baseline:72",
+        "job:56370:baseline:73",
+        "job:56370:baseline:75",
+        "job:56370:baseline:76"
+      ]
+    },
+    {
+      "claim": "When the guard later reported an all-clear, the Copilot again said the whole site still needed to be covered and requested another patrol.",
+      "trace_refs": [
+        "job:56370:events:697",
+        "job:56370:baseline:79",
+        "job:56370:baseline:80"
+      ]
+    },
+    {
+      "claim": "After the guard explicitly said he had already completed that patrol, the Copilot characterized the reports as repeated non-compliance in a critical escalation and again challenged the guard based on location data.",
+      "trace_refs": [
+        "job:56370:events:702",
+        "job:56370:baseline:83",
+        "job:56370:baseline:84",
+        "job:56370:baseline:87"
+      ]
+    },
+    {
+      "claim": "Once the guard explained that his phone had been offline while he walked the full loop and checked both buildings, the Copilot accepted the patrol report and acknowledged the completed work.",
+      "trace_refs": [
+        "job:56370:events:714",
+        "job:56370:baseline:89",
+        "job:56370:baseline:90"
+      ]
+    }
+  ],
+  "expected_behavior": "Acknowledge a credible patrol-completion report and stop repeatedly challenging or flagging the guard unless stronger current evidence directly contradicts the report.",
+  "relevant_turns": [
+    {
+      "turn_ref": "job:56370:baseline:62",
+      "trigger": "guard_message",
+      "instruction_file": "instructions/guard_response.md"
+    },
+    {
+      "turn_ref": "job:56370:baseline:70",
+      "trigger": "guard_message",
+      "instruction_file": "instructions/guard_response.md"
+    },
+    {
+      "turn_ref": "job:56370:baseline:73",
+      "trigger": "guard_message",
+      "instruction_file": "instructions/guard_response.md"
+    },
+    {
+      "turn_ref": "job:56370:baseline:76",
+      "trigger": "guard_message",
+      "instruction_file": "instructions/guard_response.md"
+    },
+    {
+      "turn_ref": "job:56370:baseline:80",
+      "trigger": "guard_message",
+      "instruction_file": "instructions/guard_response.md"
+    },
+    {
+      "turn_ref": "job:56370:baseline:87",
+      "trigger": "guard_message",
+      "instruction_file": "instructions/guard_response.md"
+    },
+    {
+      "turn_ref": "job:56370:baseline:90",
+      "trigger": "guard_message",
+      "instruction_file": "instructions/guard_response.md"
+    }
+  ],
+  "prompt_diagnosis": {
+    "file": "instructions/guard_response.md",
+    "section": "Guard reply: reactive, high priority",
+    "exact_text": "Before you affirm a work-done claim, verify it against a duty the job actually defines,\nmatching the proof to the claim: a patrol or presence requirement against a fresh\n`get_guard_locations` trajectory, a required report or checklist against the feed and\nlogs. Don't manufacture a cadence the post never set just to check it. If the data\ndoesn't back the claim, ask for what the post calls for, curious, not accusing.",
+    "diagnosis_type": "incorrectly_prioritized",
+    "explanation": "This turn-specific instruction makes telemetry verification a prerequisite to affirming completed work and directs another ask whenever data does not support the claim. It does not state the evidentiary threshold needed to override the guard’s account, so it can take priority over the shared core rule that telemetry is not a verdict and the guard’s account outranks GPS. That interpretation fits the repeated challenges and behavior flags based on clustered location data."
+  },
+  "hypothesis": "On guard-message turns, the categorical commands to “verify before you affirm” and ask whenever data “doesn't back the claim” likely caused the Copilot to treat absence of corroborating movement as contradiction. Explicitly limiting challenges and behavior flags to fresh, reliable evidence that directly contradicts the report should make the local instruction operationalize, rather than overshadow, the core telemetry hierarchy.",
+  "proposed_edit": {
+    "file": "instructions/guard_response.md",
+    "old_text": "Before you affirm a work-done claim, verify it against a duty the job actually defines,\nmatching the proof to the claim: a patrol or presence requirement against a fresh\n`get_guard_locations` trajectory, a required report or checklist against the feed and\nlogs. Don't manufacture a cadence the post never set just to check it. If the data\ndoesn't back the claim, ask for what the post calls for, curious, not accusing.",
+    "new_text": "Before you affirm a work-done claim, verify it against a duty the job actually defines,\nmatching the proof to the claim: a patrol or presence requirement against a fresh\n`get_guard_locations` trajectory, a required report or checklist against the feed and\nlogs. Don't manufacture a cadence the post never set just to check it. Treat telemetry\nas a signal, not a verdict: the guard's account outranks missing, stale, clustered, or\nincomplete location data. Only fresh, reliable evidence that directly contradicts the\nclaim justifies one curious follow-up or behavior flag; otherwise acknowledge the report\nand move on. Keep any safety or coverage escalation required by core rules.",
+    "intended_effect": "Make the guard-response instruction apply the existing telemetry hierarchy explicitly, preventing lack of GPS corroboration from triggering repeated challenges or behavior flags while preserving verification and required safety or coverage escalation."
+  },
+  "risks": [
+    "A guard’s inaccurate completion report may be accepted when telemetry is incomplete or ambiguous.",
+    "The terms “fresh,” “reliable,” and “directly contradicts” still require judgment and may produce inconsistent thresholds.",
+    "Limiting behavior flags under this clause could delay review of a developing pattern unless independent evidence or core safety and coverage rules clearly apply."
+  ],
+  "confidence": 0.91,
+  "uncertainties": [
+    "The raw location and telemetry outputs are omitted as unparseable, so their accuracy, staleness, and actual geographic coverage cannot be independently assessed from this window.",
+    "The trace establishes that the prompt language and behavior align, but it cannot prove that this passage alone caused the decisions.",
+    "The guard’s phone-off explanation appeared only after the earlier challenges and escalation, so the Copilot did not have that explanation during every problematic turn.",
+    "The phone-disconnection escalation involved a separate coverage and communication concern and is not fully explained by the patrol-verification instruction."
+  ]
+}

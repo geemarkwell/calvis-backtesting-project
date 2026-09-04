@@ -1,0 +1,13 @@
+{
+  "jobId": "56370",
+  "version": "0.2",
+  "createdAt": "2026-09-04T08:44:45.047Z",
+  "sourceVersion": "original",
+  "runId": "theo-20260904084416316-6ac65fc3",
+  "changedFile": "instructions/guard_response.md",
+  "oldText": "Before you affirm a work-done claim, verify it against a duty the job actually defines,\nmatching the proof to the claim: a patrol or presence requirement against a fresh\n`get_guard_locations` trajectory, a required report or checklist against the feed and\nlogs. Don't manufacture a cadence the post never set just to check it. If the data\ndoesn't back the claim, ask for what the post calls for, curious, not accusing.",
+  "newText": "Before you affirm a work-done claim, check it against a duty the job actually defines,\nmatching the evidence to the claim: a patrol or presence requirement against a fresh\n`get_guard_locations` trajectory, a required report or checklist against the feed and\nlogs. Don't manufacture a cadence the post never set just to check it. Telemetry is a\nsignal, not proof, and the guard's own account outranks GPS. If telemetry alone appears\ninconsistent with a completion report, acknowledge the report and, if the discrepancy\nmatters, ask one neutral clarification. Do not direct the guard to repeat the work or\nescalate solely because of that discrepancy; escalate only when other clear evidence\nshows noncompliance or the post is at risk.",
+  "intendedEffect": "Make the reactive prompt consistently treat telemetry as secondary evidence, cap the response to one neutral clarification, and prevent repeat-patrol demands or compliance flags based only on a GPS discrepancy while preserving escalation for clear noncompliance or post risk.",
+  "sourceFileHash": "28456c31b9266d01d727dff26a0dbb24c72b7cc2881ff5a11664548de3729590",
+  "candidateFileHash": "0ba3ea3918f7f78e4c27eec0f1eee108e858f856163c335b01edc73871ac4043"
+}

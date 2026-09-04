@@ -1,0 +1,88 @@
+{
+  "version": 1,
+  "runId": "maya-50837-1",
+  "judgedAt": "2026-09-04T08:54:42.934Z",
+  "jobId": "50837",
+  "callout": "On job 50837 the copilot went quiet after the first hour. It woke on schedule five times between 3am and 7am and sent nothing at all — no patrol report asked for, no check on the guard, all the way to the end of the shift.",
+  "oldReplay": {
+    "simulationNumber": null,
+    "logFile": null
+  },
+  "candidateReplay": {
+    "simulationNumber": 22,
+    "logFile": "database/simulate-22.json"
+  },
+  "verdict": {
+    "fixed": false,
+    "verdict": "no",
+    "summary": "The historical baseline and old replay confirm five silent scheduled check-ins from turns 8 through 12. The candidate resumed messaging on turns 10–12 and checked the guard on turns 11–12, but remained completely silent on turns 8–9 and never requested a patrol report. Therefore, not every callout-specific behavior was fixed.",
+    "confidence": 96,
+    "criteria": [
+      {
+        "claim": "The Copilot must not remain silent on any of the five scheduled check-ins from turns 8 through 12.",
+        "old_measurement": 0,
+        "candidate_measurement": 3,
+        "passed": false,
+        "evidence": [
+          "old:turn:8",
+          "old:turn:9",
+          "old:turn:10",
+          "old:turn:11",
+          "old:turn:12",
+          "candidate:turn:8",
+          "candidate:turn:9",
+          "candidate:turn:10:message:0",
+          "candidate:turn:11:message:0",
+          "candidate:turn:12:message:0"
+        ]
+      },
+      {
+        "claim": "The Copilot must ask for a patrol report during the called-out window.",
+        "old_measurement": 0,
+        "candidate_measurement": 3,
+        "passed": false,
+        "evidence": [
+          "old:turn:8",
+          "old:turn:9",
+          "old:turn:10",
+          "old:turn:11",
+          "old:turn:12",
+          "candidate:turn:10:message:0",
+          "candidate:turn:11:message:0",
+          "candidate:turn:12:message:0"
+        ]
+      },
+      {
+        "claim": "The Copilot must proactively check on the guard during the called-out window.",
+        "old_measurement": 0,
+        "candidate_measurement": 3,
+        "passed": true,
+        "evidence": [
+          "old:turn:8",
+          "old:turn:9",
+          "old:turn:10",
+          "old:turn:11",
+          "old:turn:12",
+          "candidate:turn:11:message:0",
+          "candidate:turn:12:message:0"
+        ]
+      },
+      {
+        "claim": "The Copilot must remain engaged through the end of the bounded shift rather than stay quiet through turn 12.",
+        "old_measurement": 0,
+        "candidate_measurement": 3,
+        "passed": true,
+        "evidence": [
+          "old:turn:12",
+          "candidate:turn:12",
+          "candidate:turn:12:message:0",
+          "candidate:turn:12:action:0"
+        ]
+      }
+    ],
+    "limitations": [
+      "The old and candidate model configurations differ: the old replay uses recorded-shift-trace with no steps, while the candidate uses openai/gpt-5-mini with up to eight steps.",
+      "Full replay context parity could not be independently verified because one or both replay responses omit debug context."
+    ]
+  }
+}

@@ -1,0 +1,6 @@
+{
+  "file": "instructions/scheduled_check_in.md",
+  "old_text": "Don't manufacture a DM to break a silence, and don't re-ping a guard you\n  already messaged unless something genuinely new and urgent came up.",
+  "new_text": "Don't manufacture a DM merely to break a short silence, and don't re-ping a guard you\n  already messaged unless something genuinely new and urgent came up. However, if two\n  consecutive scheduled wakes pass with no guard-originated update since shift start or\n  the last update, treat that extended silence as worth one concise check-in: ask for the\n  guard's status and any duty or report the job actually requires. Then follow the normal\n  no-nag rules.",
+  "intended_effect": "Create a deterministic exception under which prolonged guard silence prompts one concise status and required-report check-in, while retaining the general no-op and anti-nag policy for ordinary quiet periods."
+}

@@ -1,0 +1,17 @@
+--- prompts/instructions/guard_response.md
++++ prompt-versions/job-56370-0.1/instructions/guard_response.md
+@@
+-Before you affirm a work-done claim, verify it against a duty the job actually defines,
+-matching the proof to the claim: a patrol or presence requirement against a fresh
+-`get_guard_locations` trajectory, a required report or checklist against the feed and
+-logs. Don't manufacture a cadence the post never set just to check it. If the data
+-doesn't back the claim, ask for what the post calls for, curious, not accusing.
++Before you challenge a work-done claim, check it against a duty the job actually defines,
++matching the proof to the claim: a patrol or presence requirement against a fresh
++`get_guard_locations` trajectory, a required report or checklist against the feed and
++logs. Treat the guard's specific first-person report as evidence and acknowledge it as
++logged unless a required element is genuinely missing or reliable data clearly
++contradicts it. Don't manufacture a cadence or ask for extra details or photos the job
++doesn't require. If something required is missing or clearly contradictory, ask one
++neutral clarification rather than stacking follow-ups; escalate only when the checked
++record provides clear evidence of noncompliance.

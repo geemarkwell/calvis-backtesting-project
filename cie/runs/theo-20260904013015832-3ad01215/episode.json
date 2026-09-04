@@ -1,0 +1,23 @@
+{
+  "start_timestamp": "2026-08-05T02:00:45.450034+00:00",
+  "end_timestamp": "2026-08-05T02:06:19.146212+00:00",
+  "trace_refs": [
+    "baseline:47",
+    "baseline:48",
+    "events:663",
+    "baseline:55",
+    "baseline:58",
+    "events:668",
+    "baseline:62",
+    "baseline:63",
+    "baseline:64",
+    "events:674",
+    "baseline:67",
+    "baseline:68",
+    "baseline:70",
+    "events:677",
+    "baseline:72",
+    "baseline:73",
+    "baseline:74"
+  ]
+}

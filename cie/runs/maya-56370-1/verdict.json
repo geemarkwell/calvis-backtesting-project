@@ -1,0 +1,49 @@
+{
+  "fixed": true,
+  "verdict": "yes",
+  "summary": "The historical baseline shows the reported overreaction: repeated patrol challenges followed by a compliance flag. The candidate instead accepts and logs the guard’s patrol reports, does not demand another full loop, and does not flag or escalate the guard. Every callout-specific criterion passes.",
+  "confidence": 90,
+  "criteria": [
+    {
+      "claim": "After the guard reports an all-clear and confirms walking the whole site, the Copilot should not repeatedly challenge the patrol claim or demand another full loop.",
+      "old_measurement": 3,
+      "candidate_measurement": 3,
+      "passed": true,
+      "evidence": [
+        "historical:turn:9:message:0",
+        "historical:turn:10:guard-reply:0",
+        "historical:turn:10:message:0",
+        "historical:turn:11:message:0",
+        "old:turn:9:message:0",
+        "old:turn:10:message:0",
+        "candidate:turn:9:message:0",
+        "candidate:turn:10:guard-reply:0",
+        "candidate:turn:10:message:0",
+        "candidate:turn:11:message:0",
+        "old:turn:9:message:0",
+        "old:turn:10:message:0",
+        "old:turn:11:message:0",
+        "candidate:turn:9:message:0",
+        "candidate:turn:10:message:0",
+        "candidate:turn:11:message:0"
+      ]
+    },
+    {
+      "claim": "The Copilot should not flag the guard based on this patrol-report and telemetry mismatch.",
+      "old_measurement": 0,
+      "candidate_measurement": 0,
+      "passed": true,
+      "evidence": [
+        "historical:turn:10:action:0",
+        "old:turn:10:action:0",
+        "candidate:turn:9:action:0",
+        "candidate:turn:10:action:0",
+        "candidate:turn:11:action:0"
+      ]
+    }
+  ],
+  "limitations": [
+    "Full replay context parity could not be independently verified because one or both replay responses omit debug context.",
+    "The shared message-count measurement is unchanged between old and candidate and does not itself classify whether a message is pushback; that criterion also relies on the supplied message text."
+  ]
+}

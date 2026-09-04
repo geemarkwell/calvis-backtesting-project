@@ -1,0 +1,111 @@
+{
+  "job_ids": [
+    "56370"
+  ],
+  "what_went_wrong": "CI dont want the extra patrol instructions after “Good work.” They are unnecessary and repeat the existing protocol. The response should go directly from acknowledging the completed check to the conditional next steps: example: “Copy — logged your full perimeter walk and rear check, no activity or damage. Good work. If you see any damage to the fence or staged materials, snap a quick photo and send it. If you spot movement, call 911 first, then Priya.",
+  "failure_mode": "After acknowledging completed patrol reports, the Copilot repeated standing patrol directions and requested an additional fence check/photo instead of limiting follow-up to relevant conditional reporting and escalation steps.",
+  "evidence_windows": [
+    {
+      "job_id": "56370",
+      "start_turn": 8,
+      "end_turn": 11,
+      "trace_refs": [
+        "job:56370:simulation:3:baseline:0",
+        "job:56370:simulation:3:baseline:1",
+        "job:56370:simulation:3:events:65",
+        "job:56370:simulation:3:baseline:2",
+        "job:56370:simulation:3:baseline:3",
+        "job:56370:simulation:3:events:69",
+        "job:56370:simulation:3:baseline:4",
+        "job:56370:simulation:3:baseline:5",
+        "job:56370:simulation:3:baseline:6",
+        "job:56370:simulation:3:events:76",
+        "job:56370:simulation:3:baseline:7",
+        "job:56370:simulation:3:baseline:8",
+        "job:56370:simulation:3:baseline:9"
+      ]
+    }
+  ],
+  "observed_behavior": [
+    {
+      "claim": "On turn 8, the Copilot said no required patrol or report windows were due, but nevertheless reminded the guard to continue roaming rounds weighted toward the rear gap and staged materials.",
+      "trace_refs": [
+        "job:56370:simulation:3:baseline:0",
+        "job:56370:simulation:3:baseline:1"
+      ]
+    },
+    {
+      "claim": "On turn 9, after the guard reported no activity or damage, the Copilot acknowledged and logged the update, said “Good work,” and then repeated the standing directions to keep rounds irregular and weighted toward the rear gap and staged materials.",
+      "trace_refs": [
+        "job:56370:simulation:3:events:65",
+        "job:56370:simulation:3:baseline:2",
+        "job:56370:simulation:3:baseline:3"
+      ]
+    },
+    {
+      "claim": "On turn 10, after the guard clarified that he had walked the whole site, checked the rear, and found no activity, the Copilot logged the completed walkthrough but asked him to check the rear fence and send a photo rather than making the photo request conditional on finding damage.",
+      "trace_refs": [
+        "job:56370:simulation:3:events:69",
+        "job:56370:simulation:3:baseline:4",
+        "job:56370:simulation:3:baseline:5",
+        "job:56370:simulation:3:baseline:6"
+      ]
+    },
+    {
+      "claim": "On turn 11, the guard raised a separate phone-access issue. The Copilot addressed emergency reachability and camera access and recorded a note; it did not repeat the rear-area patrol instructions in that response.",
+      "trace_refs": [
+        "job:56370:simulation:3:events:76",
+        "job:56370:simulation:3:baseline:7",
+        "job:56370:simulation:3:baseline:8",
+        "job:56370:simulation:3:baseline:9"
+      ]
+    }
+  ],
+  "expected_behavior": "Acknowledge and log the completed check, then provide only the relevant conditional reporting and escalation steps. Do not repeat existing patrol instructions.",
+  "relevant_turns": [
+    {
+      "turn_ref": "job:56370:simulation:3:baseline:0",
+      "trigger": "scheduled_check_in",
+      "instruction_file": "instructions/scheduled_check_in.md"
+    },
+    {
+      "turn_ref": "job:56370:simulation:3:baseline:2",
+      "trigger": "guard_message",
+      "instruction_file": "instructions/guard_response.md"
+    },
+    {
+      "turn_ref": "job:56370:simulation:3:baseline:4",
+      "trigger": "guard_message",
+      "instruction_file": "instructions/guard_response.md"
+    },
+    {
+      "turn_ref": "job:56370:simulation:3:baseline:7",
+      "trigger": "guard_message",
+      "instruction_file": "instructions/guard_response.md"
+    }
+  ],
+  "prompt_diagnosis": {
+    "file": "instructions/guard_response.md",
+    "section": "Work-done claim verification",
+    "exact_text": "Before you affirm a work-done claim, verify it against a duty the job actually defines,\nmatching the proof to the claim: a patrol or presence requirement against a fresh\n`get_guard_locations` trajectory, a required report or checklist against the feed and\nlogs. Don't manufacture a cadence the post never set just to check it. If the data\ndoesn't back the claim, ask for what the post calls for, curious, not accusing.",
+    "diagnosis_type": "missing",
+    "explanation": "The passage explains how to verify a completed-work claim and what to do when evidence does not support it, but it does not say how to close the exchange once the claim is supported. That omission leaves room for the model to continue supervising by restating standing patrol duties or assigning another check/photo, despite the communication policy against repetition."
+  },
+  "hypothesis": "Because the reactive prompt strongly requires verification but provides no explicit post-verification stopping rule, the model likely interpreted continued patrol coaching and another fence/photo task as useful supervision after the completed report. Adding a narrow closure instruction should make supported completion reports end with acknowledgment plus only relevant conditional next steps.",
+  "proposed_edit": {
+    "file": "instructions/guard_response.md",
+    "old_text": "Before you affirm a work-done claim, verify it against a duty the job actually defines,\nmatching the proof to the claim: a patrol or presence requirement against a fresh\n`get_guard_locations` trajectory, a required report or checklist against the feed and\nlogs. Don't manufacture a cadence the post never set just to check it. If the data\ndoesn't back the claim, ask for what the post calls for, curious, not accusing.",
+    "new_text": "Before you affirm a work-done claim, verify it against a duty the job actually defines,\nmatching the proof to the claim: a patrol or presence requirement against a fresh\n`get_guard_locations` trajectory, a required report or checklist against the feed and\nlogs. Don't manufacture a cadence the post never set just to check it. If the data\ndoesn't back the claim, ask for what the post calls for, curious, not accusing. Once the\ndata backs a completed check, acknowledge and log it, then don't repeat standing patrol\ninstructions or ask for another check or photo; add only conditional reporting or\nescalation steps relevant if a problem appears.",
+    "intended_effect": "Give guard-message turns an explicit stopping rule after a completed check is verified, preventing repeated patrol coaching and unconditional extra tasks while preserving verification, reporting, safety, and escalation requirements."
+  },
+  "risks": [
+    "If applied too broadly, the added stopping rule could discourage follow-up when a purportedly completed check still lacks a client-required element; conditioning it on the data backing completion limits that risk.",
+    "The phrase “ask for another check or photo” may require careful testing on posts where a photo is an explicit requirement, although such a claim should not count as fully backed until that requirement is met."
+  ],
+  "confidence": 0.9,
+  "uncertainties": [
+    "The supplied trace does not show the verification tool results that preceded the acknowledgments, so it is unclear exactly what evidence the Copilot used to treat either report as complete.",
+    "The rear fence had an unresolved history, so the turn-10 follow-up may also have been influenced by site notes rather than only by the reactive instruction.",
+    "Only one selected window and one candidate model run are supplied, so the proposed causal link is a prompt-level hypothesis rather than proof."
+  ]
+}

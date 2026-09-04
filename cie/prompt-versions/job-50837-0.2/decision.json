@@ -1,0 +1,15 @@
+{
+  "jobId": "50837",
+  "version": "0.2",
+  "status": "pending",
+  "createdAt": "2026-09-04T09:01:15.644Z",
+  "decidedAt": null,
+  "evaluation": {
+    "runId": "maya-50837-2",
+    "judgedAt": "2026-09-04T09:03:16.684Z",
+    "fixed": true,
+    "verdict": "yes",
+    "confidence": 90,
+    "summary": "The historical baseline confirms five consecutive silent scheduled check-ins from turns 8 through 12. The candidate did not repeat that pattern: it sent messages on four of the five turns, requested a site-status response at turn 10, checked the guard’s required arrival/POC status at turns 11 and 12, and remained active through the final replayed turn. One isolated silent turn remained, but the called-out all-the-way-to-shift-end silence did not."
+  }
+}

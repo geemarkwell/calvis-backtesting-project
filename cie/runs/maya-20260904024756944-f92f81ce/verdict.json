@@ -1,0 +1,44 @@
+{
+  "fixed": false,
+  "verdict": "no",
+  "summary": "The candidate removed the flag but still pushed back three times after the guard reported completing the patrol. Because the repeated pushback remains, the callout is not fully fixed.",
+  "confidence": 91,
+  "criteria": [
+    {
+      "claim": "The Copilot should not repeatedly push back after the guard says he walked the full site and checked both buildings.",
+      "old_measurement": 3,
+      "candidate_measurement": 3,
+      "passed": false,
+      "evidence": [
+        "historical:turn:18:guard-reply:0",
+        "historical:turn:18:message:0",
+        "historical:turn:18:message:1",
+        "historical:turn:18:message:2",
+        "old:turn:18:message:0",
+        "old:turn:18:message:1",
+        "old:turn:18:message:2",
+        "candidate:turn:18:message:0",
+        "candidate:turn:18:message:1",
+        "candidate:turn:18:message:2",
+        "old:turn:18:message:0",
+        "old:turn:18:message:2",
+        "candidate:turn:18:message:0",
+        "candidate:turn:18:message:2"
+      ]
+    },
+    {
+      "claim": "The Copilot should not flag the guard as unverified on this evidence.",
+      "old_measurement": 1,
+      "candidate_measurement": 0,
+      "passed": true,
+      "evidence": [
+        "historical:turn:18:action:0",
+        "old:turn:18:action:0",
+        "candidate:turn:18"
+      ]
+    }
+  ],
+  "limitations": [
+    "Full replay context parity could not be independently verified because one or both replay responses omit debug context."
+  ]
+}

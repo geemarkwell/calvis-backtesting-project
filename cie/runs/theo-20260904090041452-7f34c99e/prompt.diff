@@ -1,0 +1,20 @@
+--- prompts/instructions/scheduled_check_in.md
++++ prompt-versions/job-50837-0.2/instructions/scheduled_check_in.md
+@@
+-- **Anything else worth doing.** A part of the site you haven't heard about, a thread
+-  the guard left open, a quick look that sharpens the picture. Reach out only when it
+-  helps the shift AND the moment fits. **A cycle with nothing worth saying is a no-op.
+-  Staying quiet is correct.** A new window that closed empty is not nothing. A window ops
+-  already owns gets a note, never another DM. Don't manufacture a DM to break a silence, and don't re-ping a guard you
+-  already messaged unless something genuinely new and urgent came up.
++- **Anything else worth doing.** A part of the site you haven't heard about, a thread
++  the guard left open, a quick look that sharpens the picture. Reach out only when it
++  helps the shift AND the moment fits. **A cycle with nothing worth saying is a no-op.
++  Staying quiet is correct.** One exception: during an active shift, an hour with no
++  guard-originated update is worth one concise status check. Include any open patrol or
++  report obligation in that check, but don't invent one. If the check is still unanswered
++  at the next scheduled wake, firm it up once, then escalate per core cadence instead of
++  letting repeated wakes pass silently. A new window that closed empty is not nothing. A
++  window ops already owns gets a note, never another DM. Don't manufacture any other DM
++  just to break a silence, and don't re-ping a guard you already messaged unless something
++  genuinely new and urgent came up.

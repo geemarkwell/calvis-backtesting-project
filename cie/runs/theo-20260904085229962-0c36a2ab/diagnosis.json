@@ -1,0 +1,113 @@
+{
+  "job_ids": [
+    "50837"
+  ],
+  "what_went_wrong": "On job 50837 the copilot went quiet after the first hour. It woke on schedule five times between 3am and 7am and sent nothing at all — no patrol report asked for, no check on the guard, all the way to the end of the shift.",
+  "failure_mode": "Repeated silent no-ops on scheduled proactive turns despite an accumulating absence of guard-originated updates.",
+  "evidence_windows": [
+    {
+      "job_id": "50837",
+      "start_turn": 8,
+      "end_turn": 12,
+      "trace_refs": [
+        "job:50837:baseline:39",
+        "job:50837:baseline:40",
+        "job:50837:baseline:41",
+        "job:50837:baseline:44",
+        "job:50837:baseline:45",
+        "job:50837:baseline:48",
+        "job:50837:baseline:49",
+        "job:50837:baseline:52",
+        "job:50837:baseline:53",
+        "job:50837:baseline:56",
+        "job:50837:baseline:57"
+      ]
+    }
+  ],
+  "observed_behavior": [
+    {
+      "claim": "At the 03:00 scheduled turn, the communications rollup showed no inbound or human guard communication, and the turn ended silently without a guard-facing message or relevant action.",
+      "trace_refs": [
+        "job:50837:baseline:40",
+        "job:50837:baseline:41"
+      ]
+    },
+    {
+      "claim": "The 04:00, 05:00, 06:00, and 07:00 scheduled turns were also explicitly recorded as silent; the associated log checks shown in the window returned no new logs.",
+      "trace_refs": [
+        "job:50837:baseline:44",
+        "job:50837:baseline:45",
+        "job:50837:baseline:48",
+        "job:50837:baseline:49",
+        "job:50837:baseline:52",
+        "job:50837:baseline:53",
+        "job:50837:baseline:56",
+        "job:50837:baseline:57"
+      ]
+    },
+    {
+      "claim": "Across turns 8 through 12, the supplied trace records no request_copilot_dm, alert, flag, escalation, or note action directed at the extended lack of guard updates.",
+      "trace_refs": [
+        "job:50837:baseline:41",
+        "job:50837:baseline:45",
+        "job:50837:baseline:48",
+        "job:50837:baseline:52",
+        "job:50837:baseline:57"
+      ]
+    }
+  ],
+  "expected_behavior": "At scheduled wakes, detect the extended lack of guard updates and send a concise check-in requesting the guard’s status and any required patrol report. Do not remain silent across repeated scheduled wakes through the end of the shift.",
+  "relevant_turns": [
+    {
+      "turn_ref": "job:50837:baseline:41",
+      "trigger": "scheduled_check_in",
+      "instruction_file": "instructions/scheduled_check_in.md"
+    },
+    {
+      "turn_ref": "job:50837:baseline:45",
+      "trigger": "scheduled_check_in",
+      "instruction_file": "instructions/scheduled_check_in.md"
+    },
+    {
+      "turn_ref": "job:50837:baseline:48",
+      "trigger": "scheduled_check_in",
+      "instruction_file": "instructions/scheduled_check_in.md"
+    },
+    {
+      "turn_ref": "job:50837:baseline:52",
+      "trigger": "scheduled_check_in",
+      "instruction_file": "instructions/scheduled_check_in.md"
+    },
+    {
+      "turn_ref": "job:50837:baseline:57",
+      "trigger": "scheduled_check_in",
+      "instruction_file": "instructions/scheduled_check_in.md"
+    }
+  ],
+  "prompt_diagnosis": {
+    "file": "instructions/scheduled_check_in.md",
+    "section": "Scheduled check-in: proactive sweep / Anything else worth doing",
+    "exact_text": "Don't manufacture a DM to break a silence, and don't re-ping a guard you\n  already messaged unless something genuinely new and urgent came up.",
+    "diagnosis_type": "overly_forceful",
+    "explanation": "This categorical anti-silence wording does not distinguish a short, uneventful gap from an extended absence of any guard-originated update across repeated scheduled wakes. Combined with the surrounding instruction that quiet is correct when no obligation is open, it likely prioritized avoiding a manufactured check-in over treating prolonged silence as a new monitoring signal."
+  },
+  "hypothesis": "Because the scheduled-check-in prompt says not to manufacture a DM to break silence and permits no-op turns when no defined obligation is open, the Copilot likely interpreted each quiet wake independently and repeatedly chose silence. Adding a narrow, measurable exception for extended silence should make one status check-in eligible without turning every routine scheduled wake into a message.",
+  "proposed_edit": {
+    "file": "instructions/scheduled_check_in.md",
+    "old_text": "Don't manufacture a DM to break a silence, and don't re-ping a guard you\n  already messaged unless something genuinely new and urgent came up.",
+    "new_text": "Don't manufacture a DM merely to break a short silence, and don't re-ping a guard you\n  already messaged unless something genuinely new and urgent came up. However, if two\n  consecutive scheduled wakes pass with no guard-originated update since shift start or\n  the last update, treat that extended silence as worth one concise check-in: ask for the\n  guard's status and any duty or report the job actually requires. Then follow the normal\n  no-nag rules.",
+    "intended_effect": "Create a deterministic exception under which prolonged guard silence prompts one concise status and required-report check-in, while retaining the general no-op and anti-nag policy for ordinary quiet periods."
+  },
+  "risks": [
+    "A two-wake threshold may still contact guards who are safely working quietly.",
+    "If wake spacing varies substantially, counting wakes may represent different elapsed durations across shifts.",
+    "The added check-in must not be used to invent a patrol or report cadence absent from the job requirements or obligation ledger."
+  ],
+  "confidence": 0.9,
+  "uncertainties": [
+    "The location tool outputs are omitted as unparseable, so the evidence does not establish whether telemetry showed reassuring movement or a concerning lack of movement.",
+    "No get_open_obligations result appears in the selected window, so the actual ledger state cannot be verified from the supplied trace.",
+    "The shift fields show no patrol_frequency_minutes or report_frequency_minutes, so the evidence supports a status check-in more directly than a demand for a specific scheduled patrol report.",
+    "Turns before turn 8 are outside the selected window, so the exact content and timing of the Copilot's earlier guard-facing message are not available."
+  ]
+}

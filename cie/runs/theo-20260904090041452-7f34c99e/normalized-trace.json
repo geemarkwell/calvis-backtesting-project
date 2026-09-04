@@ -1,0 +1,199 @@
+[
+  {
+    "ref": "job:50837:simulation:22:baseline:0",
+    "source": "baseline",
+    "sourceIndex": 0,
+    "timestamp": "2026-07-21T03:00:59.468455+00:00",
+    "type": "turn_start",
+    "content": {
+      "turn": 8,
+      "simulationNumber": 22,
+      "replayMode": "candidate",
+      "model": "openai/gpt-5-mini",
+      "skipped": false,
+      "stopReason": "stop"
+    },
+    "turnRef": "job:50837:simulation:22:baseline:0",
+    "trigger": "scheduled_check_in",
+    "instructionFile": "instructions/scheduled_check_in.md",
+    "silent": true
+  },
+  {
+    "ref": "job:50837:simulation:22:baseline:1",
+    "source": "baseline",
+    "sourceIndex": 1,
+    "timestamp": "2026-07-21T04:00:55.633905+00:00",
+    "type": "turn_start",
+    "content": {
+      "turn": 9,
+      "simulationNumber": 22,
+      "replayMode": "candidate",
+      "model": "openai/gpt-5-mini",
+      "skipped": false,
+      "stopReason": "stop"
+    },
+    "turnRef": "job:50837:simulation:22:baseline:1",
+    "trigger": "scheduled_check_in",
+    "instructionFile": "instructions/scheduled_check_in.md",
+    "silent": true
+  },
+  {
+    "ref": "job:50837:simulation:22:baseline:2",
+    "source": "baseline",
+    "sourceIndex": 2,
+    "timestamp": "2026-07-21T05:00:51.728529+00:00",
+    "type": "turn_start",
+    "content": {
+      "turn": 10,
+      "simulationNumber": 22,
+      "replayMode": "candidate",
+      "model": "openai/gpt-5-mini",
+      "skipped": false,
+      "stopReason": "stop"
+    },
+    "turnRef": "job:50837:simulation:22:baseline:2",
+    "trigger": "scheduled_check_in",
+    "instructionFile": "instructions/scheduled_check_in.md",
+    "silent": false
+  },
+  {
+    "ref": "job:50837:simulation:22:baseline:3",
+    "source": "baseline",
+    "sourceIndex": 3,
+    "timestamp": "2026-07-21T05:00:51.728529+00:00",
+    "type": "copilot_message",
+    "content": "Quick sweep — I couldn't load the open obligations list, but last I have from you is \"site clear and secured\" and Jacob cleared that vehicle. No required rounds are showing on the job card. Stay posted and call police immediately if anyone breaches the fence, enters the building, or attempts theft. Gate entry is via Lauder Street.",
+    "turnRef": "job:50837:simulation:22:baseline:2",
+    "trigger": "scheduled_check_in",
+    "instructionFile": "instructions/scheduled_check_in.md"
+  },
+  {
+    "ref": "job:50837:simulation:22:baseline:4",
+    "source": "baseline",
+    "sourceIndex": 4,
+    "timestamp": "2026-07-21T05:00:51.728529+00:00",
+    "type": "tool_call",
+    "content": {
+      "tool": "add_copilot_note",
+      "input": {
+        "session_id": "948e91ff-3c07-4537-9d3a-bb8b7f3df3ab",
+        "note_text": "Scheduled sweep at 01:00. get_open_obligations unavailable; fallback to job instructions and recent feed. Guard last reported site clear and Jacob confirmed vehicle authorization. No patrol cadence required by job card. Reminded guard to call police for fence breach, building entry, or theft and noted gate entry via Lauder Street.",
+        "entity_type": "guards",
+        "entity_id": 7326,
+        "guard_id": 7326
+      },
+      "output": null,
+      "ok": null,
+      "error": null
+    },
+    "turnRef": "job:50837:simulation:22:baseline:2",
+    "trigger": "scheduled_check_in",
+    "instructionFile": "instructions/scheduled_check_in.md"
+  },
+  {
+    "ref": "job:50837:simulation:22:baseline:5",
+    "source": "baseline",
+    "sourceIndex": 5,
+    "timestamp": "2026-07-21T06:00:50.709146+00:00",
+    "type": "turn_start",
+    "content": {
+      "turn": 11,
+      "simulationNumber": 22,
+      "replayMode": "candidate",
+      "model": "openai/gpt-5-mini",
+      "skipped": false,
+      "stopReason": "stop"
+    },
+    "turnRef": "job:50837:simulation:22:baseline:5",
+    "trigger": "scheduled_check_in",
+    "instructionFile": "instructions/scheduled_check_in.md",
+    "silent": false
+  },
+  {
+    "ref": "job:50837:simulation:22:baseline:6",
+    "source": "baseline",
+    "sourceIndex": 6,
+    "timestamp": "2026-07-21T06:00:50.709146+00:00",
+    "type": "copilot_message",
+    "content": "Shift's started — are you on post and checked in with a POC (Naomi, Nate, or Jacob)? Reply ‘yes’ if done. Gate entry is via Lauder Street now; gate code is 9515.",
+    "turnRef": "job:50837:simulation:22:baseline:5",
+    "trigger": "scheduled_check_in",
+    "instructionFile": "instructions/scheduled_check_in.md"
+  },
+  {
+    "ref": "job:50837:simulation:22:baseline:7",
+    "source": "baseline",
+    "sourceIndex": 7,
+    "timestamp": "2026-07-21T06:00:50.709146+00:00",
+    "type": "tool_call",
+    "content": {
+      "tool": "add_copilot_note",
+      "input": {
+        "session_id": "948e91ff-3c07-4537-9d3a-bb8b7f3df3ab",
+        "note_text": "At 02:00 scheduled sweep: attempted get_open_obligations but tool unavailable. Sent DM to guard asking for arrival/P O C check-in confirmation and reminding that gate entry is via Lauder Street and code 9515.",
+        "entity_type": "guards",
+        "entity_id": 7326,
+        "guard_id": 7326
+      },
+      "output": null,
+      "ok": null,
+      "error": null
+    },
+    "turnRef": "job:50837:simulation:22:baseline:5",
+    "trigger": "scheduled_check_in",
+    "instructionFile": "instructions/scheduled_check_in.md"
+  },
+  {
+    "ref": "job:50837:simulation:22:baseline:8",
+    "source": "baseline",
+    "sourceIndex": 8,
+    "timestamp": "2026-07-21T07:00:54.703402+00:00",
+    "type": "turn_start",
+    "content": {
+      "turn": 12,
+      "simulationNumber": 22,
+      "replayMode": "candidate",
+      "model": "openai/gpt-5-mini",
+      "skipped": false,
+      "stopReason": "stop"
+    },
+    "turnRef": "job:50837:simulation:22:baseline:8",
+    "trigger": "scheduled_check_in",
+    "instructionFile": "instructions/scheduled_check_in.md",
+    "silent": false
+  },
+  {
+    "ref": "job:50837:simulation:22:baseline:9",
+    "source": "baseline",
+    "sourceIndex": 9,
+    "timestamp": "2026-07-21T07:00:54.703402+00:00",
+    "type": "copilot_message",
+    "content": "Firm-up: still waiting on your arrival/POC check-in. Reply ‘yes’ when you’re on post and checked in with Naomi, Nate, or Jacob.",
+    "turnRef": "job:50837:simulation:22:baseline:8",
+    "trigger": "scheduled_check_in",
+    "instructionFile": "instructions/scheduled_check_in.md"
+  },
+  {
+    "ref": "job:50837:simulation:22:baseline:10",
+    "source": "baseline",
+    "sourceIndex": 10,
+    "timestamp": "2026-07-21T07:00:54.703402+00:00",
+    "type": "tool_call",
+    "content": {
+      "tool": "add_copilot_note",
+      "input": {
+        "session_id": "948e91ff-3c07-4537-9d3a-bb8b7f3df3ab",
+        "note_text": "03:00 firm-up sent for arrival/POC check-in (previous ask at 02:00). get_open_obligations unavailable; using job instructions for compliance. Awaiting guard response.",
+        "entity_type": "guards",
+        "entity_id": 7326,
+        "guard_id": 7326
+      },
+      "output": null,
+      "ok": null,
+      "error": null
+    },
+    "turnRef": "job:50837:simulation:22:baseline:8",
+    "trigger": "scheduled_check_in",
+    "instructionFile": "instructions/scheduled_check_in.md"
+  }
+]

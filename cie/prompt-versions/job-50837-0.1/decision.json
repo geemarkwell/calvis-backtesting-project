@@ -1,0 +1,15 @@
+{
+  "jobId": "50837",
+  "version": "0.1",
+  "status": "rejected",
+  "createdAt": "2026-09-04T08:53:01.621Z",
+  "decidedAt": "2026-09-04T08:58:57.921Z",
+  "evaluation": {
+    "runId": "maya-50837-1",
+    "judgedAt": "2026-09-04T08:54:42.934Z",
+    "fixed": false,
+    "verdict": "no",
+    "confidence": 96,
+    "summary": "The historical baseline and old replay confirm five silent scheduled check-ins from turns 8 through 12. The candidate resumed messaging on turns 10–12 and checked the guard on turns 11–12, but remained completely silent on turns 8–9 and never requested a patrol report. Therefore, not every callout-specific behavior was fixed."
+  }
+}

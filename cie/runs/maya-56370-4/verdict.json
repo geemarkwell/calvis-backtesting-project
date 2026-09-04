@@ -1,0 +1,53 @@
+{
+  "fixed": true,
+  "verdict": "yes",
+  "summary": "The historical baseline contains the reported failure: repeated patrol challenges culminating in a compliance flag. In the candidate replay, the Copilot accepts the guard’s patrol report, does not demand another full-site loop, and takes no flagging action. All callout-specific criteria pass.",
+  "confidence": 94,
+  "criteria": [
+    {
+      "claim": "After the guard reported walking the whole site, the Copilot should not challenge that account or demand another full patrol.",
+      "old_measurement": 1,
+      "candidate_measurement": 1,
+      "passed": true,
+      "evidence": [
+        "historical:turn:10:guard-reply:0",
+        "historical:turn:10:message:0",
+        "old:turn:10:guard-reply:0",
+        "old:turn:10:message:0",
+        "candidate:turn:10:guard-reply:0",
+        "candidate:turn:10:message:0"
+      ]
+    },
+    {
+      "claim": "The Copilot should not repeatedly push back on the guard’s patrol completion over the short interaction.",
+      "old_measurement": 3,
+      "candidate_measurement": 3,
+      "passed": true,
+      "evidence": [
+        "historical:turn:9:message:0",
+        "historical:turn:10:message:0",
+        "historical:turn:11:message:0",
+        "old:turn:9:message:0",
+        "old:turn:10:message:0",
+        "old:turn:11:message:0",
+        "candidate:turn:9:message:0",
+        "candidate:turn:10:message:0",
+        "candidate:turn:11:message:0"
+      ]
+    },
+    {
+      "claim": "The Copilot should not flag the guard based on the disputed patrol-completion inference.",
+      "old_measurement": 0,
+      "candidate_measurement": 0,
+      "passed": true,
+      "evidence": [
+        "historical:turn:10:action:0",
+        "old:turn:10",
+        "candidate:turn:10"
+      ]
+    }
+  ],
+  "limitations": [
+    "Full replay context parity could not be independently verified because one or both replay responses omit debug context."
+  ]
+}

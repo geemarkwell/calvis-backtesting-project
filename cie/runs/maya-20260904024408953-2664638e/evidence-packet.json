@@ -1,0 +1,169 @@
+{
+  "callout": "On job 56370 the guard said he walked the full site and checked both buildings. The Copilot pushed back three times in four minutes and flagged him. Too hard for the evidence it had.",
+  "jobId": "56370",
+  "startTurn": 18,
+  "endTurn": 18,
+  "trajectories": {
+    "historical": {
+      "name": "historical",
+      "turns": [
+        {
+          "ref": "historical:turn:18",
+          "turn": 18,
+          "trigger": "guard_message",
+          "timestamp": "2026-08-05T03:12:00.000Z",
+          "events": [
+            {
+              "ref": "historical:turn:18:event:0",
+              "timestamp": "2026-08-05T03:12:00.000Z",
+              "type": "guard_message",
+              "data": {
+                "text": "I walked the full site and checked both buildings."
+              }
+            }
+          ],
+          "guardReplies": [
+            {
+              "ref": "historical:turn:18:guard-reply:0",
+              "timestamp": "2026-08-05T03:12:00.000Z",
+              "message": "I walked the full site and checked both buildings.",
+              "source": "historical",
+              "historicalMessage": "I walked the full site and checked both buildings."
+            }
+          ],
+          "copilotMessages": [
+            {
+              "ref": "historical:turn:18:message:0",
+              "timestamp": "2026-08-05T03:12:00.000Z",
+              "text": "Your location data does not prove that."
+            },
+            {
+              "ref": "historical:turn:18:message:1",
+              "timestamp": "2026-08-05T03:12:00.000Z",
+              "text": "I still need you to confirm the patrol."
+            },
+            {
+              "ref": "historical:turn:18:message:2",
+              "timestamp": "2026-08-05T03:12:00.000Z",
+              "text": "This is your third request to verify it."
+            }
+          ],
+          "actions": [
+            {
+              "ref": "historical:turn:18:action:0",
+              "timestamp": "2026-08-05T03:12:00.000Z",
+              "tool": "flag_copilot_guard",
+              "input": {
+                "reason": "Patrol not verified"
+              }
+            }
+          ],
+          "silent": false,
+          "skipped": false
+        }
+      ]
+    },
+    "old": {
+      "name": "old",
+      "turns": [
+        {
+          "ref": "old:turn:18",
+          "turn": 18,
+          "trigger": "guard_message",
+          "timestamp": "2026-08-05T03:12:00.000Z",
+          "events": [
+            {
+              "ref": "old:turn:18:event:0",
+              "timestamp": "2026-08-05T03:12:00.000Z",
+              "type": "guard_message",
+              "data": {
+                "text": "I walked the full site and checked both buildings."
+              }
+            }
+          ],
+          "guardReplies": [
+            {
+              "ref": "old:turn:18:guard-reply:0",
+              "timestamp": "2026-08-05T03:12:00.000Z",
+              "message": "I walked the full site and checked both buildings.",
+              "source": "historical",
+              "historicalMessage": "I walked the full site and checked both buildings."
+            }
+          ],
+          "copilotMessages": [
+            {
+              "ref": "old:turn:18:message:0",
+              "timestamp": "2026-08-05T03:12:00.000Z",
+              "text": "Your location data does not prove that."
+            },
+            {
+              "ref": "old:turn:18:message:1",
+              "timestamp": "2026-08-05T03:12:00.000Z",
+              "text": "I still need you to confirm the patrol."
+            },
+            {
+              "ref": "old:turn:18:message:2",
+              "timestamp": "2026-08-05T03:12:00.000Z",
+              "text": "This is your third request to verify it."
+            }
+          ],
+          "actions": [
+            {
+              "ref": "old:turn:18:action:0",
+              "timestamp": "2026-08-05T03:12:00.000Z",
+              "tool": "flag_copilot_guard",
+              "input": {
+                "reason": "Patrol not verified"
+              }
+            }
+          ],
+          "silent": false,
+          "skipped": false
+        }
+      ]
+    },
+    "candidate": {
+      "name": "candidate",
+      "turns": [
+        {
+          "ref": "candidate:turn:18",
+          "turn": 18,
+          "trigger": "guard_message",
+          "timestamp": "2026-08-05T03:12:00.000Z",
+          "events": [
+            {
+              "ref": "candidate:turn:18:event:0",
+              "timestamp": "2026-08-05T03:12:00.000Z",
+              "type": "guard_message",
+              "data": {
+                "text": "I walked the full site and checked both buildings."
+              }
+            }
+          ],
+          "guardReplies": [
+            {
+              "ref": "candidate:turn:18:guard-reply:0",
+              "timestamp": "2026-08-05T03:12:00.000Z",
+              "message": "I walked the full site and checked both buildings.",
+              "source": "historical",
+              "historicalMessage": "I walked the full site and checked both buildings."
+            }
+          ],
+          "copilotMessages": [
+            {
+              "ref": "candidate:turn:18:message:0",
+              "timestamp": "2026-08-05T03:12:00.000Z",
+              "text": "Thanks for confirming you completed the full patrol and checked both buildings."
+            }
+          ],
+          "actions": [],
+          "silent": false,
+          "skipped": false
+        }
+      ]
+    }
+  },
+  "warnings": [
+    "Full replay context parity could not be independently verified because one or both replay responses omit debug context."
+  ]
+}

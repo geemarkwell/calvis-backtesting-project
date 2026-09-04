@@ -1,0 +1,330 @@
+{
+  "selectedKinds": [
+    "message_count",
+    "message_timing",
+    "flags",
+    "trigger_to_action_latency",
+    "simulated_guard_replies"
+  ],
+  "trajectories": {
+    "historical": [
+      {
+        "key": "copilot_message_count",
+        "value": 4,
+        "evidenceRefs": [
+          "historical:turn:8:message:0",
+          "historical:turn:9:message:0",
+          "historical:turn:10:message:0",
+          "historical:turn:11:message:0"
+        ]
+      },
+      {
+        "key": "first_copilot_message_timestamp",
+        "value": "2026-08-05T02:01:01.385661+00:00",
+        "evidenceRefs": [
+          "historical:turn:8:message:0"
+        ]
+      },
+      {
+        "key": "last_copilot_message_timestamp",
+        "value": "2026-08-05T02:05:46.777284+00:00",
+        "evidenceRefs": [
+          "historical:turn:11:message:0"
+        ]
+      },
+      {
+        "key": "copilot_message_span_ms",
+        "value": 285392,
+        "evidenceRefs": [
+          "historical:turn:8:message:0",
+          "historical:turn:11:message:0"
+        ]
+      },
+      {
+        "key": "copilot_message_count.turn.8",
+        "value": 1,
+        "evidenceRefs": [
+          "historical:turn:8:message:0"
+        ]
+      },
+      {
+        "key": "copilot_message_count.turn.9",
+        "value": 1,
+        "evidenceRefs": [
+          "historical:turn:9:message:0"
+        ]
+      },
+      {
+        "key": "copilot_message_count.turn.10",
+        "value": 1,
+        "evidenceRefs": [
+          "historical:turn:10:message:0"
+        ]
+      },
+      {
+        "key": "copilot_message_count.turn.11",
+        "value": 1,
+        "evidenceRefs": [
+          "historical:turn:11:message:0"
+        ]
+      },
+      {
+        "key": "flag_count",
+        "value": 1,
+        "evidenceRefs": [
+          "historical:turn:10:action:0"
+        ]
+      },
+      {
+        "key": "trigger_to_first_action_latency_ms.turn.8",
+        "value": null,
+        "evidenceRefs": [
+          "historical:turn:8"
+        ]
+      },
+      {
+        "key": "trigger_to_first_action_latency_ms.turn.9",
+        "value": null,
+        "evidenceRefs": [
+          "historical:turn:9"
+        ]
+      },
+      {
+        "key": "trigger_to_first_action_latency_ms.turn.10",
+        "value": null,
+        "evidenceRefs": [
+          "historical:turn:10",
+          "historical:turn:10:action:0"
+        ]
+      },
+      {
+        "key": "trigger_to_first_action_latency_ms.turn.11",
+        "value": null,
+        "evidenceRefs": [
+          "historical:turn:11",
+          "historical:turn:11:action:0"
+        ]
+      },
+      {
+        "key": "simulated_guard_reply_count",
+        "value": 0,
+        "evidenceRefs": []
+      },
+      {
+        "key": "null_simulated_guard_reply_count",
+        "value": 0,
+        "evidenceRefs": []
+      }
+    ],
+    "old": [
+      {
+        "key": "copilot_message_count",
+        "value": 3,
+        "evidenceRefs": [
+          "old:turn:9:message:0",
+          "old:turn:10:message:0",
+          "old:turn:11:message:0"
+        ]
+      },
+      {
+        "key": "first_copilot_message_timestamp",
+        "value": "2026-08-05T02:02:41.719042+00:00",
+        "evidenceRefs": [
+          "old:turn:9:message:0"
+        ]
+      },
+      {
+        "key": "last_copilot_message_timestamp",
+        "value": "2026-08-05T02:05:46.777284+00:00",
+        "evidenceRefs": [
+          "old:turn:11:message:0"
+        ]
+      },
+      {
+        "key": "copilot_message_span_ms",
+        "value": 185058,
+        "evidenceRefs": [
+          "old:turn:9:message:0",
+          "old:turn:11:message:0"
+        ]
+      },
+      {
+        "key": "copilot_message_count.turn.8",
+        "value": 0,
+        "evidenceRefs": [
+          "old:turn:8"
+        ]
+      },
+      {
+        "key": "copilot_message_count.turn.9",
+        "value": 1,
+        "evidenceRefs": [
+          "old:turn:9:message:0"
+        ]
+      },
+      {
+        "key": "copilot_message_count.turn.10",
+        "value": 1,
+        "evidenceRefs": [
+          "old:turn:10:message:0"
+        ]
+      },
+      {
+        "key": "copilot_message_count.turn.11",
+        "value": 1,
+        "evidenceRefs": [
+          "old:turn:11:message:0"
+        ]
+      },
+      {
+        "key": "flag_count",
+        "value": 0,
+        "evidenceRefs": []
+      },
+      {
+        "key": "trigger_to_first_action_latency_ms.turn.8",
+        "value": null,
+        "evidenceRefs": [
+          "old:turn:8"
+        ]
+      },
+      {
+        "key": "trigger_to_first_action_latency_ms.turn.9",
+        "value": null,
+        "evidenceRefs": [
+          "old:turn:9"
+        ]
+      },
+      {
+        "key": "trigger_to_first_action_latency_ms.turn.10",
+        "value": null,
+        "evidenceRefs": [
+          "old:turn:10",
+          "old:turn:10:action:0"
+        ]
+      },
+      {
+        "key": "trigger_to_first_action_latency_ms.turn.11",
+        "value": null,
+        "evidenceRefs": [
+          "old:turn:11"
+        ]
+      },
+      {
+        "key": "simulated_guard_reply_count",
+        "value": 0,
+        "evidenceRefs": []
+      },
+      {
+        "key": "null_simulated_guard_reply_count",
+        "value": 0,
+        "evidenceRefs": []
+      }
+    ],
+    "candidate": [
+      {
+        "key": "copilot_message_count",
+        "value": 3,
+        "evidenceRefs": [
+          "candidate:turn:9:message:0",
+          "candidate:turn:10:message:0",
+          "candidate:turn:11:message:0"
+        ]
+      },
+      {
+        "key": "first_copilot_message_timestamp",
+        "value": "2026-08-05T02:02:41.719042+00:00",
+        "evidenceRefs": [
+          "candidate:turn:9:message:0"
+        ]
+      },
+      {
+        "key": "last_copilot_message_timestamp",
+        "value": "2026-08-05T02:05:46.777284+00:00",
+        "evidenceRefs": [
+          "candidate:turn:11:message:0"
+        ]
+      },
+      {
+        "key": "copilot_message_span_ms",
+        "value": 185058,
+        "evidenceRefs": [
+          "candidate:turn:9:message:0",
+          "candidate:turn:11:message:0"
+        ]
+      },
+      {
+        "key": "copilot_message_count.turn.8",
+        "value": 0,
+        "evidenceRefs": [
+          "candidate:turn:8"
+        ]
+      },
+      {
+        "key": "copilot_message_count.turn.9",
+        "value": 1,
+        "evidenceRefs": [
+          "candidate:turn:9:message:0"
+        ]
+      },
+      {
+        "key": "copilot_message_count.turn.10",
+        "value": 1,
+        "evidenceRefs": [
+          "candidate:turn:10:message:0"
+        ]
+      },
+      {
+        "key": "copilot_message_count.turn.11",
+        "value": 1,
+        "evidenceRefs": [
+          "candidate:turn:11:message:0"
+        ]
+      },
+      {
+        "key": "flag_count",
+        "value": 0,
+        "evidenceRefs": []
+      },
+      {
+        "key": "trigger_to_first_action_latency_ms.turn.8",
+        "value": null,
+        "evidenceRefs": [
+          "candidate:turn:8"
+        ]
+      },
+      {
+        "key": "trigger_to_first_action_latency_ms.turn.9",
+        "value": null,
+        "evidenceRefs": [
+          "candidate:turn:9",
+          "candidate:turn:9:action:0"
+        ]
+      },
+      {
+        "key": "trigger_to_first_action_latency_ms.turn.10",
+        "value": null,
+        "evidenceRefs": [
+          "candidate:turn:10"
+        ]
+      },
+      {
+        "key": "trigger_to_first_action_latency_ms.turn.11",
+        "value": null,
+        "evidenceRefs": [
+          "candidate:turn:11"
+        ]
+      },
+      {
+        "key": "simulated_guard_reply_count",
+        "value": 0,
+        "evidenceRefs": []
+      },
+      {
+        "key": "null_simulated_guard_reply_count",
+        "value": 0,
+        "evidenceRefs": []
+      }
+    ]
+  }
+}

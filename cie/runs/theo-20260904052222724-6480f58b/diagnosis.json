@@ -1,0 +1,65 @@
+{
+  "job_ids": [
+    "56370"
+  ],
+  "what_went_wrong": "The agent complimented the guard saying 'Good work' but the agent should just specify it logged and continue assisting the guard. No need for compliments",
+  "failure_mode": "The Copilot added evaluative praise to a routine all-clear acknowledgment instead of limiting the response to logging confirmation and operational assistance.",
+  "evidence_windows": [
+    {
+      "job_id": "56370",
+      "start_turn": 9,
+      "end_turn": 9,
+      "trace_refs": [
+        "job:56370:simulation:3:events:65",
+        "job:56370:simulation:3:baseline:2",
+        "job:56370:simulation:3:baseline:3"
+      ]
+    }
+  ],
+  "observed_behavior": [
+    {
+      "claim": "The guard reported that there was nothing to report, no damage, and no activity.",
+      "trace_refs": [
+        "job:56370:simulation:3:events:65"
+      ]
+    },
+    {
+      "claim": "The Copilot acknowledged the report as logged, added the compliment “Good work,” and then supplied patrol and escalation guidance.",
+      "trace_refs": [
+        "job:56370:simulation:3:baseline:3"
+      ]
+    }
+  ],
+  "expected_behavior": "Satying strictly helpful no need for compliments as the guard does not care about that",
+  "relevant_turns": [
+    {
+      "turn_ref": "job:56370:simulation:3:baseline:2",
+      "trigger": "guard_message",
+      "instruction_file": "instructions/guard_response.md"
+    }
+  ],
+  "prompt_diagnosis": {
+    "file": "instructions/guard_response.md",
+    "section": "Read the reply literally and match it",
+    "exact_text": "- **A status claim that asserts work got done** (rounds or walkthrough complete, \"all\n  clear,\" checklist done) → not small talk; it's an implicit report. Verify before you\n  affirm it, don't rubber-stamp.",
+    "diagnosis_type": "ambiguous",
+    "explanation": "This passage requires verification and prohibits rubber-stamping, but it does not say how to acknowledge a supported routine report or prohibit compliments after logging it. Combined with the shared instruction to reply “warm” and positive examples elsewhere in the communication policy, the model can interpret brief praise such as “Good work” as acceptable once it has acknowledged the report."
+  },
+  "hypothesis": "Because the status-report rule prohibits only unverified affirmation and does not explicitly distinguish a useful acknowledgment from evaluative praise, the model likely treated “Good work” as permitted warmth before continuing with operational guidance. Adding a narrow no-praise rule for work-done claims should test whether that ambiguity caused the unwanted compliment without weakening logging, safety guidance, or escalation behavior.",
+  "proposed_edit": {
+    "file": "instructions/guard_response.md",
+    "old_text": "- **A status claim that asserts work got done** (rounds or walkthrough complete, \"all\n  clear,\" checklist done) → not small talk; it's an implicit report. Verify before you\n  affirm it, don't rubber-stamp.",
+    "new_text": "- **A status claim that asserts work got done** (rounds or walkthrough complete, \"all\n  clear,\" checklist done) → not small talk; it's an implicit report. Verify before you\n  affirm it, don't rubber-stamp. When supported, acknowledge that it is logged and\n  continue assisting without compliments or evaluative praise.",
+    "intended_effect": "Make routine report acknowledgments strictly functional: confirm the report is logged and continue with relevant assistance, while preventing additions such as “Good work.”"
+  },
+  "risks": [
+    "The added restriction could make routine acknowledgments feel less warm if interpreted too broadly, though it still permits direct acknowledgment and useful assistance.",
+    "The shared communication policy still contains praise-oriented examples, so behavior outside work-done status claims may remain unchanged."
+  ],
+  "confidence": 0.93,
+  "uncertainties": [
+    "The trace does not show the model’s internal reasoning, so the causal link between the prompt ambiguity and the compliment is inferred rather than proven.",
+    "The supplied window does not record any verification tool call, making it unclear whether the Copilot considered the all-clear supported before responding.",
+    "Only one selected response window is available, so the frequency of this behavior across other report acknowledgments is unknown."
+  ]
+}

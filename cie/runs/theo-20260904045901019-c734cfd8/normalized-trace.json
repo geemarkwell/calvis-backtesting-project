@@ -1,0 +1,213 @@
+[
+  {
+    "ref": "job:56370:simulation:3:baseline:0",
+    "source": "baseline",
+    "sourceIndex": 0,
+    "timestamp": "2026-08-05T02:01:01.385661+00:00",
+    "type": "turn_start",
+    "content": {
+      "turn": 8,
+      "simulationNumber": 3,
+      "replayMode": "candidate",
+      "model": "openai/gpt-5-mini",
+      "skipped": false,
+      "stopReason": "stop"
+    },
+    "turnRef": "job:56370:simulation:3:baseline:0",
+    "trigger": "scheduled_check_in",
+    "instructionFile": "instructions/scheduled_check_in.md",
+    "silent": false
+  },
+  {
+    "ref": "job:56370:simulation:3:baseline:1",
+    "source": "baseline",
+    "sourceIndex": 1,
+    "timestamp": "2026-08-05T02:01:01.385661+00:00",
+    "type": "copilot_message",
+    "content": "Scheduled sweep: quick update from me. The open-obligations tool failed so I checked the job card—no required patrol/report windows are currently due. No new logs or replies. Stay on your roaming perimeter patrol and weight rounds to the rear gap and staged materials like we discussed. When you finish the next loop, send me a quick all-clear or report anything unusual.",
+    "turnRef": "job:56370:simulation:3:baseline:0",
+    "trigger": "scheduled_check_in",
+    "instructionFile": "instructions/scheduled_check_in.md"
+  },
+  {
+    "ref": "job:56370:simulation:3:events:65",
+    "source": "events",
+    "sourceIndex": 65,
+    "timestamp": "2026-08-05T02:02:41.719042+00:00",
+    "type": "guard_message",
+    "content": {
+      "text": "There was nothing to report and there was nothing damage or any activity",
+      "replySource": "historical",
+      "historicalReply": "There was nothing to report and there was nothing damage or any activity"
+    },
+    "turnRef": "job:56370:simulation:3:baseline:2",
+    "trigger": "guard_message",
+    "instructionFile": "instructions/guard_response.md"
+  },
+  {
+    "ref": "job:56370:simulation:3:baseline:2",
+    "source": "baseline",
+    "sourceIndex": 2,
+    "timestamp": "2026-08-05T02:02:41.719042+00:00",
+    "type": "turn_start",
+    "content": {
+      "turn": 9,
+      "simulationNumber": 3,
+      "replayMode": "candidate",
+      "model": "openai/gpt-5-mini",
+      "skipped": false,
+      "stopReason": "stop"
+    },
+    "turnRef": "job:56370:simulation:3:baseline:2",
+    "trigger": "guard_message",
+    "instructionFile": "instructions/guard_response.md",
+    "silent": false
+  },
+  {
+    "ref": "job:56370:simulation:3:baseline:3",
+    "source": "baseline",
+    "sourceIndex": 3,
+    "timestamp": "2026-08-05T02:02:41.719042+00:00",
+    "type": "copilot_message",
+    "content": "All right, thanks—logged that. Good work. Keep your rounds irregular and weighted to the rear gap and staged materials. If you see movement on the cameras or anyone at the rear, do not approach: call 911 first, then Priya at +1-555-000-0150, then report it here.",
+    "turnRef": "job:56370:simulation:3:baseline:2",
+    "trigger": "guard_message",
+    "instructionFile": "instructions/guard_response.md"
+  },
+  {
+    "ref": "job:56370:simulation:3:events:69",
+    "source": "events",
+    "sourceIndex": 69,
+    "timestamp": "2026-08-05T02:03:51.791566+00:00",
+    "type": "guard_message",
+    "content": {
+      "text": "Yes I walk the whole site and I check the rear and there was no activity",
+      "replySource": "historical",
+      "historicalReply": "Yes I walk the whole site and I check the rear and there was no activity"
+    },
+    "turnRef": "job:56370:simulation:3:baseline:4",
+    "trigger": "guard_message",
+    "instructionFile": "instructions/guard_response.md"
+  },
+  {
+    "ref": "job:56370:simulation:3:baseline:4",
+    "source": "baseline",
+    "sourceIndex": 4,
+    "timestamp": "2026-08-05T02:03:51.791566+00:00",
+    "type": "turn_start",
+    "content": {
+      "turn": 10,
+      "simulationNumber": 3,
+      "replayMode": "candidate",
+      "model": "openai/gpt-5-mini",
+      "skipped": false,
+      "stopReason": "stop"
+    },
+    "turnRef": "job:56370:simulation:3:baseline:4",
+    "trigger": "guard_message",
+    "instructionFile": "instructions/guard_response.md",
+    "silent": false
+  },
+  {
+    "ref": "job:56370:simulation:3:baseline:5",
+    "source": "baseline",
+    "sourceIndex": 5,
+    "timestamp": "2026-08-05T02:03:51.791566+00:00",
+    "type": "copilot_message",
+    "content": "Good, thanks — logged. Did you check the rear orange security fence at the gap? Is it holding and undamaged? If it's safe to do so, snap a quick photo of the rear gap/fence and send it.",
+    "turnRef": "job:56370:simulation:3:baseline:4",
+    "trigger": "guard_message",
+    "instructionFile": "instructions/guard_response.md"
+  },
+  {
+    "ref": "job:56370:simulation:3:baseline:6",
+    "source": "baseline",
+    "sourceIndex": 6,
+    "timestamp": "2026-08-05T02:03:51.791566+00:00",
+    "type": "tool_call",
+    "content": {
+      "tool": "add_copilot_note",
+      "input": {
+        "session_id": "16e10cc0-7f46-41c5-83e0-15c49e07deff",
+        "note_text": "Guard Hector Nguyen (id 9674) completed a full perimeter walkthrough at 22:03 local and reported no activity or damage. Requested confirmation on rear orange security fence condition and photo if safe to do so.",
+        "entity_type": "job",
+        "entity_id": 56370,
+        "guard_id": 9674
+      },
+      "output": null,
+      "ok": null,
+      "error": null
+    },
+    "turnRef": "job:56370:simulation:3:baseline:4",
+    "trigger": "guard_message",
+    "instructionFile": "instructions/guard_response.md"
+  },
+  {
+    "ref": "job:56370:simulation:3:events:76",
+    "source": "events",
+    "sourceIndex": 76,
+    "timestamp": "2026-08-05T02:05:46.777284+00:00",
+    "type": "guard_message",
+    "content": {
+      "text": "Ok I going to need to leave my phone in my car so that I won’t get distracted from the internet",
+      "replySource": "historical",
+      "historicalReply": "Ok I going to need to leave my phone in my car so that I won’t get distracted from the internet"
+    },
+    "turnRef": "job:56370:simulation:3:baseline:7",
+    "trigger": "guard_message",
+    "instructionFile": "instructions/guard_response.md"
+  },
+  {
+    "ref": "job:56370:simulation:3:baseline:7",
+    "source": "baseline",
+    "sourceIndex": 7,
+    "timestamp": "2026-08-05T02:05:46.777284+00:00",
+    "type": "turn_start",
+    "content": {
+      "turn": 11,
+      "simulationNumber": 3,
+      "replayMode": "candidate",
+      "model": "openai/gpt-5-mini",
+      "skipped": false,
+      "stopReason": "stop"
+    },
+    "turnRef": "job:56370:simulation:3:baseline:7",
+    "trigger": "guard_message",
+    "instructionFile": "instructions/guard_response.md",
+    "silent": false
+  },
+  {
+    "ref": "job:56370:simulation:3:baseline:8",
+    "source": "baseline",
+    "sourceIndex": 8,
+    "timestamp": "2026-08-05T02:05:46.777284+00:00",
+    "type": "copilot_message",
+    "content": "I get wanting to avoid distractions. Quick ask: can you keep the phone reachable for emergencies and quick camera checks (pocket or on vibrate)? If you must leave it in the car, confirm you'll check in after each perimeter loop so we know the site is covered.",
+    "turnRef": "job:56370:simulation:3:baseline:7",
+    "trigger": "guard_message",
+    "instructionFile": "instructions/guard_response.md"
+  },
+  {
+    "ref": "job:56370:simulation:3:baseline:9",
+    "source": "baseline",
+    "sourceIndex": 9,
+    "timestamp": "2026-08-05T02:05:46.777284+00:00",
+    "type": "tool_call",
+    "content": {
+      "tool": "add_copilot_note",
+      "input": {
+        "session_id": "16e10cc0-7f46-41c5-83e0-15c49e07deff",
+        "note_text": "Guard Hector Nguyen (id 9674) stated at 22:05 local that he will leave his phone in his car to avoid internet distractions. Guard is clocked in and on site. Noted that leaving the phone in the car reduces ability to access camera feeds and receive Copilot DMs; advised guard to keep phone reachable for emergencies and camera checks.",
+        "entity_type": "job",
+        "entity_id": 56370,
+        "guard_id": 9674
+      },
+      "output": null,
+      "ok": null,
+      "error": null
+    },
+    "turnRef": "job:56370:simulation:3:baseline:7",
+    "trigger": "guard_message",
+    "instructionFile": "instructions/guard_response.md"
+  }
+]

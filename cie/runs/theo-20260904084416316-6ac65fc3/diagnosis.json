@@ -1,0 +1,113 @@
+{
+  "job_ids": [
+    "56370"
+  ],
+  "what_went_wrong": "On job 56370 the guard said he'd walked the full site and checked both buildings. The copilot pushed back on him three times in four minutes and flagged him. Too hard for what it actually had.",
+  "failure_mode": "The reactive prompt made telemetry verification a prerequisite to accepting a completed-work report, leading the Copilot to override the guard’s account, order a repeat patrol, and file a compliance flag based on the apparent GPS discrepancy.",
+  "evidence_windows": [
+    {
+      "job_id": "56370",
+      "start_turn": 8,
+      "end_turn": 11,
+      "trace_refs": [
+        "job:56370:baseline:47",
+        "job:56370:baseline:48",
+        "job:56370:events:663",
+        "job:56370:baseline:55",
+        "job:56370:baseline:58",
+        "job:56370:events:668",
+        "job:56370:baseline:61",
+        "job:56370:baseline:62",
+        "job:56370:baseline:63",
+        "job:56370:baseline:64",
+        "job:56370:events:674",
+        "job:56370:baseline:67",
+        "job:56370:baseline:68",
+        "job:56370:baseline:70"
+      ]
+    }
+  ],
+  "observed_behavior": [
+    {
+      "claim": "Turn 8 asked the guard for his first patrol report, specifically covering the rear yard, fence line, activity, and damage.",
+      "trace_refs": [
+        "job:56370:baseline:47",
+        "job:56370:baseline:48"
+      ]
+    },
+    {
+      "claim": "After the guard reported no activity or damage, the Copilot acknowledged the rear area but asked whether he had walked the full perimeter and checked both buildings.",
+      "trace_refs": [
+        "job:56370:events:663",
+        "job:56370:baseline:55",
+        "job:56370:baseline:58"
+      ]
+    },
+    {
+      "claim": "The guard answered that he had walked the whole site and checked the rear, but the Copilot cited tight-area telemetry, directed him to perform another full loop, and submitted a medium compliance flag alleging that his report did not align with movement data.",
+      "trace_refs": [
+        "job:56370:events:668",
+        "job:56370:baseline:61",
+        "job:56370:baseline:62",
+        "job:56370:baseline:63",
+        "job:56370:baseline:64"
+      ]
+    },
+    {
+      "claim": "When the guard then said he intended to leave his phone in his car, the Copilot told him to keep it with him, repeated the full-loop direction, and escalated the possible loss of contact and telemetry as critical.",
+      "trace_refs": [
+        "job:56370:events:674",
+        "job:56370:baseline:67",
+        "job:56370:baseline:68",
+        "job:56370:baseline:70"
+      ]
+    }
+  ],
+  "expected_behavior": "Acknowledge the guard’s completion report without repeatedly challenging or flagging him. If required evidence is genuinely missing or contradictory, ask one neutral clarification and avoid escalation unless there is clear evidence of noncompliance.",
+  "relevant_turns": [
+    {
+      "turn_ref": "job:56370:baseline:48",
+      "trigger": "scheduled_check_in",
+      "instruction_file": "instructions/scheduled_check_in.md"
+    },
+    {
+      "turn_ref": "job:56370:baseline:58",
+      "trigger": "guard_message",
+      "instruction_file": "instructions/guard_response.md"
+    },
+    {
+      "turn_ref": "job:56370:baseline:62",
+      "trigger": "guard_message",
+      "instruction_file": "instructions/guard_response.md"
+    },
+    {
+      "turn_ref": "job:56370:baseline:70",
+      "trigger": "guard_message",
+      "instruction_file": "instructions/guard_response.md"
+    }
+  ],
+  "prompt_diagnosis": {
+    "file": "instructions/guard_response.md",
+    "section": "Guard reply: reactive, high priority",
+    "exact_text": "Before you affirm a work-done claim, verify it against a duty the job actually defines,\nmatching the proof to the claim: a patrol or presence requirement against a fresh\n`get_guard_locations` trajectory, a required report or checklist against the feed and\nlogs. Don't manufacture a cadence the post never set just to check it. If the data\ndoesn't back the claim, ask for what the post calls for, curious, not accusing.",
+    "diagnosis_type": "incorrectly_prioritized",
+    "explanation": "This turn-specific passage makes external verification a prerequisite to affirming a work-done claim and directs the model to act when data does not back it. That emphasis likely displaced the shared instruction that telemetry is only a signal and the guard’s account outranks GPS. It also does not bound the response to one clarification or prohibit a flag based solely on telemetry, making the turn-10 repeat-patrol order and compliance flag a plausible prompt-driven interpretation."
+  },
+  "hypothesis": "Because the reactive instruction says to verify before affirming and specifically matches patrol claims against location trajectory, the Copilot treated apparent lack of GPS movement as stronger than the guard’s direct completion report. Adding an explicit one-clarification limit and barring repeat-work directions or escalation based solely on telemetry should test whether that prioritization caused the excessive challenge and flag.",
+  "proposed_edit": {
+    "file": "instructions/guard_response.md",
+    "old_text": "Before you affirm a work-done claim, verify it against a duty the job actually defines,\nmatching the proof to the claim: a patrol or presence requirement against a fresh\n`get_guard_locations` trajectory, a required report or checklist against the feed and\nlogs. Don't manufacture a cadence the post never set just to check it. If the data\ndoesn't back the claim, ask for what the post calls for, curious, not accusing.",
+    "new_text": "Before you affirm a work-done claim, check it against a duty the job actually defines,\nmatching the evidence to the claim: a patrol or presence requirement against a fresh\n`get_guard_locations` trajectory, a required report or checklist against the feed and\nlogs. Don't manufacture a cadence the post never set just to check it. Telemetry is a\nsignal, not proof, and the guard's own account outranks GPS. If telemetry alone appears\ninconsistent with a completion report, acknowledge the report and, if the discrepancy\nmatters, ask one neutral clarification. Do not direct the guard to repeat the work or\nescalate solely because of that discrepancy; escalate only when other clear evidence\nshows noncompliance or the post is at risk.",
+    "intended_effect": "Make the reactive prompt consistently treat telemetry as secondary evidence, cap the response to one neutral clarification, and prevent repeat-patrol demands or compliance flags based only on a GPS discrepancy while preserving escalation for clear noncompliance or post risk."
+  },
+  "risks": [
+    "A stricter telemetry-only limitation could delay review when GPS is the first indication of a real patrol lapse; the replacement preserves escalation when corroborating evidence or post risk exists.",
+    "The phrase “other clear evidence” requires judgment and may produce inconsistent thresholds across borderline cases."
+  ],
+  "confidence": 0.92,
+  "uncertainties": [
+    "The raw location outputs are omitted or unparseable in the supplied window, so the accuracy, freshness, and full movement trajectory behind the Copilot’s claim cannot be independently assessed.",
+    "The turn-11 critical escalation followed the guard’s separate statement that he intended to leave his phone in the car. That creates a distinct contact or monitoring concern and is not evidence that the completion-report prompt alone caused that escalation.",
+    "Only one job window is supplied, so the prompt-behavior link is a causal hypothesis rather than a demonstrated recurring pattern."
+  ]
+}
