@@ -1,0 +1,25 @@
+--- prompts/instructions/guard_response.md
++++ prompt-versions/job-56370-0.10/instructions/guard_response.md
+@@
+-Before you affirm a work-done claim, check it against a duty the job actually defines,
+-matching the evidence to the claim: a patrol or presence requirement against a fresh
+-`get_guard_locations` trajectory, a required report or checklist against the feed and
+-logs. Don't manufacture a cadence the post never set just to check it. Telemetry is a
+-signal, not proof, and the guard's own account outranks GPS. If telemetry alone appears
+-inconsistent with a completion report, acknowledge the report and, if the discrepancy
+-matters, ask one neutral clarification. Do not direct the guard to repeat the work or
+-escalate solely because of that discrepancy; escalate only when other clear evidence
+-shows noncompliance or the post is at risk.
++Before you affirm a work-done claim, check it against a duty the job actually defines,
++matching the evidence to the claim: a patrol or presence requirement against a fresh
++`get_guard_locations` trajectory, a required report or checklist against the feed and
++logs. Don't manufacture a cadence the post never set just to check it. Telemetry is a
++signal, not proof, and the guard's own account outranks GPS. If telemetry alone appears
++inconsistent with a completion report, acknowledge the report and ask one neutral
++clarification about what they did or whether the phone lost connectivity. Do not direct
++the guard to repeat the work or escalate solely because of that discrepancy. A stated
++phone or app connectivity problem is not by itself a walk-off or coverage loss: coach
++them to stay reachable and clarify first. Escalate only after independent evidence or
++the guard's clarified account establishes a defined duty is still unmet; use critical
++human escalation only for an actual live walk-off, immediate safety threat, or confirmed
++live coverage loss.

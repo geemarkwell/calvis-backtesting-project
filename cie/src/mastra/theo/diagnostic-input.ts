@@ -1,4 +1,4 @@
-import { readdir, readFile } from 'node:fs/promises';
+import { access, readdir, readFile } from 'node:fs/promises';
 import { join, resolve } from 'node:path';
 import { z } from 'zod';
 import {
@@ -7,6 +7,9 @@ import {
 } from '../../copilot-simulation/shift-loader';
 import type { ShiftBundle } from '../../copilot-simulation/copilot-simulation.types';
 import { loadSimulationLog } from '../../copilot-simulation/copilot-original.service';
+import { instructionFileForTrigger } from '../copilot/turn-builder';
+import { compileTraceContext } from '../../trace-context/trace-context.compiler';
+import type { CompactTraceContextDto } from '../../trace-context/dto/compile-trace-context.dto';
 import {
   normalizeSimulationTrace,
   normalizeTrace,
@@ -60,6 +63,16 @@ const simulationResponseWindowSchema = z
     },
   );
 
+const diagnosisContextSchema = z
+  .object({
+    diagnosisRunId: nonEmptyTextSchema.optional(),
+    patternId: nonEmptyTextSchema,
+    diagnosis: nonEmptyTextSchema,
+    likelyCause: nonEmptyTextSchema,
+    suggestedFix: nonEmptyTextSchema,
+  })
+  .strict();
+
 export const theoRequestSchema = z
   .object({
     whatWentWrong: nonEmptyTextSchema,
@@ -67,6 +80,8 @@ export const theoRequestSchema = z
       .array(z.union([jobResponseWindowSchema, simulationResponseWindowSchema]))
       .min(1, 'At least one bad AI response window is required.'),
     expectedBehavior: nonEmptyTextSchema,
+    diagnosisContext: diagnosisContextSchema.optional(),
+    useCompactContext: z.boolean().optional(),
   })
   .strict()
   .superRefine((request, context) => {
@@ -95,6 +110,7 @@ export interface DiagnosticResponseWindow {
   endTurn: number;
   simTarget?: number;
   trace: NormalizedTraceEntry[];
+  compactContext?: CompactTraceContextDto;
 }
 
 export interface DiagnosticShiftContext {
@@ -108,6 +124,7 @@ export interface DiagnosticInput {
   badResponses: DiagnosticResponseWindow[];
   shifts: DiagnosticShiftContext[];
   promptFiles: Record<string, string>;
+  diagnosisContext?: z.infer<typeof diagnosisContextSchema>;
 }
 
 export interface LoadDiagnosticInputOptions {
@@ -166,6 +183,7 @@ export async function loadDiagnosticInput({
   const concern = `${request.whatWentWrong}\n${request.expectedBehavior}`;
   const includeTelemetry =
     includeRawTelemetry ?? calloutConcernsRawTelemetry(concern);
+  const useCompactContext = request.useCompactContext ?? true;
   const bundles = new Map<string, ShiftBundle>();
   const traces = new Map<string, NormalizedTraceEntry[]>();
   const shifts = new Map<string, Record<string, unknown>>();
@@ -219,44 +237,78 @@ export async function loadDiagnosticInput({
     });
   }
 
-  const promptFiles = await loadPromptFiles(
-    resolve(resolvedBundleRoot, 'prompts'),
-  );
+  const badResponses = resolvedWindows.map(({ traceKey, ...window }) => {
+    const selectedTrace = selectTraceWindow(traces.get(traceKey)!, window);
+    return {
+      ...window,
+      trace: selectedTrace,
+      compactContext: useCompactContext
+        ? compileTraceContext({ trace: selectedTrace, purpose: 'theo' })
+        : undefined,
+    };
+  });
+  const promptFiles = await loadPromptFiles(resolve(resolvedBundleRoot, 'prompts'), {
+    instructionFiles: selectInstructionFilesForTrace(
+      badResponses.flatMap((window) => window.trace),
+    ),
+  });
 
   return {
     whatWentWrong: request.whatWentWrong,
     expectedBehavior: request.expectedBehavior,
-    badResponses: resolvedWindows.map(({ traceKey, ...window }) => {
-      return {
-        ...window,
-        trace: selectTraceWindow(traces.get(traceKey)!, window),
-      };
-    }),
+    badResponses,
     shifts: [...shifts.entries()].map(([jobId, shift]) => ({
       jobId,
       shift,
     })),
     promptFiles,
+    diagnosisContext: request.diagnosisContext,
   };
 }
 
 export async function loadPromptFiles(
   promptRoot: string,
+  options: { instructionFiles?: Iterable<string> } = {},
 ): Promise<Record<string, string>> {
-  const promptFiles: Record<string, string> = {
-    'PROMPTS.md': await readRequiredFile(resolve(promptRoot, 'PROMPTS.md')),
-  };
+  const promptFiles: Record<string, string> = {};
 
-  for (const directory of ['core', 'instructions']) {
-    const files = await listFiles(resolve(promptRoot, directory));
-    for (const relativeFile of files) {
-      const stableName = `${directory}/${relativeFile}`;
-      promptFiles[stableName] = await readRequiredFile(
-        resolve(promptRoot, ...stableName.split('/')),
-      );
+  for (const relativeFile of await listFiles(resolve(promptRoot, 'core'))) {
+    const stableName = `core/${relativeFile}`;
+    promptFiles[stableName] = await readRequiredFile(
+      resolve(promptRoot, ...stableName.split('/')),
+    );
+  }
+
+  const instructionFiles = [...new Set(options.instructionFiles ?? [])].sort();
+  for (const stableName of instructionFiles) {
+    if (!/^instructions\/[^/]+\.md$/.test(stableName)) {
+      continue;
+    }
+    const contents = await readOptionalFile(resolve(promptRoot, ...stableName.split('/')));
+    if (contents !== undefined) {
+      promptFiles[stableName] = contents;
     }
   }
   return promptFiles;
+}
+
+export function selectInstructionFilesForTrace(
+  trace: readonly NormalizedTraceEntry[],
+): string[] {
+  const instructionFiles = new Set<string>();
+  for (const entry of trace) {
+    if (entry.type !== 'turn_start') {
+      continue;
+    }
+    const instructionFile = entry.instructionFile ??
+      (entry.trigger
+        ? `instructions/${instructionFileForTrigger(entry.trigger)}`
+        : undefined);
+    if (instructionFile) {
+      instructionFiles.add(instructionFile);
+    }
+  }
+  return [...instructionFiles].sort();
 }
 
 async function listFiles(
@@ -289,4 +341,13 @@ async function readRequiredFile(path: string): Promise<string> {
     throw new Error(`Prompt file is empty: ${path}`);
   }
   return contents;
+}
+
+async function readOptionalFile(path: string): Promise<string | undefined> {
+  try {
+    await access(path);
+  } catch {
+    return undefined;
+  }
+  return readRequiredFile(path);
 }

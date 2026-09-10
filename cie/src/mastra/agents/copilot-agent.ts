@@ -15,7 +15,7 @@ const recordedToolCallSchema = z.object({
 
 export const copilotModelConfiguration = {
   model: 'openai/gpt-5-mini',
-  maxRetries: 0,
+  maxRetries: 1,
   maxSteps: 8,
 } as const;
 

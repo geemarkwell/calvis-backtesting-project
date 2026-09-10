@@ -1,7 +1,9 @@
 import { mkdir, readdir, writeFile } from 'node:fs/promises';
 import { dirname, parse, resolve } from 'node:path';
+import type { BacktestDebuggingSink } from '../../backtestDebugging/logger';
 import type { CopilotSimulationResponse } from '../../copilot-simulation/copilot-simulation.types';
 import { mayaAgent } from '../agents/maya-agent';
+import { MAYA_INSTRUCTIONS } from './instructions';
 import { buildMayaJudgeInput } from './evidence-packet';
 import {
   createMayaJudgmentRecord,
@@ -22,8 +24,10 @@ export interface RunMayaInput {
   callout: string;
   oldReplay: CopilotSimulationResponse;
   candidateReplay: CopilotSimulationResponse;
+  useCompactContext?: boolean;
   runsRoot?: string;
   runId?: string;
+  backtestDebugging?: BacktestDebuggingSink;
 }
 
 export interface MayaRunResult {
@@ -151,8 +155,10 @@ export async function runMaya(
     callout,
     oldReplay,
     candidateReplay,
+    useCompactContext = true,
     runsRoot = resolve(process.cwd(), 'runs'),
     runId: requestedRunId,
+    backtestDebugging,
   }: RunMayaInput,
   { generateVerdict = generateWithMaya }: MayaRunnerDependencies = {},
 ): Promise<MayaRunResult> {
@@ -165,9 +171,15 @@ export async function runMaya(
     validateRunId(requestedRunId);
   }
 
-  const input = mayaJudgeInputSchema.parse(
-    buildMayaJudgeInput({ callout, oldReplay, candidateReplay }),
-  );
+  const rawJudgeInput = buildMayaJudgeInput({
+    callout,
+    oldReplay,
+    candidateReplay,
+    useCompactContext,
+  });
+  await backtestDebugging?.writeStage('09b-maya-built-judge-input.json', rawJudgeInput);
+  const input = mayaJudgeInputSchema.parse(rawJudgeInput);
+  await backtestDebugging?.writeStage('09c-maya-validated-judge-input.json', input);
 
   let runId: string;
   let artifactDirectory: string;
@@ -200,7 +212,23 @@ export async function runMaya(
     ),
   ]);
 
-  const generatedVerdict = await generateVerdict(buildMayaJudgeMessage(input));
+  const judgeMessage = buildMayaJudgeMessage(input);
+  await backtestDebugging?.writeStage('09d-maya-agent-request-payload.json', {
+    model: process.env.MAYA_MODEL ?? 'openai/gpt-5.6-sol',
+    input: [
+      { role: 'developer', content: MAYA_INSTRUCTIONS },
+      {
+        role: 'user',
+        content: [{ type: 'input_text', text: judgeMessage }],
+      },
+    ],
+    structuredOutputSchema: 'mayaVerdictSchema',
+    maxSteps: 1,
+    toolChoice: 'none',
+  });
+
+  const generatedVerdict = await generateVerdict(judgeMessage);
+  await backtestDebugging?.writeStage('10a-maya-raw-verdict-output.json', generatedVerdict);
   const completedVerdict = completeMayaVerdictEvidence({
     verdict: generatedVerdict,
     input,
@@ -209,9 +237,26 @@ export async function runMaya(
   try {
     verdict = validateMayaVerdict({ verdict: completedVerdict, input });
   } catch (validationError) {
-    const repairedVerdict = await generateVerdict(
-      buildMayaRepairMessage(input, completedVerdict, validationError),
+    const repairMessage = buildMayaRepairMessage(
+      input,
+      completedVerdict,
+      validationError,
     );
+    await backtestDebugging?.writeStage('10b-maya-repair-request-payload.json', {
+      model: process.env.MAYA_MODEL ?? 'openai/gpt-5.6-sol',
+      input: [
+        { role: 'developer', content: MAYA_INSTRUCTIONS },
+        {
+          role: 'user',
+          content: [{ type: 'input_text', text: repairMessage }],
+        },
+      ],
+      structuredOutputSchema: 'mayaVerdictSchema',
+      maxSteps: 1,
+      toolChoice: 'none',
+    });
+    const repairedVerdict = await generateVerdict(repairMessage);
+    await backtestDebugging?.writeStage('10c-maya-repaired-verdict-output.json', repairedVerdict);
     verdict = validateMayaVerdict({
       verdict: completeMayaVerdictEvidence({
         verdict: repairedVerdict,

@@ -18,6 +18,12 @@ import { mayaAgent } from './agents/maya-agent';
 import { testCriteriaAgent } from './agents/test-criteria-agent';
 import { testEvaluatorAgent } from './agents/test-evaluator-agent';
 import { diagnoseAgent } from './agents/diagnose-agent';
+import { taskSuccessEvaluatorAgent } from './agents/task-success-evaluator-agent';
+import { toolUseEvaluatorAgent } from './agents/tool-use-evaluator-agent';
+import { contextEvaluatorAgent } from './agents/context-evaluator-agent';
+import { safetyRecoveryEvaluatorAgent } from './agents/safety-recovery-evaluator-agent';
+import { freeAgentEvaluatorAgent } from './agents/free-agent-evaluator-agent';
+import { promptIssueEvaluatorAgent } from './agents/prompt-issue-evaluator-agent';
 
 export const mastra = new Mastra({
   workflows: { weatherWorkflow },
@@ -30,6 +36,12 @@ export const mastra = new Mastra({
     testCriteriaAgent,
     testEvaluatorAgent,
     diagnoseAgent,
+    taskSuccessEvaluatorAgent,
+    toolUseEvaluatorAgent,
+    contextEvaluatorAgent,
+    safetyRecoveryEvaluatorAgent,
+    freeAgentEvaluatorAgent,
+    promptIssueEvaluatorAgent,
   },
   storage: new MastraCompositeStore({
     id: 'composite-storage',
@@ -72,4 +84,10 @@ export {
   testCriteriaAgent,
   testEvaluatorAgent,
   diagnoseAgent,
+  taskSuccessEvaluatorAgent,
+  toolUseEvaluatorAgent,
+  contextEvaluatorAgent,
+  safetyRecoveryEvaluatorAgent,
+  freeAgentEvaluatorAgent,
+  promptIssueEvaluatorAgent,
 };

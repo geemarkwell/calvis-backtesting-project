@@ -1,5 +1,6 @@
 import type {
   BaselineSource,
+  DiagnoseRunSummary,
   OriginalSourceOption,
   ReplayMode,
 } from "../types";
@@ -11,10 +12,12 @@ export interface BacktestFormState {
   startTurn: string;
   endTurn: string;
   baselineSource: BaselineSource;
+  diagnosisRunId: string;
   replayMode: ReplayMode;
   debug: boolean;
   evaluate: boolean;
   callNiko: boolean;
+  useCompactContext: boolean;
 }
 
 interface ControlDeckProps {
@@ -23,6 +26,8 @@ interface ControlDeckProps {
   validationError: string | null;
   baselineOptions: OriginalSourceOption[];
   baselineOptionsLoading: boolean;
+  diagnosisRuns: DiagnoseRunSummary[];
+  diagnosisRunsLoading: boolean;
   theoAvailable: boolean;
   evaluationAvailable: boolean;
   onChange: (next: BacktestFormState) => void;
@@ -37,6 +42,8 @@ export function ControlDeck({
   validationError,
   baselineOptions,
   baselineOptionsLoading,
+  diagnosisRuns,
+  diagnosisRunsLoading,
   theoAvailable,
   evaluationAvailable,
   onChange,
@@ -76,8 +83,9 @@ export function ControlDeck({
             name="jobId"
             inputMode="numeric"
             autoComplete="off"
-            placeholder="ENTER ID"
+            placeholder={value.evaluate ? "AUTO" : "ENTER ID"}
             value={value.jobId}
+            disabled={value.evaluate}
             onChange={(event) => update("jobId", event.target.value)}
             aria-describedby={validationError ? "form-error" : undefined}
           />
@@ -109,9 +117,23 @@ export function ControlDeck({
           />
         </label>
 
-        {!value.evaluate && (
-          <label className="field field--baseline">
-            <span>ORIGINAL AGENT</span>
+        <label className="field field--baseline">
+          <span>{value.evaluate ? "DIAGNOSIS RUN" : "ORIGINAL AGENT"}</span>
+          {value.evaluate ? (
+            <select
+              name="diagnosisRunId"
+              value={value.diagnosisRunId}
+              disabled={diagnosisRunsLoading}
+              onChange={(event) => update("diagnosisRunId", event.target.value)}
+            >
+              <option value="">SELECT DIAGNOSIS</option>
+              {diagnosisRuns.map((run) => (
+                <option key={run.runId} value={run.runId}>
+                  {run.jobId} / TURNS {run.startTurn}-{run.endTurn} / {run.findingCount} FOUND
+                </option>
+              ))}
+            </select>
+          ) : (
             <select
               name="baselineSource"
               value={value.baselineSource}
@@ -126,8 +148,8 @@ export function ControlDeck({
                 </option>
               ))}
             </select>
-          </label>
-        )}
+          )}
+        </label>
 
         {!value.evaluate && (
           <label className="field field--mode">
@@ -177,14 +199,33 @@ export function ControlDeck({
           </span>
         </label>
 
+        <label className="switch-control">
+          <input
+            name="useCompactContext"
+            type="checkbox"
+            checked={value.useCompactContext ?? true}
+            onChange={(event) =>
+              update("useCompactContext", event.target.checked)
+            }
+          />
+          <span className="switch-control__track" aria-hidden="true">
+            <span />
+          </span>
+          <span>
+            COMPACT
+            <small>THEO / REPLAY / MAYA</small>
+          </span>
+        </label>
+
         <div className="control-actions">
           <button
             className="execute-button"
             type="submit"
             disabled={
               busy ||
-              !value.callout.trim() ||
-              (!value.evaluate && !value.expectedBehavior.trim())
+              (value.evaluate
+                ? !value.diagnosisRunId
+                : !value.callout.trim() || !value.expectedBehavior.trim())
             }
           >
             <span>{busy ? "RUNNING" : "EXECUTE BACKTEST"}</span>
@@ -218,20 +259,18 @@ export function ControlDeck({
           </button>
         </div>
 
-        <label className="field field--callout">
-          <span>{value.evaluate ? "USER QUESTION" : "WHAT SHOULD MAYA JUDGE?"}</span>
-          <textarea
-            name="callout"
-            rows={2}
-            placeholder={
-              value.evaluate
-                ? "Example: Is our agent being polite to the guard?"
-                : "DESCRIBE WHAT WENT WRONG AND WHAT SHOULD IMPROVE"
-            }
-            value={value.callout}
-            onChange={(event) => update("callout", event.target.value)}
-          />
-        </label>
+        {!value.evaluate && (
+          <label className="field field--callout">
+            <span>WHAT SHOULD MAYA JUDGE?</span>
+            <textarea
+              name="callout"
+              rows={2}
+              placeholder="DESCRIBE WHAT WENT WRONG AND WHAT SHOULD IMPROVE"
+              value={value.callout}
+              onChange={(event) => update("callout", event.target.value)}
+            />
+          </label>
+        )}
 
         {!value.evaluate && (
           <label className="field field--callout">
@@ -251,7 +290,7 @@ export function ControlDeck({
       <div className="control-deck__footer">
         <span>
           {value.evaluate
-            ? "EVALUATE LOADS RECORDED OUTPUT AND GRADES IT AGAINST DRAFTED CRITERIA"
+            ? "EVALUATE BACKTESTS THE SELECTED DIAGNOSIS RUN"
             : "BASELINE LOADS RECORDED OUTPUT / NEW AGENT RUNS SELECTED MODE"}
         </span>
         <output id="form-error" className="form-error" aria-live="polite">

@@ -6,4 +6,5 @@ export class SimulateCopilotDto {
   promptVersion?: string;
   callNiko?: boolean;
   debug?: boolean;
+  useCompactContext?: boolean;
 }

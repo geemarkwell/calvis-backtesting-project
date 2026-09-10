@@ -67,6 +67,23 @@ function validDiagnosis(): TheoDiagnosis {
     },
     hypothesis:
       'Clarifying how to handle credible reports and contradictory evidence should prevent unsupported repeated pushback.',
+    candidate: {
+      kind: 'prompt',
+      summary: 'Clarify credible guard completion reports in obligation handling.',
+      rationale:
+        'The trace suggests the agent needed clearer prompt priority for credible reports versus contradictory evidence.',
+      expected_behavior: request.expectedBehavior,
+      validation_plan: ['Replay the selected turns and ask Maya whether repeated pushback stopped.'],
+      risks: ['Weak reports could be accepted without sufficient scrutiny.'],
+      prompt_edit: {
+        file: 'core/obligations.md',
+        old_text: oldText,
+        new_text:
+          'If the guard gives a credible answer, the ask is done. Ack it and close the loop unless stronger, current evidence directly contradicts the report.',
+        intended_effect:
+          'Stop repeated follow-up while preserving evidence-backed intervention.',
+      },
+    },
     proposed_edit: {
       file: 'core/obligations.md',
       old_text: oldText,
@@ -106,6 +123,34 @@ describe('Theo runner', () => {
     expect(message).toContain(request.whatWentWrong);
   });
 
+  it('omits raw trace and truncates huge shift instructions in compact Theo messages', () => {
+    const message = buildTheoDiagnosticMessage({
+      whatWentWrong: request.whatWentWrong,
+      badResponses: [
+        {
+          jobId: '56370',
+          startTurn: 1,
+          endTurn: 2,
+          trace: [{ ref: 'job:56370:baseline:1', content: 'raw trace' }],
+          compactContext: { summary: 'compact evidence' },
+        },
+      ],
+      shifts: [
+        {
+          jobId: '56370',
+          shift: {
+            instructions: { content: 'x'.repeat(10_000) },
+          },
+        },
+      ],
+    });
+
+    expect(message).toContain('"trace": []');
+    expect(message).not.toContain('raw trace');
+    expect(message).toContain('truncated for compact Theo context');
+    expect(message).not.toContain('x'.repeat(5_000));
+  });
+
   it('runs one validated diagnosis and writes the Theo artifacts', async () => {
     const generateDiagnosis = jest.fn(() => Promise.resolve(validDiagnosis()));
     const result = await runTheo(
@@ -122,7 +167,9 @@ describe('Theo runner', () => {
     expect(generateDiagnosis).toHaveBeenCalledTimes(1);
     expect(result.diagnosis.job_ids).toEqual(['56370']);
     expect(await readdir(result.artifactDirectory)).toEqual([
+      'backtest-record.json',
       'candidate-version.json',
+      'candidate.json',
       'diagnosis.json',
       'diagnostic-input.json',
       'episode.json',
@@ -130,6 +177,9 @@ describe('Theo runner', () => {
       'prompt.diff',
       'proposed-edit.json',
     ]);
+    expect(result.canReplay).toBe(true);
+    expect(result.candidate.kind).toBe('prompt');
+    expect(result.backtestRecord.canReplay).toBe(true);
     expect(result.candidatePromptVersion).toBe('0.1');
     expect(result.candidatePromptJobId).toBe('56370');
     expect(result.candidatePromptRoot).toBe(
@@ -140,12 +190,12 @@ describe('Theo runner', () => {
       'utf8',
     );
     const candidatePrompt = await readFile(
-      resolve(result.candidatePromptRoot, 'core', 'obligations.md'),
+      resolve(result.candidatePromptRoot!, 'core', 'obligations.md'),
       'utf8',
     );
     expect(originalPrompt).toContain(oldText);
     expect(candidatePrompt).not.toContain(oldText);
-    expect(candidatePrompt).toContain(validDiagnosis().proposed_edit.new_text);
+    expect(candidatePrompt).toContain(validDiagnosis().proposed_edit!.new_text);
     const savedCandidateVersion = JSON.parse(
       await readFile(
         resolve(result.artifactDirectory, 'candidate-version.json'),
@@ -171,6 +221,44 @@ describe('Theo runner', () => {
     expect(
       normalizedTrace.some((entry) => entry.ref === 'job:56370:events:714'),
     ).toBe(true);
+  });
+
+  it('saves a manual backtest record for a non-prompt candidate', async () => {
+    const nonPrompt = {
+      ...validDiagnosis(),
+      prompt_diagnosis: undefined,
+      proposed_edit: undefined,
+      candidate: {
+        kind: 'tool' as const,
+        summary: 'Add a purpose-built patrol verification read.',
+        rationale: 'The trace suggests available tools could not verify the claim directly.',
+        expected_behavior: request.expectedBehavior,
+        validation_plan: ['Add the tool, rerun the selected window, and judge with Maya.'],
+        risks: ['Tool data could be incomplete.'],
+      },
+    };
+    const result = await runTheo(
+      {
+        request,
+        bundleRoot,
+        runsRoot,
+        promptVersionsRoot,
+        runId: 'non-prompt-candidate',
+      },
+      { generateDiagnosis: () => Promise.resolve(nonPrompt) },
+    );
+
+    expect(result.canReplay).toBe(false);
+    expect(result.candidate.kind).toBe('tool');
+    expect(result.candidatePromptVersion).toBeUndefined();
+    expect(await readdir(result.artifactDirectory)).toEqual([
+      'backtest-record.json',
+      'candidate.json',
+      'diagnosis.json',
+      'diagnostic-input.json',
+      'episode.json',
+      'normalized-trace.json',
+    ]);
   });
 
   it('stops after an invalid diagnosis without writing validated outputs', async () => {

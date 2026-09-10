@@ -1,5 +1,20 @@
-jest.mock('../mastra/agents/diagnose-agent', () => ({
-  diagnoseAgent: { generate: jest.fn() },
+jest.mock('../mastra/agents/context-evaluator-agent', () => ({
+  contextEvaluatorAgent: { generate: jest.fn() },
+}));
+jest.mock('../mastra/agents/safety-recovery-evaluator-agent', () => ({
+  safetyRecoveryEvaluatorAgent: { generate: jest.fn() },
+}));
+jest.mock('../mastra/agents/task-success-evaluator-agent', () => ({
+  taskSuccessEvaluatorAgent: { generate: jest.fn() },
+}));
+jest.mock('../mastra/agents/tool-use-evaluator-agent', () => ({
+  toolUseEvaluatorAgent: { generate: jest.fn() },
+}));
+jest.mock('../mastra/agents/free-agent-evaluator-agent', () => ({
+  freeAgentEvaluatorAgent: { generate: jest.fn() },
+}));
+jest.mock('../mastra/agents/prompt-issue-evaluator-agent', () => ({
+  promptIssueEvaluatorAgent: { generate: jest.fn() },
 }));
 
 import { mkdtemp, readFile, rm } from 'node:fs/promises';
@@ -38,33 +53,68 @@ describe('diagnose runner', () => {
       endTurn: 9,
       shift: { id: '56370' },
       deterministicPatterns: [],
+      lenses: [],
       trace: [],
       intervalEvents: [],
     });
 
     expect(message).toContain('<diagnose_input>');
     expect(message).toContain('untrusted evidence data');
+    expect(message).toContain('Lens focus areas');
+    expect(message).toContain('Stay out of scope');
   });
 
-  it('returns LLM findings and writes artifacts', async () => {
+  it('returns specialized LLM findings and writes artifacts', async () => {
+    const generateFindings = jest
+      .fn()
+      .mockResolvedValueOnce({ summary: 'Task issue found.', findings: [finding] })
+      .mockResolvedValue({ summary: 'No issue found.', findings: [] });
     const result = await runDiagnose(
       {
         request: { jobId: '56370', startTurn: 9, endTurn: 9 },
         runsRoot,
         runId: 'diagnose-unit-test',
       },
-      {
-        generateFindings: jest.fn().mockResolvedValue({
-          summary: 'The LLM found one issue.',
-          findings: [finding],
-        }),
-      },
+      { generateFindings },
     );
 
-    expect(result.summary).toBe('The LLM found one issue.');
-    expect(result.llmFindings).toEqual([finding]);
+    expect(generateFindings).toHaveBeenCalledTimes(6);
+    expect(result.lenses).toHaveLength(6);
+    expect(result.evaluatorReports).toHaveLength(6);
+    expect(result.evaluatorReports[0].lens?.id).toBe('task-success');
+    expect(result.llmFindings).toEqual([
+      expect.objectContaining({
+        ...finding,
+        expectedBehavior: expect.stringContaining(finding.suggestedFix),
+      }),
+    ]);
     await expect(
       readFile(join(result.artifactDirectory, 'llm-findings.json'), 'utf8'),
     ).resolves.toContain('llm-tool-loop');
+  });
+
+  it('runs only explicitly selected lenses', async () => {
+    const generateFindings = jest
+      .fn()
+      .mockResolvedValue({ summary: 'No issue found.', findings: [] });
+    const result = await runDiagnose(
+      {
+        request: {
+          jobId: '56370',
+          startTurn: 9,
+          endTurn: 9,
+          lensIds: ['tool-use'],
+        },
+        runsRoot,
+        runId: 'diagnose-lens-subset-test',
+      },
+      { generateFindings },
+    );
+
+    expect(generateFindings).toHaveBeenCalledTimes(1);
+    expect(result.lenses.map((lens) => lens.id)).toEqual(['tool-use']);
+    expect(result.evaluatorReports.map((report) => report.evaluatorId)).toEqual([
+      'tool-use',
+    ]);
   });
 });

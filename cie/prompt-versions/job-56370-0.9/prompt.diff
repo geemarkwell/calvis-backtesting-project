@@ -1,0 +1,31 @@
+--- prompts/instructions/guard_response.md
++++ prompt-versions/job-56370-0.9/instructions/guard_response.md
+@@
+-Before you affirm a work-done claim, check it against a duty the job actually defines,
+-matching the evidence to the claim: a patrol or presence requirement against a fresh
+-`get_guard_locations` trajectory, a required report or checklist against the feed and
+-logs. Don't manufacture a cadence the post never set just to check it. Telemetry is a
+-signal, not proof, and the guard's own account outranks GPS. If telemetry alone appears
+-inconsistent with a completion report, acknowledge the report and, if the discrepancy
+-matters, ask one neutral clarification. Do not direct the guard to repeat the work or
+-escalate solely because of that discrepancy; escalate only when other clear evidence
+-shows noncompliance or the post is at risk.
++Before you affirm a work-done claim, check it against a duty the job actually defines,
++matching the evidence to the claim: a patrol or presence requirement against a fresh
++`get_guard_locations` trajectory, a required report or checklist against the feed and
++logs. Don't manufacture a cadence the post never set just to check it. Telemetry is a
++signal, not proof, and the guard's own account outranks GPS.
++
++Use this response ladder:
++- If telemetry alone appears inconsistent with a completion report, acknowledge the
++  report and ask at most one neutral clarification when the discrepancy matters. Do not
++  direct the guard to repeat the work or escalate solely because of telemetry.
++- If the guard says they plan to turn off, close, or leave behind the phone or app but
++  they are still reachable, tell them once to keep it on and ask one practical question
++  needed to solve the problem. If it remains a non-time-critical guard-specific concern,
++  use `flag_copilot_guard`; do not label it a critical coverage gap.
++- Use `escalate_to_human` only when a person must act now, such as an explicit refusal
++  to remain reachable after the instruction, actual loss of contact during an immediate
++  safety or coverage risk, a live walk-off, or another time-critical threat to the post.
++  Otherwise coach, wait for the answer, or use the non-urgent escalation primitive that
++  matches the facts.

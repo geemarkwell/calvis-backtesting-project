@@ -9,6 +9,7 @@ export interface SimulationRequest {
   promptVersion?: string;
   debug: boolean;
   callNiko: boolean;
+  useCompactContext: boolean;
 }
 
 export interface BacktestRequest extends SimulationRequest {
@@ -105,6 +106,98 @@ export interface SavedTestFailure {
   suggestedFix: TestEvaluationVerdict["suggestedFix"];
   failedCriteria: Array<TestEvaluationCriterionResult & { status: "fail" }>;
   artifactDirectory: string;
+}
+
+export type DiagnoseLensId =
+  | "task-success"
+  | "tool-use"
+  | "context"
+  | "safety-recovery"
+  | "prompt-issue"
+  | "free-agent";
+
+export interface DiagnoseLens {
+  id: DiagnoseLensId;
+  name: string;
+  description: string;
+  focusAreas: string[];
+  exclusions: string[];
+}
+
+export interface DiagnoseEvidence {
+  ref: string;
+  turn?: number;
+  timestamp?: string;
+  summary: string;
+}
+
+export interface DiagnosePattern {
+  id: string;
+  title: string;
+  category: string;
+  severity: "critical" | "high" | "medium" | "low";
+  confidence: number;
+  diagnosis: string;
+  likelyCause: string;
+  suggestedFix: string;
+  expectedBehavior?: string;
+  evidence: DiagnoseEvidence[];
+}
+
+export interface DiagnoseEvaluatorReport {
+  evaluatorId: DiagnoseLensId;
+  evaluatorName: string;
+  summary: string;
+  findings: DiagnosePattern[];
+  lens?: DiagnoseLens;
+}
+
+export interface DiagnoseToolCall {
+  ref: string;
+  tool: string;
+  turn?: number;
+  timestamp?: string;
+  ok?: boolean | null;
+  error?: string | null;
+  inputPreview: string;
+  outputPreview?: string;
+}
+
+export interface DiagnoseToolSummary {
+  tool: string;
+  count: number;
+  failures: number;
+}
+
+export interface DiagnoseRunSummary {
+  runId: string;
+  artifactDirectory: string;
+  jobId: string;
+  startTurn: number;
+  endTurn: number;
+  summary: string;
+  findingCount: number;
+  createdAt?: string;
+}
+
+export interface DiagnoseRunsResponse {
+  runs: DiagnoseRunSummary[];
+}
+
+export interface DiagnoseResponse {
+  runId: string;
+  artifactDirectory: string;
+  jobId: string;
+  startTurn: number;
+  endTurn: number;
+  summary: string;
+  lenses: DiagnoseLens[];
+  patterns: DiagnosePattern[];
+  llmFindings: DiagnosePattern[];
+  evaluatorReports: DiagnoseEvaluatorReport[];
+  toolCalls: DiagnoseToolCall[];
+  toolSummary: DiagnoseToolSummary[];
+  noFindings: boolean;
 }
 
 export interface OriginalRequest {
@@ -230,6 +323,13 @@ export interface TheoRequest {
   whatWentWrong: string;
   badResponses: TheoContext[];
   expectedBehavior: string;
+  diagnosisContext?: {
+    diagnosisRunId?: string;
+    patternId: string;
+    diagnosis: string;
+    likelyCause: string;
+    suggestedFix: string;
+  };
 }
 
 export interface TheoPromptChange {
@@ -237,6 +337,26 @@ export interface TheoPromptChange {
   old_text: string;
   new_text: string;
   intended_effect: string;
+}
+
+export type CandidateKind =
+  | "prompt"
+  | "tool"
+  | "context"
+  | "workflow"
+  | "safety"
+  | "code"
+  | "test"
+  | "unknown";
+
+export interface TheoCandidate {
+  kind: CandidateKind;
+  summary: string;
+  rationale: string;
+  expected_behavior: string;
+  validation_plan: string[];
+  risks: string[];
+  prompt_edit?: TheoPromptChange;
 }
 
 export interface TheoDiagnosis {
@@ -254,12 +374,13 @@ export interface TheoDiagnosis {
     trace_refs: string[];
   }>;
   expected_behavior: string;
-  relevant_turns: Array<{
+  candidate: TheoCandidate;
+  relevant_turns?: Array<{
     turn_ref: string;
     trigger: string;
     instruction_file: string;
   }>;
-  prompt_diagnosis: {
+  prompt_diagnosis?: {
     file: string;
     section: string;
     exact_text: string;
@@ -272,7 +393,7 @@ export interface TheoDiagnosis {
     explanation: string;
   };
   hypothesis: string;
-  proposed_edit: TheoPromptChange;
+  proposed_edit?: TheoPromptChange;
   risks: string[];
   confidence: number;
   uncertainties: string[];
@@ -281,11 +402,24 @@ export interface TheoDiagnosis {
 export interface TheoResponse {
   runId: string;
   artifactDirectory: string;
-  candidatePromptJobId: string;
-  candidatePromptVersion: string;
-  candidatePromptRoot: string;
+  candidatePromptJobId?: string;
+  candidatePromptVersion?: string;
+  candidatePromptRoot?: string;
   diagnosis: TheoDiagnosis;
-  suggestedPromptChange: TheoPromptChange;
+  candidate: TheoCandidate;
+  canReplay: boolean;
+  backtestRecord: {
+    runId: string;
+    createdAt: string;
+    candidateKind: CandidateKind;
+    canReplay: boolean;
+    jobId: string;
+    startTurn: number;
+    endTurn: number;
+    expectedBehavior: string;
+    candidate: TheoCandidate;
+  };
+  suggestedPromptChange: TheoPromptChange | null;
 }
 
 export interface CandidateEvaluation {

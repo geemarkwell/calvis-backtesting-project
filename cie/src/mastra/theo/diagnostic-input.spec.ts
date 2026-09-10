@@ -92,7 +92,7 @@ describe('Theo diagnostic input', () => {
     );
   });
 
-  it('loads only requested turns and complete stable prompt surface', async () => {
+  it('loads only requested turns, core system prompt, and trace-used instructions', async () => {
     const input = await loadDiagnosticInput({
       request: {
         whatWentWrong: 'Copilot pushed back repeatedly.',
@@ -109,21 +109,13 @@ describe('Theo diagnostic input', () => {
       endTurn: 16,
     });
     expect(Object.keys(input.promptFiles)).toEqual([
-      'PROMPTS.md',
       'core/comms_policy.md',
       'core/context.md',
       'core/holding_the_post.md',
       'core/identity.md',
       'core/obligations.md',
       'core/tools.md',
-      'instructions/approval_decision.md',
-      'instructions/default.md',
       'instructions/guard_response.md',
-      'instructions/job_event.md',
-      'instructions/obligation_due.md',
-      'instructions/operator_message.md',
-      'instructions/scheduled_check_in.md',
-      'instructions/session_start.md',
     ]);
     expect(
       input.badResponses[0].trace.every((entry) =>

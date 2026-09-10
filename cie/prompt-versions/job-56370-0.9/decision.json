@@ -1,0 +1,15 @@
+{
+  "jobId": "56370",
+  "version": "0.9",
+  "status": "pending",
+  "createdAt": "2026-09-10T21:33:28.185Z",
+  "decidedAt": null,
+  "evaluation": {
+    "runId": "maya-56370-10",
+    "judgedAt": "2026-09-10T21:42:25.046Z",
+    "fixed": true,
+    "verdict": "yes",
+    "confidence": 88,
+    "summary": "The candidate removed the called-out human-intervention pattern. The old replay made three escalations, including immediate escalation on the failed uniform check and later human escalation during phone/patrol ambiguity. The candidate made zero escalations and instead coached, requested confirmation or evidence, and recorded non-escalation notes."
+  }
+}

@@ -48,6 +48,7 @@ describe('MayaJudgmentService', () => {
       callout: 'Copilot pushed too hard.',
       oldReplay,
       candidateReplay,
+      useCompactContext: true,
     });
   });
 

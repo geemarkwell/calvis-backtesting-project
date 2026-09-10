@@ -2,13 +2,11 @@
 
 import { useEffect, useRef, useState, type UIEvent } from "react";
 import {
-  draftTestCriteria,
+  getDiagnosisRun,
   getOriginalCopilot,
+  listDiagnosisRuns,
   listOriginalSources,
   runCopilotBacktest,
-  runTestEvaluation,
-  saveFailedEvaluation,
-  saveTestSpec,
 } from "./api";
 import { ControlDeck, type BacktestFormState } from "./components/ControlDeck";
 import { ChatPanel } from "./components/ChatPanel";
@@ -18,12 +16,13 @@ import { TheoPanel } from "./components/TheoPanel";
 import type {
   BacktestResponse,
   BacktestRequest,
+  DiagnoseResponse,
+  DiagnoseRunSummary,
   PanelState,
   OriginalRequest,
   OriginalSourceOption,
   SimulationRequest,
   SimulationResponse,
-  TestEvaluationResponse,
   TheoContext,
 } from "./types";
 
@@ -37,6 +36,16 @@ const DEFAULT_BASELINE_OPTIONS: OriginalSourceOption[] = [
   { id: "shift", source: "shift", label: "Recorded shift" },
 ];
 
+type DiagnosisFinding =
+  | DiagnoseResponse["llmFindings"][number]
+  | DiagnoseResponse["patterns"][number];
+
+interface DiagnosisBacktestTargetResult {
+  findingId: string;
+  findingTitle: string;
+  result: BacktestResponse;
+}
+
 const INITIAL_FORM: BacktestFormState = {
   jobId: "",
   callout: "",
@@ -44,10 +53,12 @@ const INITIAL_FORM: BacktestFormState = {
   startTurn: "",
   endTurn: "",
   baselineSource: "shift",
+  diagnosisRunId: "",
   replayMode: "candidate",
   debug: false,
   evaluate: false,
   callNiko: false,
+  useCompactContext: true,
 };
 
 export default function BacktestConsole() {
@@ -62,12 +73,24 @@ export default function BacktestConsole() {
     DEFAULT_BASELINE_OPTIONS,
   );
   const [baselineOptionsLoading, setBaselineOptionsLoading] = useState(false);
+  const [diagnosisRuns, setDiagnosisRuns] = useState<DiagnoseRunSummary[]>([]);
+  const [diagnosisRunsLoading, setDiagnosisRunsLoading] = useState(false);
   const [backtestResult, setBacktestResult] = useState<BacktestResponse | null>(
     null,
   );
-  const [evaluationResult, setEvaluationResult] =
-    useState<TestEvaluationResponse | null>(null);
-  const [savedFailureId, setSavedFailureId] = useState<string | null>(null);
+  const [diagnosisBacktestResults, setDiagnosisBacktestResults] = useState<
+    DiagnosisBacktestTargetResult[]
+  >([]);
+  const [diagnosisResult, setDiagnosisResult] = useState<DiagnoseResponse | null>(
+    null,
+  );
+  const [selectedDiagnosisPreview, setSelectedDiagnosisPreview] =
+    useState<DiagnoseResponse | null>(null);
+  const [selectedDiagnosisLoading, setSelectedDiagnosisLoading] = useState(false);
+  const [selectedDiagnosisError, setSelectedDiagnosisError] = useState<string | null>(
+    null,
+  );
+  const [selectedDiagnosisFindingId, setSelectedDiagnosisFindingId] = useState<string>("");
   const requestRef = useRef<AbortController | null>(null);
   const originalScrollRef = useRef<HTMLDivElement>(null);
   const comparisonScrollRef = useRef<HTMLDivElement>(null);
@@ -77,6 +100,69 @@ export default function BacktestConsole() {
   const theoContext = contextFromSimulation(comparison.data);
   const theoCallout = form.callout.trim() || null;
   const evaluationJobId = /^\d+$/.test(jobId.trim()) ? jobId.trim() : null;
+
+  useEffect(() => {
+    const controller = new AbortController();
+    setDiagnosisRunsLoading(true);
+    void listDiagnosisRuns(controller.signal)
+      .then((result) => setDiagnosisRuns(result.runs))
+      .catch(() => setDiagnosisRuns([]))
+      .finally(() => {
+        if (!controller.signal.aborted) setDiagnosisRunsLoading(false);
+      });
+    return () => controller.abort();
+  }, []);
+
+  useEffect(() => {
+    if (!form.evaluate || !form.diagnosisRunId) {
+      setSelectedDiagnosisPreview(null);
+      setSelectedDiagnosisError(null);
+      setSelectedDiagnosisLoading(false);
+      setSelectedDiagnosisFindingId("");
+      return;
+    }
+
+    const controller = new AbortController();
+    setSelectedDiagnosisLoading(true);
+    setSelectedDiagnosisError(null);
+    void getDiagnosisRun(form.diagnosisRunId, controller.signal)
+      .then((run) => {
+        if (!controller.signal.aborted) {
+          setSelectedDiagnosisPreview(run);
+          setSelectedDiagnosisFindingId("");
+        }
+      })
+      .catch((error: unknown) => {
+        if (!controller.signal.aborted) {
+          setSelectedDiagnosisPreview(null);
+          setSelectedDiagnosisError(error instanceof Error ? error.message : String(error));
+        }
+      })
+      .finally(() => {
+        if (!controller.signal.aborted) {
+          setSelectedDiagnosisLoading(false);
+        }
+      });
+
+    return () => controller.abort();
+  }, [form.evaluate, form.diagnosisRunId]);
+
+  useEffect(() => {
+    const selected = diagnosisRuns.find((run) => run.runId === form.diagnosisRunId);
+    if (!selected) return;
+    setForm((current) =>
+      current.jobId === selected.jobId &&
+      current.startTurn === String(selected.startTurn) &&
+      current.endTurn === String(selected.endTurn)
+        ? current
+        : {
+            ...current,
+            jobId: selected.jobId,
+            startTurn: String(selected.startTurn),
+            endTurn: String(selected.endTurn),
+          },
+    );
+  }, [diagnosisRuns, form.diagnosisRunId]);
 
   useEffect(() => {
     const coordinates = sourceCoordinates(jobId, startTurn, endTurn);
@@ -142,6 +228,7 @@ export default function BacktestConsole() {
       baselineSource: "shift",
     });
     setBacktestResult(null);
+    setDiagnosisBacktestResults([]);
     setBaselineOptions(DEFAULT_BASELINE_OPTIONS);
     setBaselineOptionsLoading(
       Boolean(sourceCoordinates(next.jobId, next.startTurn, next.endTurn)),
@@ -149,7 +236,10 @@ export default function BacktestConsole() {
   }
 
   async function executeBacktest() {
-    const parsed = parseForm(form);
+    const selectedDiagnosisRun = diagnosisRuns.find(
+      (run) => run.runId === form.diagnosisRunId,
+    );
+    const parsed = parseForm(form, selectedDiagnosisRun);
     if (typeof parsed === "string") {
       setValidationError(parsed);
       return;
@@ -160,32 +250,54 @@ export default function BacktestConsole() {
     requestRef.current = controller;
     setValidationError(null);
     setBacktestResult(null);
-    setEvaluationResult(null);
-    setSavedFailureId(null);
+    setDiagnosisBacktestResults([]);
+    setDiagnosisResult(null);
 
     if (form.evaluate) {
+      setOriginal({ status: "loading", data: null, error: null });
       setComparison({ status: "loading", data: null, error: null });
       try {
-        const draft = await draftTestCriteria(parsed.callout, controller.signal);
-        const savedSpec = await saveTestSpec(draft.testSpec, controller.signal);
-        const result = await runTestEvaluation(
-          {
-            testSpecId: savedSpec.id,
-            jobId: parsed.simulation.jobId,
-            startTurn: parsed.simulation.startTurn,
-            endTurn: parsed.simulation.endTurn,
-          },
+        const diagnosis = await getDiagnosisRun(
+          form.diagnosisRunId,
+          controller.signal,
+        );
+        const findings = allDiagnosisFindings(diagnosis);
+        const finding = findings.find(
+          (item) => item.id === selectedDiagnosisFindingId,
+        );
+        if (!finding) {
+          throw new Error("SELECT ONE DIAGNOSIS TARGET TO BACKTEST.");
+        }
+        const result = await runCopilotBacktest(
+          diagnosisBacktestRequest(parsed.simulation, finding),
           controller.signal,
         );
         if (controller.signal.aborted) {
           return;
         }
-        setEvaluationResult(result);
-        setComparison({ status: "success", data: null, error: null });
+        setDiagnosisResult(diagnosis);
+        setDiagnosisBacktestResults([
+          {
+            findingId: finding.id,
+            findingTitle: finding.title,
+            result,
+          },
+        ]);
+        setBacktestResult(result);
+        setOriginal({ status: "success", data: result.oldReplay, error: null });
+        setComparison({
+          status: "success",
+          data: result.candidateReplay,
+          error: null,
+        });
+        setValidationError(
+          result.mayaError ? `MAYA JUDGMENT FAILED FOR ${finding.id}` : null,
+        );
       } catch (error: unknown) {
         if (!controller.signal.aborted) {
           const message = error instanceof Error ? error.message : String(error);
           setComparison({ status: "error", data: null, error: message });
+          setOriginal(IDLE_PANEL);
         }
       }
       return;
@@ -306,6 +418,8 @@ export default function BacktestConsole() {
           validationError={validationError}
           baselineOptions={baselineOptions}
           baselineOptionsLoading={baselineOptionsLoading}
+          diagnosisRuns={diagnosisRuns}
+          diagnosisRunsLoading={diagnosisRunsLoading}
           theoAvailable={theoContext !== null}
           evaluationAvailable={evaluationJobId !== null}
           onChange={updateForm}
@@ -314,44 +428,94 @@ export default function BacktestConsole() {
           onEvaluation={() => setView("evaluation")}
         />
 
-        {form.evaluate ? (
-          <BehaviorEvaluationResult
-            state={comparison}
-            result={evaluationResult}
-            savedFailureId={savedFailureId}
-            onSaved={setSavedFailureId}
+        {form.evaluate && (
+          <TheoParamsPreview
+            diagnosis={selectedDiagnosisPreview}
+            loading={selectedDiagnosisLoading}
+            error={selectedDiagnosisError}
+            selectedFindingId={selectedDiagnosisFindingId}
+            replayStartTurn={form.startTurn}
+            replayEndTurn={form.endTurn}
+            onSelectFinding={(findingId) => {
+              setSelectedDiagnosisFindingId(findingId);
+              setDiagnosisBacktestResults([]);
+              setBacktestResult(null);
+              setDiagnosisResult(null);
+              setOriginal(IDLE_PANEL);
+              setComparison(IDLE_PANEL);
+            }}
           />
-        ) : (
-          <section className="comparison-grid">
-            <ChatPanel
-              title="Original agent"
-              state={original}
-              scrollRef={originalScrollRef}
-              onScroll={(event) =>
-                synchronizeScroll(event, comparisonScrollRef.current)
-              }
-            />
-            <ChatPanel
-              title="New agent"
-              state={comparison}
-              scrollRef={comparisonScrollRef}
-              onScroll={(event) =>
-                synchronizeScroll(event, originalScrollRef.current)
-              }
-            />
-          </section>
         )}
 
-        {!form.evaluate && backtestResult && (
-          <CandidateReview
-            result={backtestResult}
-            onDecision={(decision) =>
-              setBacktestResult((current) =>
-                current ? { ...current, candidateDecision: decision } : current,
-              )
+        {form.evaluate && (
+          <DiagnosisBacktestResult state={comparison} result={diagnosisResult} />
+        )}
+
+        <section className="comparison-grid">
+          <ChatPanel
+            title="Original agent"
+            state={original}
+            scrollRef={originalScrollRef}
+            onScroll={(event) =>
+              synchronizeScroll(event, comparisonScrollRef.current)
             }
           />
-        )}
+          <ChatPanel
+            title="New agent"
+            state={comparison}
+            scrollRef={comparisonScrollRef}
+            onScroll={(event) =>
+              synchronizeScroll(event, originalScrollRef.current)
+            }
+          />
+        </section>
+
+        {form.evaluate
+          ? diagnosisBacktestResults.map((target) => (
+              <section key={target.findingId} className="candidate-review">
+                <header>
+                  <div>
+                    <span className="candidate-review__kicker">MAYA TARGET</span>
+                    <h2>{target.findingId}</h2>
+                  </div>
+                  <strong data-status={target.result.maya?.verdict.fixed ? "accepted" : "rejected"}>
+                    {target.result.maya?.verdict.fixed ? "FIXED" : "REVIEW"}
+                  </strong>
+                </header>
+                <div className="candidate-review__grid">
+                  <section>
+                    <span>PATTERN</span>
+                    <h3>{target.findingTitle}</h3>
+                    <p>{target.result.maya?.verdict.summary ?? target.result.mayaError}</p>
+                  </section>
+                </div>
+                <CandidateReview
+                  result={target.result}
+                  onDecision={(decision) =>
+                    setDiagnosisBacktestResults((current) =>
+                      current.map((item) =>
+                        item.findingId === target.findingId
+                          ? {
+                              ...item,
+                              result: { ...item.result, candidateDecision: decision },
+                            }
+                          : item,
+                      ),
+                    )
+                  }
+                />
+              </section>
+            ))
+          : backtestResult && (
+              <CandidateReview
+                result={backtestResult}
+                onDecision={(decision) =>
+                  setBacktestResult((current) =>
+                    current ? { ...current, candidateDecision: decision } : current,
+                  )
+                }
+              />
+            )}
       </div>
 
       {theoContext && (
@@ -382,41 +546,132 @@ export default function BacktestConsole() {
   );
 }
 
-function BehaviorEvaluationResult({
-  state,
-  result,
-  savedFailureId,
-  onSaved,
+function TheoParamsPreview({
+  diagnosis,
+  loading,
+  error,
+  selectedFindingId,
+  replayStartTurn,
+  replayEndTurn,
+  onSelectFinding,
 }: {
-  state: PanelState;
-  result: TestEvaluationResponse | null;
-  savedFailureId: string | null;
-  onSaved: (id: string) => void;
+  diagnosis: DiagnoseResponse | null;
+  loading: boolean;
+  error: string | null;
+  selectedFindingId: string;
+  replayStartTurn: string;
+  replayEndTurn: string;
+  onSelectFinding: (findingId: string) => void;
 }) {
-  const [savingFailure, setSavingFailure] = useState(false);
-  const [saveError, setSaveError] = useState<string | null>(null);
+  const findings = diagnosis ? allDiagnosisFindings(diagnosis) : [];
 
-  async function saveFailure() {
-    if (!result || result.verdict.passed || savingFailure || savedFailureId) {
-      return;
-    }
-    setSavingFailure(true);
-    setSaveError(null);
-    try {
-      const saved = await saveFailedEvaluation(result);
-      onSaved(saved.id);
-    } catch (error: unknown) {
-      setSaveError(error instanceof Error ? error.message : String(error));
-    } finally {
-      setSavingFailure(false);
-    }
-  }
-  if (state.status === "idle") {
+  if (loading) {
     return (
-      <section className="candidate-review" aria-label="Behavior evaluation">
+      <section className="candidate-review" aria-label="Theo params preview">
         <header>
           <div>
-            <span className="candidate-review__kicker">BEHAVIOUR EVALUATION</span>
+            <span className="candidate-review__kicker">THEO PARAMS</span>
+            <h2>LOADING</h2>
+          </div>
+        </header>
+      </section>
+    );
+  }
+
+  if (error) {
+    return (
+      <section className="candidate-review" aria-label="Theo params preview">
+        <header>
+          <div>
+            <span className="candidate-review__kicker">THEO PARAMS</span>
+            <h2>FAILED</h2>
+          </div>
+          <strong data-status="rejected">ERROR</strong>
+        </header>
+        <p className="candidate-review__error" role="alert">{error}</p>
+      </section>
+    );
+  }
+
+  if (!diagnosis || findings.length === 0) {
+    return null;
+  }
+
+  const expectedBehavior = expectedBehaviorForDiagnosis(diagnosis);
+
+  return (
+    <section className="candidate-review" aria-label="Theo params preview">
+      <header>
+        <div>
+          <span className="candidate-review__kicker">THEO PARAMS</span>
+          <h2>
+            JOB {diagnosis.jobId} / REPLAY TURNS {replayStartTurn || "—"}-{replayEndTurn || "—"}
+          </h2>
+        </div>
+        <strong data-status="rejected">SELECTED</strong>
+      </header>
+      <div className="candidate-review__grid">
+        <section>
+          <span>PATTERNS</span>
+          <h3>{findings.length} TARGET{findings.length === 1 ? "" : "S"}</h3>
+          <p>Pick one target to run. Each target gets its own Maya evaluation.</p>
+        </section>
+        <section>
+          <span>EXPECTED BEHAVIOUR</span>
+          <h3>MAYA TARGET</h3>
+          <p>{expectedBehavior}</p>
+        </section>
+      </div>
+      <div className="candidate-review__change">
+        <small>THEO WILL RECEIVE</small>
+        <div>
+          {findings.map((finding) => (
+            <section key={finding.id}>
+              <span>{selectedFindingId === finding.id ? "SELECTED" : finding.id}</span>
+              <p>
+                <strong>{finding.title}</strong>
+                <br />
+                Diagnosis: {finding.diagnosis}
+                <br />
+                Maya target: {expectedBehaviorForFinding(finding)}
+              </p>
+              <small>
+                Fix: {finding.suggestedFix}
+                {finding.evidence.length > 0
+                  ? ` / Evidence: ${finding.evidence.map((item) => item.ref).join(" · ")}`
+                  : ""}
+              </small>
+              <div>
+                <button
+                  type="button"
+                  className="candidate-review__accept"
+                  disabled={selectedFindingId === finding.id}
+                  onClick={() => onSelectFinding(finding.id)}
+                >
+                  {selectedFindingId === finding.id ? "TARGET SELECTED" : "SELECT TARGET"}
+                </button>
+              </div>
+            </section>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function DiagnosisBacktestResult({
+  state,
+  result,
+}: {
+  state: PanelState;
+  result: DiagnoseResponse | null;
+}) {
+  if (state.status === "idle") {
+    return (
+      <section className="candidate-review" aria-label="Diagnosis backtest">
+        <header>
+          <div>
+            <span className="candidate-review__kicker">DIAGNOSIS</span>
             <h2>READY</h2>
           </div>
         </header>
@@ -424,7 +679,7 @@ function BehaviorEvaluationResult({
           <section>
             <span>STATUS</span>
             <h3>WAITING</h3>
-            <p>Enter a user question and execute the backtest.</p>
+            <p>Select a diagnosis run and execute the backtest.</p>
           </section>
         </div>
       </section>
@@ -433,18 +688,18 @@ function BehaviorEvaluationResult({
 
   if (state.status === "loading") {
     return (
-      <section className="candidate-review" aria-label="Behavior evaluation">
+      <section className="candidate-review" aria-label="Diagnosis backtest">
         <header>
           <div>
-            <span className="candidate-review__kicker">BEHAVIOUR EVALUATION</span>
+            <span className="candidate-review__kicker">DIAGNOSIS</span>
             <h2>RUNNING</h2>
           </div>
         </header>
         <div className="candidate-review__grid">
           <section>
             <span>STATUS</span>
-            <h3>DRAFTING + EVALUATING</h3>
-            <p>Creating criteria, saving the test, and grading the trace.</p>
+            <h3>ANALYZING TRACE</h3>
+            <p>Backtesting the selected diagnosis run against the recorded output.</p>
           </section>
         </div>
       </section>
@@ -453,10 +708,10 @@ function BehaviorEvaluationResult({
 
   if (state.status === "error") {
     return (
-      <section className="candidate-review" aria-label="Behavior evaluation">
+      <section className="candidate-review" aria-label="Diagnosis backtest">
         <header>
           <div>
-            <span className="candidate-review__kicker">BEHAVIOUR EVALUATION</span>
+            <span className="candidate-review__kicker">DIAGNOSIS</span>
             <h2>FAILED</h2>
           </div>
           <strong data-status="rejected">ERROR</strong>
@@ -472,81 +727,68 @@ function BehaviorEvaluationResult({
     return null;
   }
 
+  const findingCount = result.llmFindings.length + result.patterns.length;
+
   return (
-    <section className="candidate-review" aria-label="Behavior evaluation">
+    <section className="candidate-review" aria-label="Diagnosis backtest">
       <header>
         <div>
-          <span className="candidate-review__kicker">BEHAVIOUR EVALUATION</span>
+          <span className="candidate-review__kicker">DIAGNOSIS</span>
           <h2>
             JOB {result.jobId} / TURNS {result.startTurn}-{result.endTurn}
           </h2>
         </div>
-        <strong data-status={result.verdict.passed ? "accepted" : "rejected"}>
-          {result.verdict.verdict.toUpperCase()}
+        <strong data-status={result.noFindings ? "accepted" : "rejected"}>
+          {result.noFindings ? "CLEAR" : `${findingCount} FOUND`}
         </strong>
       </header>
 
       <div className="candidate-review__grid">
         <section>
           <span>RESULT</span>
-          <h3>{result.verdict.passed ? "GOOD" : "BAD"}</h3>
-          <p>{result.verdict.summary}</p>
+          <h3>{result.noFindings ? "CLEAR" : "REVIEW"}</h3>
+          <p>{result.summary}</p>
         </section>
         <section>
-          <span>SUGGESTED FIX</span>
-          <h3>{result.verdict.suggestedFix.category.toUpperCase()}</h3>
-          <p>{result.verdict.suggestedFix.summary}</p>
+          <span>LENS</span>
+          <h3>{result.lenses[0]?.name.toUpperCase() ?? "DIAGNOSIS"}</h3>
+          <p>{result.lenses[0]?.description ?? "Selected diagnosis lens."}</p>
         </section>
       </div>
 
       <div className="candidate-review__change">
-        <small>
-          {result.testSpecId} / confidence {Math.round(result.verdict.confidence * 100)}%
-        </small>
+        <small>{result.runId}</small>
         <div>
-          {result.verdict.criteriaResults.map((criterion) => (
-            <section key={criterion.criterionId}>
-              <span>{criterion.status.toUpperCase()}</span>
+          {result.evaluatorReports.map((report) => (
+            <section key={report.evaluatorId}>
+              <span>
+                {report.findings.length} FINDING
+                {report.findings.length === 1 ? "" : "S"}
+              </span>
               <p>
-                <strong>{criterion.criterionId}</strong>: {criterion.summary}
+                <strong>{report.evaluatorName}</strong>: {report.summary}
               </p>
-              {criterion.evidenceRefs.length > 0 && (
-                <small>{criterion.evidenceRefs.join(", ")}</small>
-              )}
+              {report.findings.map((finding) => (
+                <p key={finding.id}>
+                  <strong>{finding.title}</strong> — {finding.diagnosis}
+                </p>
+              ))}
+            </section>
+          ))}
+          {result.patterns.map((pattern) => (
+            <section key={pattern.id}>
+              <span>{pattern.severity.toUpperCase()}</span>
+              <p>
+                <strong>{pattern.title}</strong>: {pattern.diagnosis}
+              </p>
             </section>
           ))}
         </div>
       </div>
 
       <footer>
-        <p>
-          {savedFailureId
-            ? `Saved failed result: ${savedFailureId}`
-            : result.artifactDirectory}
-        </p>
-        {!result.verdict.passed && (
-          <div>
-            <button
-              type="button"
-              className="candidate-review__reject"
-              disabled={savingFailure || savedFailureId !== null}
-              onClick={() => void saveFailure()}
-            >
-              {savedFailureId
-                ? "FAIL SAVED"
-                : savingFailure
-                  ? "SAVING…"
-                  : "SAVE FAIL"}
-            </button>
-          </div>
-        )}
+        <p>{result.artifactDirectory}</p>
       </footer>
-
-      {saveError && (
-        <p className="candidate-review__error" role="alert">
-          {saveError}
-        </p>
-      )}
     </section>
   );
 }
@@ -600,6 +842,41 @@ function sourceCoordinates(
   return { jobId, startTurn, endTurn };
 }
 
+function allDiagnosisFindings(diagnosis: DiagnoseResponse): DiagnosisFinding[] {
+  return [...diagnosis.llmFindings, ...diagnosis.patterns];
+}
+
+function expectedBehaviorForFinding(finding: DiagnosisFinding): string {
+  return (
+    finding.expectedBehavior?.trim() ||
+    `The candidate should resolve diagnosis ${finding.id}: ${finding.diagnosis}. It should follow this intended fix: ${finding.suggestedFix}`
+  );
+}
+
+function expectedBehaviorForDiagnosis(diagnosis: DiagnoseResponse): string {
+  return allDiagnosisFindings(diagnosis)
+    .map((finding) => `${finding.id}: ${expectedBehaviorForFinding(finding)}`)
+    .join("\n");
+}
+
+function diagnosisBacktestRequest(
+  simulation: SimulationRequest,
+  finding: DiagnosisFinding,
+): BacktestRequest {
+  const callout = [
+    `Diagnosis ${finding.id}: ${finding.diagnosis}`,
+    `Likely cause: ${finding.likelyCause}`,
+    `Suggested fix: ${finding.suggestedFix}`,
+  ].join("\n");
+  return {
+    ...simulation,
+    replayMode: "candidate",
+    callout,
+    expectedBehavior: expectedBehaviorForFinding(finding),
+    baselineSource: "shift",
+  };
+}
+
 function backtestRequest(
   request: ParsedBacktest,
   sourceId: BacktestFormState["baselineSource"],
@@ -641,13 +918,21 @@ interface ParsedBacktest {
   expectedBehavior: string;
 }
 
-function parseForm(form: BacktestFormState): ParsedBacktest | string {
-  const jobId = form.jobId.trim();
+function parseForm(
+  form: BacktestFormState,
+  selectedDiagnosisRun?: DiagnoseRunSummary,
+): ParsedBacktest | string {
+  const jobId = form.evaluate && selectedDiagnosisRun
+    ? selectedDiagnosisRun.jobId
+    : form.jobId.trim();
   const callout = form.callout.trim();
   const expectedBehavior = form.expectedBehavior.trim();
   const startTurn = Number(form.startTurn);
   const endTurn = Number(form.endTurn);
 
+  if (form.evaluate && !selectedDiagnosisRun) {
+    return "SELECT A DIAGNOSIS RUN.";
+  }
   if (!/^\d+$/.test(jobId)) {
     return "JOB ID MUST CONTAIN DIGITS ONLY.";
   }
@@ -660,10 +945,8 @@ function parseForm(form: BacktestFormState): ParsedBacktest | string {
   if (startTurn > endTurn) {
     return "START TURN CANNOT EXCEED END TURN.";
   }
-  if (!callout) {
-    return form.evaluate
-      ? "USER QUESTION IS REQUIRED."
-      : "MAYA CALLOUT IS REQUIRED.";
+  if (!form.evaluate && !callout) {
+    return "MAYA CALLOUT IS REQUIRED.";
   }
   if (!form.evaluate && !expectedBehavior) {
     return "EXPECTED BEHAVIOUR IS REQUIRED.";
@@ -674,14 +957,15 @@ function parseForm(form: BacktestFormState): ParsedBacktest | string {
 
   return {
     callout,
-    expectedBehavior: form.evaluate ? callout : expectedBehavior,
+    expectedBehavior: form.evaluate ? "Diagnosis-derived expected behavior" : expectedBehavior,
     simulation: {
       jobId,
       startTurn,
       endTurn,
-      replayMode: form.replayMode,
+      replayMode: form.evaluate ? "candidate" : form.replayMode,
       debug: form.debug,
       callNiko: form.callNiko,
+      useCompactContext: form.useCompactContext,
     },
   };
 }

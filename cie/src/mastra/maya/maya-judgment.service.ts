@@ -1,4 +1,5 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
+import type { BacktestDebuggingSink } from '../../backtestDebugging/logger';
 import type { CopilotSimulationResponse } from '../../copilot-simulation/copilot-simulation.types';
 import { listMayaJudgments } from './judgment-history';
 import { runMaya } from './runner';
@@ -11,13 +12,15 @@ export interface MayaJudgeRequest {
   callout: string;
   oldReplay: CopilotSimulationResponse;
   candidateReplay: CopilotSimulationResponse;
+  useCompactContext?: boolean;
 }
 
 @Injectable()
 export class MayaJudgmentService {
-  async judge(input: unknown) {
+  async judge(input: unknown, backtestDebugging?: BacktestDebuggingSink) {
     const request = parseJudgeRequest(input);
-    return runMaya(request);
+    await backtestDebugging?.writeStage('09a-maya-validated-request.json', request);
+    return runMaya({ ...request, backtestDebugging });
   }
 
   getHistory(input: MayaJudgmentQuery) {
@@ -67,6 +70,10 @@ function parseJudgeRequest(input: unknown): MayaJudgeRequest {
     oldReplay: input.oldReplay as unknown as CopilotSimulationResponse,
     candidateReplay:
       input.candidateReplay as unknown as CopilotSimulationResponse,
+    useCompactContext:
+      typeof input.useCompactContext === 'boolean'
+        ? input.useCompactContext
+        : true,
   };
 }
 

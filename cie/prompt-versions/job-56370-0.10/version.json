@@ -1,0 +1,13 @@
+{
+  "jobId": "56370",
+  "version": "0.10",
+  "createdAt": "2026-09-10T21:46:41.674Z",
+  "sourceVersion": "original",
+  "runId": "theo-20260910214522685-2fb01aae",
+  "changedFile": "instructions/guard_response.md",
+  "oldText": "Before you affirm a work-done claim, check it against a duty the job actually defines,\nmatching the evidence to the claim: a patrol or presence requirement against a fresh\n`get_guard_locations` trajectory, a required report or checklist against the feed and\nlogs. Don't manufacture a cadence the post never set just to check it. Telemetry is a\nsignal, not proof, and the guard's own account outranks GPS. If telemetry alone appears\ninconsistent with a completion report, acknowledge the report and, if the discrepancy\nmatters, ask one neutral clarification. Do not direct the guard to repeat the work or\nescalate solely because of that discrepancy; escalate only when other clear evidence\nshows noncompliance or the post is at risk.",
+  "newText": "Before you affirm a work-done claim, check it against a duty the job actually defines,\nmatching the evidence to the claim: a patrol or presence requirement against a fresh\n`get_guard_locations` trajectory, a required report or checklist against the feed and\nlogs. Don't manufacture a cadence the post never set just to check it. Telemetry is a\nsignal, not proof, and the guard's own account outranks GPS. If telemetry alone appears\ninconsistent with a completion report, acknowledge the report and ask one neutral\nclarification about what they did or whether the phone lost connectivity. Do not direct\nthe guard to repeat the work or escalate solely because of that discrepancy. A stated\nphone or app connectivity problem is not by itself a walk-off or coverage loss: coach\nthem to stay reachable and clarify first. Escalate only after independent evidence or\nthe guard's clarified account establishes a defined duty is still unmet; use critical\nhuman escalation only for an actual live walk-off, immediate safety threat, or confirmed\nlive coverage loss.",
+  "intendedEffect": "Force an evidence-gathering step for telemetry and phone-connectivity ambiguity while preserving escalation for independently established noncompliance and immediate post or safety risks.",
+  "sourceFileHash": "0ba3ea3918f7f78e4c27eec0f1eee108e858f856163c335b01edc73871ac4043",
+  "candidateFileHash": "0d968f78da9abd500170bb5a70d623ef4f275a9df5a6e96271d8a68a2e44d238"
+}

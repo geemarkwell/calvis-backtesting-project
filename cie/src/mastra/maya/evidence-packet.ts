@@ -69,6 +69,7 @@ export interface BuildMayaEvidencePacketInput {
   callout: string;
   oldReplay: CopilotSimulationResponse;
   candidateReplay: CopilotSimulationResponse;
+  useCompactContext?: boolean;
 }
 
 export interface MayaJudgeInput {
@@ -85,6 +86,7 @@ export function buildMayaEvidencePacket({
   callout,
   oldReplay,
   candidateReplay,
+  useCompactContext = true,
 }: BuildMayaEvidencePacketInput): MayaEvidencePacket {
   validateComparableReplays(oldReplay, candidateReplay);
 
@@ -102,6 +104,7 @@ export function buildMayaEvidencePacket({
         (turn) => turn.historicalCopilotOutput,
         historicalGuardReplies,
         () => false,
+        useCompactContext,
       ),
       old: buildTrajectory(
         'old',
@@ -109,6 +112,7 @@ export function buildMayaEvidencePacket({
         (turn) => turn.candidateCopilotOutput,
         (turn) => turn.guardReplies,
         (turn) => turn.skipped,
+        useCompactContext,
       ),
       candidate: buildTrajectory(
         'candidate',
@@ -116,6 +120,7 @@ export function buildMayaEvidencePacket({
         (turn) => turn.candidateCopilotOutput,
         (turn) => turn.guardReplies,
         (turn) => turn.skipped,
+        useCompactContext,
       ),
     },
     warnings,
@@ -270,6 +275,7 @@ function buildTrajectory(
     turn: CopilotSimulationTurn,
   ) => CopilotSimulationGuardReply[],
   skippedForTurn: (turn: CopilotSimulationTurn) => boolean,
+  useCompactContext: boolean,
 ): MayaEvidenceTrajectory {
   return {
     name,
@@ -282,7 +288,7 @@ function buildTrajectory(
         trigger: turn.trigger,
         timestamp: turn.timestamp,
         events: turn.shiftEvents.map((event, index) =>
-          buildEvent(`${turnRef}:event:${index}`, event),
+          buildEvent(`${turnRef}:event:${index}`, event, useCompactContext),
         ),
         guardReplies: repliesForTurn(turn).map((reply, index) => ({
           ref: `${turnRef}:guard-reply:${index}`,
@@ -300,7 +306,9 @@ function buildTrajectory(
           ref: `${turnRef}:action:${index}`,
           timestamp: turn.timestamp,
           tool: baseToolName(action.tool),
-          input: copyRecord(action.input),
+          input: useCompactContext
+            ? compactActionInput(action.input)
+            : copyRecord(action.input),
         })),
         silent: output.silent,
         skipped: skippedForTurn(turn),
@@ -319,14 +327,50 @@ function historicalGuardReplies(
   }));
 }
 
-function buildEvent(ref: string, event: ShiftEvent): MayaEvidenceEvent {
+function buildEvent(
+  ref: string,
+  event: ShiftEvent,
+  useCompactContext: boolean,
+): MayaEvidenceEvent {
   const { ts, type, ...data } = event;
   return {
     ref,
     timestamp: ts,
     type,
-    data: copyRecord(data),
+    data: useCompactContext ? compactEventData(type, data) : copyRecord(data),
   };
+}
+
+function compactActionInput(input: Record<string, unknown>): Record<string, unknown> {
+  const copy = copyRecord(input);
+  for (const key of ['content', 'body', 'details', 'note_text', 'description']) {
+    const value = copy[key];
+    if (typeof value === 'string' && value.length > 500) {
+      copy[key] = { omitted: 'long action text', characterCount: value.length };
+    }
+  }
+  return copy;
+}
+
+function compactEventData(
+  type: string,
+  data: Record<string, unknown>,
+): Record<string, unknown> {
+  const copy = copyRecord(data);
+  if (/location|telemetry/i.test(type)) {
+    return {
+      omitted: 'raw telemetry event',
+      keys: Object.keys(copy),
+    };
+  }
+  for (const [key, value] of Object.entries(copy)) {
+    if (typeof value === 'string' && value.length > 500) {
+      copy[key] = { omitted: 'long event text', characterCount: value.length };
+    } else if (Array.isArray(value) && value.length > 10) {
+      copy[key] = { omitted: 'large event array', itemCount: value.length };
+    }
+  }
+  return copy;
 }
 
 function copyRecord(value: Record<string, unknown>): Record<string, unknown> {

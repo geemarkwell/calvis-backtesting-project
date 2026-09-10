@@ -5,13 +5,17 @@ import {
 } from '@nestjs/common';
 import type { MessageInput } from '@mastra/core/agent/message-list';
 import { resolve } from 'node:path';
+import type { PipelineLogger } from '../common/telemetry/pipeline-logger';
 import {
   copilot,
   copilotModelConfiguration,
 } from '../mastra/agents/copilot-agent';
 import { createCopilotRequestContext } from '../mastra/copilot/request-context';
 import { buildCopilotTurnMessage } from '../mastra/copilot/turn-builder';
-import type { CopilotRequestContext } from '../mastra/copilot/types';
+import type {
+  CopilotRequestContext,
+  RecordedReplayToolCall,
+} from '../mastra/copilot/types';
 import { normalizeTrace } from '../mastra/theo/trace-normalizer';
 import { simulateGuard } from '../mastra/niko/simulator';
 import type { NikoConversationMessage } from '../mastra/niko/schemas';
@@ -55,7 +59,7 @@ const EMPTY_COPILOT_OUTPUT: CopilotOutputSnapshot = {
 @Injectable()
 export class CopilotSimulationService {
   async simulate(
-    input: SimulateCopilotDto,
+    input: SimulateCopilotDto & { pipelineLogger?: PipelineLogger },
   ): Promise<CopilotSimulationResponse> {
     const bundleRoot = await findBundleRoot();
     const { jobId, bundle } = await loadShiftBundle(bundleRoot, input.jobId);
@@ -68,6 +72,7 @@ export class CopilotSimulationService {
     const promptVersion = normalizePromptVersion(input.promptVersion);
     const callNiko = normalizeCallNiko(input.callNiko);
     const debugEnabled = normalizeDebug(input.debug);
+    const useCompactContext = normalizeCompactContext(input.useCompactContext);
     if (promptVersion && replayMode !== 'candidate') {
       throw new BadRequestException(
         'promptVersion may be used only with replayMode "candidate".',
@@ -119,6 +124,7 @@ export class CopilotSimulationService {
       bundle,
       episode.selectedTurns[0].turn,
       historicalState,
+      useCompactContext,
     );
     const guardConversation = buildHistoricalGuardConversation(
       bundle,
@@ -132,6 +138,10 @@ export class CopilotSimulationService {
       lastCopilotMessage(guardConversation);
 
     for (const turn of episode.selectedTurns) {
+      input.pipelineLogger?.stage('CANDIDATE').info('TURN_START', {
+        turn: turn.turn,
+        trigger: turn.trigger,
+      });
       const intervalEvents = eventsInInterval(
         bundle.events,
         previousBoundary,
@@ -234,6 +244,10 @@ export class CopilotSimulationService {
             : {}),
         });
         previousBoundary = turn.ts;
+        input.pipelineLogger?.stage('CANDIDATE').info('TURN_SKIP', {
+          turn: turn.turn,
+          reason: 'guard_message_removed',
+        });
         continue;
       }
 
@@ -245,10 +259,17 @@ export class CopilotSimulationService {
       try {
         result = await copilot.generate(turnInput, { requestContext });
       } catch (error) {
-        const message = error instanceof Error ? error.message : String(error);
-        throw new InternalServerErrorException(
-          `Copilot simulation failed on turn ${turn.turn}: ${message}`,
-        );
+        input.pipelineLogger?.stage('CANDIDATE').error(error, {
+          turn: turn.turn,
+        });
+        throw new InternalServerErrorException({
+          message: `Copilot simulation failed on turn ${turn.turn}.`,
+          code: 'COPILOT_SIMULATION_FAILED',
+          phase: 'candidate_replay',
+          turn: turn.turn,
+          detail: summarizeModelError(error),
+          retryable: isRetryableModelError(error),
+        });
       }
 
       const actions = getObservedActions(requestContext).slice(observedBefore);
@@ -269,6 +290,12 @@ export class CopilotSimulationService {
         guardConversation.push({ role: 'copilot', content: message });
       }
       candidateCopilotMessageForReply = copilotMessages.at(-1) ?? null;
+      input.pipelineLogger?.stage('CANDIDATE').info('TURN_SUCCESS', {
+        turn: turn.turn,
+        actionCount: actions.length,
+        messageCount: copilotMessages.length,
+        diverged: divergedThisTurn,
+      });
       turns.push({
         turn: turn.turn,
         trigger: turn.trigger,
@@ -440,6 +467,16 @@ function normalizeDebug(value: unknown): boolean {
   throw new BadRequestException('debug must be a boolean.');
 }
 
+function normalizeCompactContext(value: unknown): boolean {
+  if (value === undefined) {
+    return true;
+  }
+  if (typeof value === 'boolean') {
+    return value;
+  }
+  throw new BadRequestException('useCompactContext must be a boolean.');
+}
+
 function normalizeCallNiko(value: unknown): boolean {
   if (value === undefined) {
     return true;
@@ -461,6 +498,7 @@ function buildHistoricalConversation(
   bundle: ShiftBundle,
   beforeTurn: number,
   historicalState: HistoricalReplayState,
+  useCompactContext: boolean,
 ): MessageInput[] {
   const turns = bundle.baseline
     .filter(
@@ -513,53 +551,122 @@ function buildHistoricalConversation(
       })),
     ].sort((left, right) => left.ts.localeCompare(right.ts));
 
-    for (const [index, entry] of recordedEntries.entries()) {
-      if (entry.kind === 'message') {
-        if (
-          historicalState.retainedChatKeys.has(
-            historyChatKey('copilot', entry.ts, entry.message),
-          )
-        ) {
-          history.push({ role: 'assistant', content: entry.message });
-        }
+    const toolEntries = recordedEntries.filter((entry) => entry.kind === 'tool');
+    const toolSummary = summarizeRecordedToolEntries(toolEntries);
+
+    for (const entry of recordedEntries) {
+      if (entry.kind !== 'message') {
         continue;
       }
-      const toolName = baseToolName(entry.call.tool);
-      const toolCallId = `recorded-${turn.turn}-${index}`;
-      history.push({
-        role: 'assistant',
-        content: [
-          {
-            type: 'tool-call',
-            toolCallId,
-            toolName,
-            input: entry.call.input,
-          },
-        ],
-      });
-      history.push({
-        role: 'tool',
-        content: [
-          {
-            type: 'tool-result',
-            toolCallId,
-            toolName,
-            output:
-              entry.call.ok === false || entry.call.error
-                ? {
-                    type: 'error-text',
-                    value:
-                      entry.call.error ?? `Recorded ${toolName} call failed.`,
-                  }
-                : { type: 'json', value: toJsonValue(entry.call.output) },
-          },
-        ],
-      } as MessageInput);
+      if (
+        historicalState.retainedChatKeys.has(
+          historyChatKey('copilot', entry.ts, entry.message),
+        )
+      ) {
+        history.push({ role: 'assistant', content: entry.message });
+      }
+    }
+
+    if (useCompactContext) {
+      if (toolSummary) {
+        history.push({ role: 'assistant', content: toolSummary });
+      }
+    } else {
+      appendRawHistoricalToolEntries(history, toolEntries, turn.turn);
     }
     previousBoundary = turn.ts;
   }
 
   return history;
+}
+
+function appendRawHistoricalToolEntries(
+  history: MessageInput[],
+  entries: Array<{
+    kind: 'tool';
+    ts: string;
+    call: RecordedReplayToolCall;
+  }>,
+  turn: number,
+): void {
+  for (const [index, entry] of entries.entries()) {
+    const toolName = baseToolName(entry.call.tool);
+    const toolCallId = `recorded-${turn}-${index}`;
+    history.push({
+      role: 'assistant',
+      content: [
+        {
+          type: 'tool-call',
+          toolCallId,
+          toolName,
+          input: entry.call.input,
+        },
+      ],
+    });
+    history.push({
+      role: 'tool',
+      content: [
+        {
+          type: 'tool-result',
+          toolCallId,
+          toolName,
+          output:
+            entry.call.ok === false || entry.call.error
+              ? {
+                  type: 'error-text',
+                  value: entry.call.error ?? `Recorded ${toolName} call failed.`,
+                }
+              : { type: 'json', value: toJsonValue(entry.call.output) },
+        },
+      ],
+    } as MessageInput);
+  }
+}
+
+function summarizeRecordedToolEntries(
+  entries: Array<{
+    kind: 'tool';
+    ts: string;
+    call: RecordedReplayToolCall;
+  }>,
+): string | undefined {
+  if (entries.length === 0) {
+    return undefined;
+  }
+
+  const groups = new Map<
+    string,
+    { tool: string; count: number; failures: number; lastTimestamp: string }
+  >();
+  for (const entry of entries) {
+    const tool = baseToolName(entry.call.tool);
+    const key = `${tool}:${stableStringify(entry.call.input)}`;
+    const current = groups.get(key) ?? {
+      tool,
+      count: 0,
+      failures: 0,
+      lastTimestamp: entry.ts,
+    };
+    current.count += 1;
+    current.lastTimestamp = entry.ts;
+    if (entry.call.ok === false || entry.call.error) {
+      current.failures += 1;
+    }
+    groups.set(key, current);
+  }
+
+  const lines = [...groups.values()]
+    .sort((left, right) => right.count - left.count)
+    .map(
+      (group) =>
+        `- ${group.tool}: called ${group.count} time${group.count === 1 ? '' : 's'}${group.failures ? `, ${group.failures} failed` : ''}; last seen ${group.lastTimestamp}`,
+    );
+
+  return `Recorded prior tool activity summary for this turn:\n${lines.join('\n')}`;
+}
+
+function stableStringify(value: unknown): string {
+  return JSON.stringify(value, Object.keys((value as Record<string, unknown>) ?? {}).sort());
 }
 
 function historicalCopilotMessagesByTurn(
@@ -775,6 +882,65 @@ function buildShiftTiming(
   return {
     timeLeftMinutes: Math.max(0, Math.ceil((endTime - turnTime) / 60_000)),
   };
+}
+
+function isRetryableModelError(error: unknown): boolean {
+  return Boolean(
+    error &&
+      typeof error === 'object' &&
+      (error as Record<string, unknown>).isRetryable === true,
+  );
+}
+
+function summarizeModelError(error: unknown): string {
+  if (!error || typeof error !== 'object') {
+    return String(error);
+  }
+
+  const record = error as Record<string, unknown>;
+  const responseBody = parseResponseBody(record.responseBody);
+  const data = isRecord(record.data) ? record.data : undefined;
+  const dataError = data && isRecord(data.error) ? data.error : undefined;
+  const body = isRecord(responseBody) ? responseBody : undefined;
+  const bodyError = body && isRecord(body.error) ? body.error : undefined;
+  const providerError = dataError ?? bodyError;
+  const message = typeof providerError?.message === 'string'
+    ? providerError.message
+    : error instanceof Error
+      ? error.message
+      : String(error);
+  const statusCode = typeof record.statusCode === 'number'
+    ? ` status=${record.statusCode}`
+    : '';
+  const requestId = requestIdFromHeaders(record.responseHeaders);
+  const retryable = typeof record.isRetryable === 'boolean'
+    ? ` retryable=${record.isRetryable}`
+    : '';
+
+  return `${message}${statusCode}${requestId ? ` requestId=${requestId}` : ''}${retryable}`;
+}
+
+function parseResponseBody(value: unknown): unknown {
+  if (typeof value !== 'string') {
+    return undefined;
+  }
+  try {
+    return JSON.parse(value);
+  } catch {
+    return undefined;
+  }
+}
+
+function requestIdFromHeaders(value: unknown): string | undefined {
+  if (!isRecord(value)) {
+    return undefined;
+  }
+  const requestId = value['x-request-id'] ?? value['X-Request-ID'];
+  return typeof requestId === 'string' ? requestId : undefined;
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return Boolean(value) && typeof value === 'object' && !Array.isArray(value);
 }
 
 export function formatCurrentTime(timestamp: string, timeZone: string): string {

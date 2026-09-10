@@ -140,6 +140,7 @@ describe('Maya runner', () => {
       callout,
       oldReplay,
       candidateReplay,
+      useCompactContext: true,
     });
     expect(generateVerdict).toHaveBeenCalledTimes(1);
     expect(completeMayaVerdictEvidence).toHaveBeenCalledWith({

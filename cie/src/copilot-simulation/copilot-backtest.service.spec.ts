@@ -150,11 +150,15 @@ describe('CopilotBacktestService', () => {
       },
       mayaError: null,
     });
-    expect(theoService.diagnose).toHaveBeenCalledWith({
-      whatWentWrong: 'Copilot pushed too hard.',
-      expectedBehavior: 'Acknowledge credible completed patrols.',
-      badResponses: [{ jobId: '56370', startTurn: 8, endTurn: 11 }],
-    });
+    expect(theoService.diagnose).toHaveBeenCalledWith(
+      {
+        whatWentWrong: 'Copilot pushed too hard.',
+        expectedBehavior: 'Acknowledge credible completed patrols.',
+        badResponses: [{ jobId: '56370', startTurn: 8, endTurn: 11 }],
+        useCompactContext: true,
+      },
+      expect.objectContaining({ writeStage: expect.any(Function) }),
+    );
     expect(originalService.getOriginal).toHaveBeenCalledWith({
       jobId: '56370',
       startTurn: 8,
@@ -162,20 +166,28 @@ describe('CopilotBacktestService', () => {
       source: 'shift',
       simulationNumber: undefined,
     });
-    expect(simulationService.simulate).toHaveBeenCalledWith({
-      jobId: '56370',
-      startTurn: 8,
-      endTurn: 11,
-      replayMode: 'candidate',
-      promptVersion: '0.1',
-      callNiko: false,
-      debug: false,
-    });
-    expect(mayaJudgmentService.judge).toHaveBeenCalledWith({
-      callout: 'Copilot pushed too hard.',
-      oldReplay,
-      candidateReplay,
-    });
+    expect(simulationService.simulate).toHaveBeenCalledWith(
+      expect.objectContaining({
+        jobId: '56370',
+        startTurn: 8,
+        endTurn: 11,
+        replayMode: 'candidate',
+        promptVersion: '0.1',
+        callNiko: false,
+        debug: false,
+        useCompactContext: true,
+        pipelineLogger: expect.any(Object),
+      }),
+    );
+    expect(mayaJudgmentService.judge).toHaveBeenCalledWith(
+      {
+        callout: 'Copilot pushed too hard.',
+        oldReplay,
+        candidateReplay,
+        useCompactContext: true,
+      },
+      expect.objectContaining({ writeStage: expect.any(Function) }),
+    );
     expect(candidateDecisionService.recordEvaluation).toHaveBeenCalledWith(
       { jobId: '56370', version: '0.1' },
       {
@@ -216,6 +228,7 @@ describe('CopilotBacktestService', () => {
       expect.objectContaining({
         badResponses: [{ simTarget: 7, startTurn: 8, endTurn: 11 }],
       }),
+      expect.objectContaining({ writeStage: expect.any(Function) }),
     );
   });
 

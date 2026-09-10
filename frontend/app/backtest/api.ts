@@ -3,6 +3,9 @@ import type {
   BacktestResponse,
   DraftTestCriteriaResponse,
   CandidateDecisionResult,
+  DiagnoseLensId,
+  DiagnoseResponse,
+  DiagnoseRunsResponse,
   MayaJudgeRequest,
   MayaJudgeResponse,
   MayaJudgmentHistory,
@@ -75,6 +78,67 @@ export async function saveTestSpec(
   const payload: unknown = await response.json();
   if (!isSavedTestSpec(payload)) {
     throw new Error("Test specs API returned an invalid response.");
+  }
+  return payload;
+}
+
+export async function listDiagnosisRuns(
+  signal?: AbortSignal,
+): Promise<DiagnoseRunsResponse> {
+  const response = await fetch('/api/diagnose/runs', { signal });
+  if (!response.ok) {
+    throw new Error(await errorMessage(response, 'Diagnosis runs failed'));
+  }
+  const payload: unknown = await response.json();
+  if (!isDiagnosisRunsResponse(payload)) {
+    throw new Error('Diagnosis runs API returned an invalid response.');
+  }
+  return payload;
+}
+
+export async function getDiagnosisRun(
+  runId: string,
+  signal?: AbortSignal,
+): Promise<DiagnoseResponse> {
+  const response = await fetch(`/api/diagnose/runs/${encodeURIComponent(runId)}`, {
+    signal,
+  });
+  if (!response.ok) {
+    throw new Error(await errorMessage(response, 'Diagnosis run failed'));
+  }
+  const payload = normalizeDiagnoseResponse(await response.json());
+  if (!isDiagnoseResponse(payload)) {
+    throw new Error('Diagnosis run API returned an invalid response.');
+  }
+  return payload;
+}
+
+export async function runDiagnoseLens(
+  request: {
+    jobId: string;
+    startTurn: number;
+    endTurn: number;
+    lensId: DiagnoseLensId;
+  },
+  signal?: AbortSignal,
+): Promise<DiagnoseResponse> {
+  const response = await fetch("/api/diagnose", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      jobId: request.jobId,
+      startTurn: request.startTurn,
+      endTurn: request.endTurn,
+      lensIds: [request.lensId],
+    }),
+    signal,
+  });
+  if (!response.ok) {
+    throw new Error(await errorMessage(response, "Diagnosis failed"));
+  }
+  const payload = normalizeDiagnoseResponse(await response.json());
+  if (!isDiagnoseResponse(payload)) {
+    throw new Error("Diagnose API returned an invalid response.");
   }
   return payload;
 }
@@ -356,11 +420,18 @@ function isTheoResponse(value: unknown): value is TheoResponse {
     !isRecord(value) ||
     typeof value.runId !== "string" ||
     typeof value.artifactDirectory !== "string" ||
-    typeof value.candidatePromptJobId !== "string" ||
-    typeof value.candidatePromptVersion !== "string" ||
-    typeof value.candidatePromptRoot !== "string" ||
+    (value.candidatePromptJobId !== undefined &&
+      typeof value.candidatePromptJobId !== "string") ||
+    (value.candidatePromptVersion !== undefined &&
+      typeof value.candidatePromptVersion !== "string") ||
+    (value.candidatePromptRoot !== undefined &&
+      typeof value.candidatePromptRoot !== "string") ||
     !isRecord(value.diagnosis) ||
-    !isPromptChange(value.suggestedPromptChange)
+    !isTheoCandidate(value.candidate) ||
+    typeof value.canReplay !== "boolean" ||
+    !isRecord(value.backtestRecord) ||
+    (value.suggestedPromptChange !== null &&
+      !isPromptChange(value.suggestedPromptChange))
   ) {
     return false;
   }
@@ -374,15 +445,14 @@ function isTheoResponse(value: unknown): value is TheoResponse {
     Array.isArray(diagnosis.evidence_windows) &&
     Array.isArray(diagnosis.observed_behavior) &&
     typeof diagnosis.expected_behavior === "string" &&
-    Array.isArray(diagnosis.relevant_turns) &&
-    isRecord(diagnosis.prompt_diagnosis) &&
-    typeof diagnosis.prompt_diagnosis.file === "string" &&
-    typeof diagnosis.prompt_diagnosis.section === "string" &&
-    typeof diagnosis.prompt_diagnosis.exact_text === "string" &&
-    typeof diagnosis.prompt_diagnosis.diagnosis_type === "string" &&
-    typeof diagnosis.prompt_diagnosis.explanation === "string" &&
+    isTheoCandidate(diagnosis.candidate) &&
+    (diagnosis.relevant_turns === undefined ||
+      Array.isArray(diagnosis.relevant_turns)) &&
+    (diagnosis.prompt_diagnosis === undefined ||
+      isRecord(diagnosis.prompt_diagnosis)) &&
     typeof diagnosis.hypothesis === "string" &&
-    isPromptChange(diagnosis.proposed_edit) &&
+    (diagnosis.proposed_edit === undefined ||
+      isPromptChange(diagnosis.proposed_edit)) &&
     Array.isArray(diagnosis.risks) &&
     diagnosis.risks.every((risk) => typeof risk === "string") &&
     typeof diagnosis.confidence === "number" &&
@@ -390,6 +460,19 @@ function isTheoResponse(value: unknown): value is TheoResponse {
     diagnosis.uncertainties.every(
       (uncertainty) => typeof uncertainty === "string",
     )
+  );
+}
+
+function isTheoCandidate(value: unknown): boolean {
+  return (
+    isRecord(value) &&
+    typeof value.kind === "string" &&
+    typeof value.summary === "string" &&
+    typeof value.rationale === "string" &&
+    typeof value.expected_behavior === "string" &&
+    Array.isArray(value.validation_plan) &&
+    Array.isArray(value.risks) &&
+    (value.prompt_edit === undefined || isPromptChange(value.prompt_edit))
   );
 }
 
@@ -526,6 +609,57 @@ function isTestEvaluationCriterion(value: unknown): boolean {
     typeof value.summary === "string" &&
     Array.isArray(value.evidenceRefs) &&
     value.evidenceRefs.every((item) => typeof item === "string")
+  );
+}
+
+function normalizeDiagnoseResponse(value: unknown): unknown {
+  if (!isRecord(value)) {
+    return value;
+  }
+  return {
+    ...value,
+    lenses: Array.isArray(value.lenses) ? value.lenses : [],
+    patterns: Array.isArray(value.patterns) ? value.patterns : [],
+    llmFindings: Array.isArray(value.llmFindings) ? value.llmFindings : [],
+    evaluatorReports: Array.isArray(value.evaluatorReports)
+      ? value.evaluatorReports
+      : [],
+    toolCalls: Array.isArray(value.toolCalls) ? value.toolCalls : [],
+    toolSummary: Array.isArray(value.toolSummary) ? value.toolSummary : [],
+  };
+}
+
+function isDiagnosisRunsResponse(value: unknown): value is DiagnoseRunsResponse {
+  return (
+    isRecord(value) &&
+    Array.isArray(value.runs) &&
+    value.runs.every(
+      (run) =>
+        isRecord(run) &&
+        typeof run.runId === 'string' &&
+        typeof run.jobId === 'string' &&
+        typeof run.startTurn === 'number' &&
+        typeof run.endTurn === 'number',
+    )
+  );
+}
+
+function isDiagnoseResponse(value: unknown): value is DiagnoseResponse {
+  return (
+    isRecord(value) &&
+    typeof value.runId === "string" &&
+    typeof value.artifactDirectory === "string" &&
+    typeof value.jobId === "string" &&
+    typeof value.startTurn === "number" &&
+    typeof value.endTurn === "number" &&
+    typeof value.summary === "string" &&
+    Array.isArray(value.lenses) &&
+    Array.isArray(value.patterns) &&
+    Array.isArray(value.llmFindings) &&
+    Array.isArray(value.evaluatorReports) &&
+    Array.isArray(value.toolCalls) &&
+    Array.isArray(value.toolSummary) &&
+    typeof value.noFindings === "boolean"
   );
 }
 

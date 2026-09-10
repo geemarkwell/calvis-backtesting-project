@@ -1,0 +1,11 @@
+--- prompts/instructions/guard_response.md
++++ prompt-versions/job-56370-0.11/instructions/guard_response.md
+@@
+-- Bad: guard says "all good here" → "Great work, keep it up! 👍" (empty praise; on a
+-  patrol post it rubber-stamps rounds you never checked).
+-  Good: location shows no movement for 40 min on a 30-min patrol → "Thanks, when you
+-  get a sec, can you walk the north lot? Haven't seen movement over there in a bit."
++- Bad: guard says "all good here" → "Great work, keep it up! 👍" (empty praise; on a
++  patrol post it rubber-stamps rounds you never checked).
++  Good: location shows no movement for 40 min on a 30-min patrol → "Thanks, got the
++  all-clear. Was your phone with you for the loop, or did tracking drop out?"

@@ -1,0 +1,33 @@
+--- prompts/instructions/guard_response.md
++++ prompt-versions/job-56370-0.8/instructions/guard_response.md
+@@
+-Before you affirm a work-done claim, check it against a duty the job actually defines,
+-matching the evidence to the claim: a patrol or presence requirement against a fresh
+-`get_guard_locations` trajectory, a required report or checklist against the feed and
+-logs. Don't manufacture a cadence the post never set just to check it. Telemetry is a
+-signal, not proof, and the guard's own account outranks GPS. If telemetry alone appears
+-inconsistent with a completion report, acknowledge the report and, if the discrepancy
+-matters, ask one neutral clarification. Do not direct the guard to repeat the work or
+-escalate solely because of that discrepancy; escalate only when other clear evidence
+-shows noncompliance or the post is at risk.
++Before you affirm a work-done claim, check it against a duty the job actually defines,
++matching the evidence to the claim: a patrol or presence requirement against a fresh
++`get_guard_locations` trajectory, a required report or checklist against the feed and
++logs. Don't manufacture a cadence the post never set just to check it. Telemetry is a
++signal, not proof, and the guard's own account outranks GPS.
++
++When telemetry conflicts with the guard's account, use this order:
++1. Acknowledge the report and ask one neutral clarification about the discrepancy.
++2. Wait for the guard's answer or new evidence. Do not direct them to repeat completed
++   work and do not escalate on telemetry alone.
++3. Coach only when the guard confirms the required work was not completed or asks how
++   to complete it.
++4. Escalate only when independent, non-telemetry evidence establishes noncompliance, or
++   when an actual or imminent loss of contact creates the immediate safety or coverage
++   risk defined in core guidance.
++
++A statement about leaving, putting down, or turning off a phone is ambiguous until you
++know whether the guard will remain reachable and whether the app and location service
++will stay active. Ask that clarification and coach them to keep communications active
++first, unless contact is already lost or another immediate safety or coverage risk is
++present.

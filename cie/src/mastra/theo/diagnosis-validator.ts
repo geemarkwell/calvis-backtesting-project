@@ -10,6 +10,7 @@ export type TheoValidationTraceEntry =
       readonly type?: string;
       readonly trigger?: string;
       readonly instructionFile?: string;
+      readonly turnRef?: string;
     };
 
 export type TheoValidationPromptFile =
@@ -149,7 +150,7 @@ function diagnosisTraceReferences(diagnosis: TheoDiagnosis): string[] {
   return [
     ...diagnosis.evidence_windows.flatMap((window) => window.trace_refs),
     ...diagnosis.observed_behavior.flatMap((item) => item.trace_refs),
-    ...diagnosis.relevant_turns.map((turn) => turn.turn_ref),
+    ...(diagnosis.relevant_turns ?? []).map((turn) => turn.turn_ref),
   ];
 }
 
@@ -319,7 +320,7 @@ export function validateTheoDiagnosis({
     }
   }
 
-  for (const relevantTurn of diagnosis.relevant_turns) {
+  for (const relevantTurn of diagnosis.relevant_turns ?? []) {
     if (!evidenceReferences.has(relevantTurn.turn_ref)) {
       issues.push(
         `Relevant turn ${relevantTurn.turn_ref} is not included in evidence_windows.`,
@@ -329,22 +330,28 @@ export function validateTheoDiagnosis({
     if (!traceEntry) {
       continue;
     }
-    if (traceEntry.type !== undefined && traceEntry.type !== 'turn_start') {
+    const referencedTurnEntry =
+      traceEntry.type === 'turn_start'
+        ? traceEntry
+        : traceEntry.turnRef
+          ? indexedTraceEntries.get(traceEntry.turnRef)
+          : undefined;
+    if (!referencedTurnEntry) {
       issues.push(
         `Relevant turn ${relevantTurn.turn_ref} does not reference a turn_start entry.`,
       );
     }
     if (
-      traceEntry.trigger !== undefined &&
-      traceEntry.trigger !== relevantTurn.trigger
+      referencedTurnEntry?.trigger !== undefined &&
+      referencedTurnEntry.trigger !== relevantTurn.trigger
     ) {
       issues.push(
         `Relevant turn ${relevantTurn.turn_ref} trigger does not match normalized trace.`,
       );
     }
     if (
-      traceEntry.instructionFile !== undefined &&
-      traceEntry.instructionFile !== relevantTurn.instruction_file
+      referencedTurnEntry?.instructionFile !== undefined &&
+      referencedTurnEntry.instructionFile !== relevantTurn.instruction_file
     ) {
       issues.push(
         `Relevant turn ${relevantTurn.turn_ref} instruction file does not match normalized trace.`,
@@ -353,51 +360,55 @@ export function validateTheoDiagnosis({
   }
 
   const indexedPromptFiles = indexPromptFiles(input.promptFiles);
-  const diagnosisPrompt = indexedPromptFiles.get(
-    diagnosis.prompt_diagnosis.file,
-  );
-
-  if (diagnosisPrompt === undefined) {
-    issues.push(
-      `Prompt diagnosis file was not supplied: ${diagnosis.prompt_diagnosis.file}.`,
-    );
-  } else if (!diagnosisPrompt.includes(diagnosis.prompt_diagnosis.exact_text)) {
-    issues.push(
-      `Prompt diagnosis exact_text does not occur in ${diagnosis.prompt_diagnosis.file}.`,
-    );
-  }
-
-  const editPrompt = indexedPromptFiles.get(diagnosis.proposed_edit.file);
-
-  if (editPrompt === undefined) {
-    issues.push(
-      `Proposed edit file was not supplied: ${diagnosis.proposed_edit.file}.`,
-    );
-  } else {
-    const oldTextOccurrences = countOccurrences(
-      editPrompt,
-      diagnosis.proposed_edit.old_text,
-    );
-
-    if (oldTextOccurrences !== 1) {
-      issues.push(
-        `Proposed edit old_text must occur exactly once in ${diagnosis.proposed_edit.file}; found ${oldTextOccurrences}.`,
-      );
+  if ((diagnosis.candidate?.kind ?? 'prompt') === 'prompt') {
+    const promptDiagnosis = diagnosis.prompt_diagnosis;
+    const proposedEdit = diagnosis.proposed_edit;
+    if (!promptDiagnosis || !proposedEdit) {
+      issues.push('Prompt candidates must include prompt_diagnosis and proposed_edit.');
     } else {
-      issues.push(
-        ...validateReplacementResult(
-          indexedPromptFiles,
-          diagnosis.proposed_edit.file,
-          editPrompt,
-          diagnosis.proposed_edit.old_text,
-          diagnosis.proposed_edit.new_text,
-        ),
-      );
-    }
-  }
+      const diagnosisPrompt = indexedPromptFiles.get(promptDiagnosis.file);
 
-  if (diagnosis.proposed_edit.new_text === diagnosis.proposed_edit.old_text) {
-    issues.push('Proposed edit new_text must differ from old_text.');
+      if (diagnosisPrompt === undefined) {
+        issues.push(
+          `Prompt diagnosis file was not supplied: ${promptDiagnosis.file}.`,
+        );
+      } else if (!diagnosisPrompt.includes(promptDiagnosis.exact_text)) {
+        issues.push(
+          `Prompt diagnosis exact_text does not occur in ${promptDiagnosis.file}.`,
+        );
+      }
+
+      const editPrompt = indexedPromptFiles.get(proposedEdit.file);
+
+      if (editPrompt === undefined) {
+        issues.push(`Proposed edit file was not supplied: ${proposedEdit.file}.`);
+      } else {
+        const oldTextOccurrences = countOccurrences(
+          editPrompt,
+          proposedEdit.old_text,
+        );
+
+        if (oldTextOccurrences !== 1) {
+          issues.push(
+            `Proposed edit old_text must occur exactly once in ${proposedEdit.file}; found ${oldTextOccurrences}.`,
+          );
+        } else {
+          issues.push(
+            ...validateReplacementResult(
+              indexedPromptFiles,
+              proposedEdit.file,
+              editPrompt,
+              proposedEdit.old_text,
+              proposedEdit.new_text,
+            ),
+          );
+        }
+      }
+
+      if (proposedEdit.new_text === proposedEdit.old_text) {
+        issues.push('Proposed edit new_text must differ from old_text.');
+      }
+    }
   }
 
   if (issues.length > 0) {

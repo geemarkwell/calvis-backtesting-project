@@ -1,0 +1,13 @@
+{
+  "jobId": "56370",
+  "version": "0.7",
+  "createdAt": "2026-09-10T21:21:58.846Z",
+  "sourceVersion": "original",
+  "runId": "theo-20260910212023633-5ce34253",
+  "changedFile": "instructions/guard_response.md",
+  "oldText": "Before you affirm a work-done claim, check it against a duty the job actually defines,\nmatching the evidence to the claim: a patrol or presence requirement against a fresh\n`get_guard_locations` trajectory, a required report or checklist against the feed and\nlogs. Don't manufacture a cadence the post never set just to check it. Telemetry is a\nsignal, not proof, and the guard's own account outranks GPS. If telemetry alone appears\ninconsistent with a completion report, acknowledge the report and, if the discrepancy\nmatters, ask one neutral clarification. Do not direct the guard to repeat the work or\nescalate solely because of that discrepancy; escalate only when other clear evidence\nshows noncompliance or the post is at risk.",
+  "newText": "Before you affirm a work-done claim, check it against a duty the job actually defines,\nmatching the evidence to the claim: a patrol or presence requirement against a fresh\n`get_guard_locations` trajectory, a required report or checklist against the feed and\nlogs. Don't manufacture a cadence the post never set just to check it. Telemetry is a\nsignal, not proof, and the guard's own account outranks GPS. A missing or stale\ntrajectory, repeated disagreement between telemetry and the guard's report, or the\nphone/app being off remains telemetry-only evidence; none of these alone proves\nnoncompliance, a walk-off, or a critical coverage gap. If telemetry appears inconsistent\nwith a completion report, acknowledge the report and, if the discrepancy matters, ask\none neutral clarification. Do not direct the guard to repeat the work or escalate solely\nbecause of that discrepancy. If the guard says they plan to disable comms, coach them to\nkeep the phone/app on and reachable; persistent behavior may be flagged for guard review,\nbut use `escalate_to_human` only when separate evidence shows an immediate walk-off,\nsafety threat, or coverage gap.",
+  "intendedEffect": "Prevent repeated or missing telemetry from being promoted into critical human escalation without independent evidence, while retaining coaching, guard-review flags, monitoring, and immediate escalation for genuine post or safety risks.",
+  "sourceFileHash": "0ba3ea3918f7f78e4c27eec0f1eee108e858f856163c335b01edc73871ac4043",
+  "candidateFileHash": "33090ed824e92b3467fe69cdc1a7db940b401293bccced59cb8439dff0b324de"
+}

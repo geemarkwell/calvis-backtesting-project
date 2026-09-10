@@ -1,0 +1,65 @@
+"use client";
+
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { useState } from "react";
+
+const routes = [
+  { href: "/", label: "Backtest", shortLabel: "BT", description: "Replay console" },
+  {
+    href: "/discover-problems",
+    label: "Discover Problems",
+    shortLabel: "DP",
+    description: "Diagnose lenses",
+  },
+  { href: "/eval-suite", label: "Eval Suite", shortLabel: "EV", description: "Test criteria" },
+];
+
+export default function GlobalSidebar() {
+  const pathname = usePathname();
+  const [collapsed, setCollapsed] = useState(false);
+
+  return (
+    <aside
+      className={collapsed ? "global-sidebar is-collapsed" : "global-sidebar"}
+      aria-label="Primary navigation"
+    >
+      <div className="global-sidebar__brand">
+        <span>C</span>
+        <strong>CIE</strong>
+      </div>
+
+      <button
+        className="global-sidebar__toggle"
+        type="button"
+        onClick={() => setCollapsed((current) => !current)}
+        aria-expanded={!collapsed}
+        aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
+      >
+        {collapsed ? "→" : "←"}
+      </button>
+
+      <nav className="global-sidebar__nav">
+        {routes.map((route) => {
+          const active =
+            route.href === "/"
+              ? pathname === "/"
+              : pathname === route.href || pathname.startsWith(`${route.href}/`);
+
+          return (
+            <Link
+              className={active ? "global-sidebar__link is-active" : "global-sidebar__link"}
+              href={route.href}
+              key={route.href}
+              title={collapsed ? route.label : undefined}
+            >
+              <b>{route.shortLabel}</b>
+              <span>{route.label}</span>
+              <small>{route.description}</small>
+            </Link>
+          );
+        })}
+      </nav>
+    </aside>
+  );
+}

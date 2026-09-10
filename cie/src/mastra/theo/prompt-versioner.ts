@@ -2,7 +2,7 @@ import { createHash } from 'node:crypto';
 import { cp, mkdir, readFile, readdir, rm, writeFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
 import { assembleCopilotSystemPrompt } from '../copilot/prompt-loader';
-import type { TheoDiagnosis } from './schemas';
+import type { PromptEdit } from './schemas';
 
 const VERSION_DIRECTORY_PATTERN = /^job-(\d+)-0\.([1-9]\d*)$/;
 const MUTABLE_PROMPT_FILE_PATTERN = /^(?:core|instructions)\/[^/]+\.md$/;
@@ -12,7 +12,7 @@ export interface CreateCandidatePromptVersionInput {
   versionsRoot: string;
   jobId: string;
   runId: string;
-  edit: TheoDiagnosis['proposed_edit'];
+  edit: PromptEdit;
 }
 
 export interface CandidatePromptVersion {
@@ -193,7 +193,7 @@ function hashContents(contents: string): string {
 function buildPromptDiff(
   jobId: string,
   version: string,
-  edit: TheoDiagnosis['proposed_edit'],
+  edit: PromptEdit,
 ): string {
   const removed = edit.old_text
     .split('\n')

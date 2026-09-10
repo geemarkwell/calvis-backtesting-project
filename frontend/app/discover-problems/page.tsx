@@ -21,6 +21,39 @@ interface DiagnosePattern {
   evidence: DiagnoseEvidence[];
 }
 
+interface DiagnoseToolCall {
+  ref: string;
+  tool: string;
+  turn?: number;
+  timestamp?: string;
+  ok?: boolean | null;
+  error?: string | null;
+  inputPreview: string;
+  outputPreview?: string;
+}
+
+interface DiagnoseToolSummary {
+  tool: string;
+  count: number;
+  failures: number;
+}
+
+interface DiagnoseLens {
+  id: string;
+  name: string;
+  description: string;
+  focusAreas: string[];
+  exclusions: string[];
+}
+
+interface DiagnoseEvaluatorReport {
+  evaluatorId: string;
+  evaluatorName: string;
+  summary: string;
+  findings: DiagnosePattern[];
+  lens?: DiagnoseLens;
+}
+
 interface DiagnoseResponse {
   runId: string;
   artifactDirectory: string;
@@ -28,8 +61,12 @@ interface DiagnoseResponse {
   startTurn: number;
   endTurn: number;
   summary: string;
+  lenses: DiagnoseLens[];
   patterns: DiagnosePattern[];
   llmFindings: DiagnosePattern[];
+  evaluatorReports: DiagnoseEvaluatorReport[];
+  toolCalls: DiagnoseToolCall[];
+  toolSummary: DiagnoseToolSummary[];
   noFindings: boolean;
 }
 
@@ -186,6 +223,7 @@ function DiagnoseResult({
   status: "idle" | "loading" | "success" | "error";
   result: DiagnoseResponse | null;
 }) {
+  const [activeTab, setActiveTab] = useState<"findings" | "tools">("findings");
   if (status === "idle") {
     return <StatusPanel title="READY" body="Enter a job and turn range to scan for unknown failure patterns." />;
   }
@@ -206,7 +244,7 @@ function DiagnoseResult({
           </h2>
         </div>
         <strong data-status={result.noFindings ? "accepted" : "rejected"}>
-          {result.noFindings ? "CLEAR" : `${result.patterns.length} FOUND`}
+          {result.noFindings ? "CLEAR" : `${result.llmFindings.length + result.patterns.length} FOUND`}
         </strong>
       </header>
 
@@ -215,6 +253,11 @@ function DiagnoseResult({
           <span>SUMMARY</span>
           <h3>{result.noFindings ? "NO FINDINGS" : "REVIEW REQUIRED"}</h3>
           <p>{result.summary}</p>
+          {result.lenses.length > 0 && (
+            <small>
+              LENSES: {result.lenses.map((lens) => lens.name).join(" / ")}
+            </small>
+          )}
         </section>
         <section>
           <span>ARTIFACTS</span>
@@ -223,35 +266,64 @@ function DiagnoseResult({
         </section>
       </div>
 
-      <div className="candidate-review__change">
-        <small>LLM FINDINGS — RANKED BY SEVERITY + CONFIDENCE</small>
-        <div>
-          {result.llmFindings.map((pattern) => (
-            <section key={pattern.id}>
-              <span>
-                {pattern.severity} / {Math.round(pattern.confidence * 100)}%
-              </span>
-              <p>
-                <strong>{pattern.title}</strong>
-                <br />
-                {pattern.diagnosis}
-              </p>
-              <p>{pattern.likelyCause}</p>
-              <p>{pattern.suggestedFix}</p>
-              {pattern.evidence.length > 0 && (
-                <small>
-                  {pattern.evidence
-                    .map((item) => `${item.ref}: ${item.summary}`)
-                    .join(" | ")}
-                </small>
-              )}
-            </section>
-          ))}
-        </div>
+      <div className="diagnose-tabs" role="tablist" aria-label="Diagnose result tabs">
+        <button
+          type="button"
+          data-active={activeTab === "findings"}
+          onClick={() => setActiveTab("findings")}
+        >
+          FINDINGS
+        </button>
+        <button
+          type="button"
+          data-active={activeTab === "tools"}
+          onClick={() => setActiveTab("tools")}
+        >
+          TOOLS ({result.toolCalls.length})
+        </button>
       </div>
 
-      {result.patterns.length > 0 && (
-        <div className="candidate-review__change">
+      {activeTab === "findings" && (
+        <>
+          <div className="candidate-review__change">
+            <small>SPECIALIZED LLM FINDINGS</small>
+            <div>
+              {result.evaluatorReports.map((report) => (
+            <section key={report.evaluatorId}>
+              <span>{report.evaluatorName}</span>
+              <p>
+                <strong>{report.findings.length} FINDING{report.findings.length === 1 ? "" : "S"}</strong>
+                <br />
+                {report.summary}
+              </p>
+              {report.findings.map((pattern) => (
+                <div key={pattern.id} className="diagnose-finding">
+                  <span>
+                    {pattern.severity} / {Math.round(pattern.confidence * 100)}%
+                  </span>
+                  <p>
+                    <strong>{pattern.title}</strong>
+                    <br />
+                    {pattern.diagnosis}
+                  </p>
+                  <p>{pattern.likelyCause}</p>
+                  <p>{pattern.suggestedFix}</p>
+                  {pattern.evidence.length > 0 && (
+                    <small>
+                      {pattern.evidence
+                        .map((item) => `${item.ref}: ${item.summary}`)
+                        .join(" | ")}
+                    </small>
+                  )}
+                </div>
+              ))}
+            </section>
+              ))}
+            </div>
+          </div>
+
+          {result.patterns.length > 0 && (
+            <div className="candidate-review__change">
           <small>DETERMINISTIC SIGNALS</small>
           <div>
             {result.patterns.map((pattern) => (
@@ -274,9 +346,104 @@ function DiagnoseResult({
               </section>
             ))}
           </div>
-        </div>
+            </div>
+          )}
+        </>
       )}
+
+      {activeTab === "tools" && <ToolsTab result={result} />}
     </section>
+  );
+}
+
+function ToolsTab({ result }: { result: DiagnoseResponse }) {
+  const expectedTools = [
+    "Read",
+    "Grep",
+    "Glob",
+    "get_guard_locations",
+    "get_job_logs",
+    "get_job_chat_messages",
+    "get_job_incidents",
+    "get_site_history",
+    "get_guard_status",
+    "get_open_obligations",
+    "request_copilot_dm",
+    "add_copilot_note",
+    "create_copilot_task",
+    "flag_copilot_guard",
+    "escalate_to_human",
+    "escalate_to_ops",
+  ];
+  const summaryByTool = new Map(result.toolSummary.map((item) => [item.tool, item]));
+
+  return (
+    <div className="candidate-review__change diagnose-tools">
+      <small>TOOLS CALLED IN TRACE WINDOW</small>
+      <div>
+        <section>
+          <span>SUMMARY</span>
+          <p>
+            <strong>{result.toolCalls.length} TOOL CALLS</strong>
+            <br />
+            Search, Read, Glob, MCP reads, and side-effect tools are listed here
+            when present in the trace. Missing tools stay at zero for future
+            integrations.
+          </p>
+        </section>
+        <section>
+          <span>TOOL INVENTORY</span>
+          <div className="diagnose-tool-inventory">
+            {expectedTools.map((tool) => {
+              const item = summaryByTool.get(tool);
+              return (
+                <span key={tool} data-empty={!item || item.count === 0}>
+                  {tool} ×{item?.count ?? 0}
+                  {item?.failures ? ` / ${item.failures} fail` : ""}
+                </span>
+              );
+            })}
+          </div>
+        </section>
+        <section className="diagnose-tool-list">
+          <span>CALL LOG</span>
+          {result.toolCalls.length === 0 ? (
+            <p>No tool calls were recorded in this selected window.</p>
+          ) : (
+            result.toolCalls.map((call) => (
+              <details key={call.ref} className="diagnose-tool-call">
+                <summary>
+                  <span className="diagnose-tool-call__name">{call.tool}</span>
+                  <span className="diagnose-tool-call__preview">
+                    {call.inputPreview.slice(0, 150)}
+                  </span>
+                  <span className="diagnose-tool-call__meta">
+                    {call.ref}{call.turn ? ` / turn ${call.turn}` : ""}
+                    {call.ok === false || call.error ? " / failed" : ""}
+                  </span>
+                </summary>
+                <div className="diagnose-tool-detail">
+                  <span>SENT</span>
+                  <pre>{call.inputPreview}</pre>
+                  <span>ANSWERED</span>
+                  {call.outputPreview ? (
+                    <pre>{call.outputPreview}</pre>
+                  ) : (
+                    <pre className="diagnose-tool-empty">no result recorded for this call</pre>
+                  )}
+                  {call.error && (
+                    <>
+                      <span>ERROR</span>
+                      <pre className="diagnose-tool-empty">{call.error}</pre>
+                    </>
+                  )}
+                </div>
+              </details>
+            ))
+          )}
+        </section>
+      </div>
+    </div>
   );
 }
 
@@ -341,7 +508,11 @@ function isDiagnoseResponse(value: unknown): value is DiagnoseResponse {
       typeof value === "object" &&
       typeof (value as DiagnoseResponse).runId === "string" &&
       typeof (value as DiagnoseResponse).jobId === "string" &&
+      Array.isArray((value as DiagnoseResponse).lenses) &&
       Array.isArray((value as DiagnoseResponse).patterns) &&
-      Array.isArray((value as DiagnoseResponse).llmFindings),
+      Array.isArray((value as DiagnoseResponse).llmFindings) &&
+      Array.isArray((value as DiagnoseResponse).evaluatorReports) &&
+      Array.isArray((value as DiagnoseResponse).toolCalls) &&
+      Array.isArray((value as DiagnoseResponse).toolSummary),
   );
 }

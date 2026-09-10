@@ -236,6 +236,7 @@ export function TheoPanel({ context, callout, onBack }: TheoPanelProps) {
 function TheoResult({ response }: { response: TheoResponse }) {
   const { diagnosis } = response;
   const promptChange = response.suggestedPromptChange;
+  const promptDiagnosis = diagnosis.prompt_diagnosis;
 
   return (
     <article className="theo-result">
@@ -266,33 +267,43 @@ function TheoResult({ response }: { response: TheoResponse }) {
       </section>
 
       <section>
-        <h3>Prompt diagnosis</h3>
-        <p>{diagnosis.prompt_diagnosis.explanation}</p>
-        <small>
-          {diagnosis.prompt_diagnosis.file} ·{" "}
-          {diagnosis.prompt_diagnosis.section} ·{" "}
-          {diagnosis.prompt_diagnosis.diagnosis_type.replaceAll("_", " ")}
-        </small>
-        <p className="theo-prompt-copy">
-          {diagnosis.prompt_diagnosis.exact_text}
+        <h3>Candidate</h3>
+        <p>
+          <strong>{response.candidate.kind.toUpperCase()}</strong>: {response.candidate.summary}
         </p>
+        <p>{response.candidate.rationale}</p>
+        <small>{response.canReplay ? "CAN REPLAY" : "MANUAL VALIDATION"}</small>
       </section>
 
-      <section>
-        <h3>Suggested prompt change</h3>
-        <small>{promptChange.file}</small>
-        <div className="theo-change">
-          <div>
-            <span>Current</span>
-            <p>{promptChange.old_text}</p>
+      {promptDiagnosis && (
+        <section>
+          <h3>Prompt diagnosis</h3>
+          <p>{promptDiagnosis.explanation}</p>
+          <small>
+            {promptDiagnosis.file} · {promptDiagnosis.section} ·{" "}
+            {promptDiagnosis.diagnosis_type.replaceAll("_", " ")}
+          </small>
+          <p className="theo-prompt-copy">{promptDiagnosis.exact_text}</p>
+        </section>
+      )}
+
+      {promptChange && (
+        <section>
+          <h3>Suggested prompt change</h3>
+          <small>{promptChange.file}</small>
+          <div className="theo-change">
+            <div>
+              <span>Current</span>
+              <p>{promptChange.old_text}</p>
+            </div>
+            <div>
+              <span>Suggested</span>
+              <p>{promptChange.new_text}</p>
+            </div>
           </div>
-          <div>
-            <span>Suggested</span>
-            <p>{promptChange.new_text}</p>
-          </div>
-        </div>
-        <p>{promptChange.intended_effect}</p>
-      </section>
+          <p>{promptChange.intended_effect}</p>
+        </section>
+      )}
 
       {diagnosis.risks.length > 0 && (
         <section>
@@ -318,8 +329,9 @@ function TheoResult({ response }: { response: TheoResponse }) {
 
       <footer>
         <span>
-          Job {response.candidatePromptJobId} · Prompt{" "}
-          {response.candidatePromptVersion}
+          {response.canReplay
+            ? `Job ${response.candidatePromptJobId} · Prompt ${response.candidatePromptVersion}`
+            : `Manual validation · ${response.candidate.kind}`}
         </span>
         <span>{response.runId}</span>
         <span>{response.artifactDirectory}</span>

@@ -13,7 +13,7 @@ jest.mock('../mastra/agents/copilot-agent', () => ({
   },
   copilotModelConfiguration: {
     model: 'openai/gpt-5-mini',
-    maxRetries: 0,
+    maxRetries: 1,
     maxSteps: 8,
   },
 }));
@@ -285,7 +285,7 @@ describe('CopilotSimulationService', () => {
       replayMode: 'candidate',
       modelConfiguration: {
         model: 'openai/gpt-5-mini',
-        maxRetries: 0,
+        maxRetries: 1,
         maxSteps: 8,
       },
     });
@@ -301,7 +301,10 @@ describe('CopilotSimulationService', () => {
           role: 'user',
           content: 'Everything is all clear',
         }),
-        expect.objectContaining({ role: 'tool' }),
+        expect.objectContaining({
+          role: 'assistant',
+          content: expect.stringContaining('Recorded prior tool activity summary'),
+        }),
       ]),
     );
     const locationEvent = debug?.eventsSupplied.find(
