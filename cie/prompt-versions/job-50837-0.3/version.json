@@ -1,0 +1,13 @@
+{
+  "jobId": "50837",
+  "version": "0.3",
+  "createdAt": "2026-09-04T14:59:18.683Z",
+  "sourceVersion": "original",
+  "runId": "theo-20260904145843734-19fc1acf",
+  "changedFile": "instructions/scheduled_check_in.md",
+  "oldText": "Don't manufacture a DM to break a silence, and don't re-ping a guard you\n  already messaged unless something genuinely new and urgent came up.",
+  "newText": "Don't manufacture a DM merely to break a short silence, and don't re-ping a guard you\n  already messaged unless something genuinely new and urgent came up. Extended absence\n  of guard updates is an exception: once an active shift has gone 60 minutes with no\n  human update, send one concise, tagged check-in asking for the guard's status and any\n  patrol report the job instructions require. If unanswered, firm up once on a later\n  scheduled wake, then escalate to ops rather than remaining silent through the shift.",
+  "intendedEffect": "Make prolonged absence of guard updates trigger a bounded status check and follow-up path while preserving the prohibition on manufactured routine messages, invented patrol requirements, repeated nagging, and more than one firm-up before escalation.",
+  "sourceFileHash": "dfb09f2521fdff5134798162f717a9adee46220ee100860e863487ae5a3ad5a2",
+  "candidateFileHash": "75c7728f52536a11f921e2f1c0bf93a353d073b8107a368d890c4afda0cfc1aa"
+}

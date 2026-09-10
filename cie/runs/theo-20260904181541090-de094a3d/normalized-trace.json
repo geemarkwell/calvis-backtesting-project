@@ -1,0 +1,536 @@
+[
+  {
+    "ref": "job:56370:baseline:47",
+    "source": "baseline",
+    "sourceIndex": 47,
+    "timestamp": "2026-08-05T02:00:45.450034+00:00",
+    "type": "copilot_message",
+    "content": "Post your first patrol report—what'd you see at the rear yard and that fence line? Any activity, damage, or anything to flag?",
+    "turnRef": "job:56370:baseline:48",
+    "trigger": "scheduled_check_in",
+    "instructionFile": "instructions/scheduled_check_in.md"
+  },
+  {
+    "ref": "job:56370:baseline:48",
+    "source": "baseline",
+    "sourceIndex": 48,
+    "timestamp": "2026-08-05T02:01:01.385661+00:00",
+    "type": "turn_start",
+    "content": {
+      "turn": 8
+    },
+    "turnRef": "job:56370:baseline:48",
+    "trigger": "scheduled_check_in",
+    "instructionFile": "instructions/scheduled_check_in.md",
+    "silent": false
+  },
+  {
+    "ref": "job:56370:baseline:49",
+    "source": "baseline",
+    "sourceIndex": 49,
+    "timestamp": "2026-08-05T02:01:41.071764+00:00",
+    "type": "tool_call",
+    "content": {
+      "tool": "Write",
+      "input": {
+        "content": {
+          "omitted": "internal workspace file contents",
+          "characterCount": 3117
+        },
+        "file_path": "workspace/analysis.md"
+      },
+      "output": "\"Wrote 3120 chars to workspace/analysis.md\"",
+      "ok": true,
+      "error": null
+    },
+    "turnRef": "job:56370:baseline:48",
+    "trigger": "scheduled_check_in",
+    "instructionFile": "instructions/scheduled_check_in.md"
+  },
+  {
+    "ref": "job:56370:baseline:50",
+    "source": "baseline",
+    "sourceIndex": 50,
+    "timestamp": "2026-08-05T02:01:41.650797+00:00",
+    "type": "tool_call",
+    "content": {
+      "tool": "mcp__calvis__get_job_logs",
+      "input": {
+        "after": "2026-08-05T01:00:00Z",
+        "job_id": 56370,
+        "session_id": "16e10cc0-7f46-41c5-83e0-15c49e07deff"
+      },
+      "output": "{\"logs\": [], \"count\": 0}",
+      "ok": true,
+      "error": null
+    },
+    "turnRef": "job:56370:baseline:48",
+    "trigger": "scheduled_check_in",
+    "instructionFile": "instructions/scheduled_check_in.md"
+  },
+  {
+    "ref": "job:56370:baseline:51",
+    "source": "baseline",
+    "sourceIndex": 51,
+    "timestamp": "2026-08-05T02:01:41.654425+00:00",
+    "type": "tool_call",
+    "content": {
+      "tool": "mcp__calvis__get_job_chat_messages",
+      "input": {
+        "limit": 25,
+        "job_id": 56370
+      },
+      "output": "{\"messages\": [{\"id\": 191477, \"room\": 124510, \"is_copilot_dm\": true, \"sender_guard\": 4069, \"sender_customer\": null, \"sender_name\": \"Copilot Assistant\", \"sender_type\": \"guard\", \"is_from_copilot\": true, \"message_type\": 0, \"text_content\": \"Hey Hector, welcome to Bellview Logistics. Fair heads-up right off: this site has an active theft problem. Two intruders have been hitting the rear perimeter (not the front gate) to steal staged materials\\u2014pipe and metal stock. Recent arrests, but they've been persistent. The job brief has the entry point marked on the photos and a camera setup to help you watch. Your patrols are the front line, weight them to the rear yard and that gap. When you get on site, open the attached photos first, then walk the perimeter\\u2014does the rear area look clear, and how's the fence looking overall?\", \"date_created\": \"2026-08-04T21:01:05.364058Z\", \"date_created_local\": \"Tue Aug 4, 5:01 PM EDT\"}, {\"id\": 191495, \"room\": 124510, \"is_copilot_dm\": true, \"sender_guard\": 4069, \"sender_customer\": null, \"sender_name\": \"Copilot Assistant\", \"sender_type\": \"guard\", \"is_from_copilot\": true, \"message_type\": 0, \"text_content\": \"Hector, quick heads-up: your uniform photo came back and the check flagged the shirt. Job requires a collared shirt or uniform shirt in dark colors\\u2014graphic tees don't qualify. I've looped ops in, but you may hear from them. Do you have the right shirt with you, or do we need to sort this before you clock in at 7?\", \"date_created\": \"2026-08-04T21:19:11.998493Z\", \"date_created_local\": \"Tue Aug 4, 5:19 PM EDT\"}, {\"id\": 191597, \"room\": 124510, \"is_copilot_dm\": true, \"sender_guard\": 4069, \"sender_customer\": null, \"sender_name\": \"Copilot Assistant\", \"sender_type\": \"guard\", \"is_from_copilot\": true, \"message_type\": 0, \"text_content\": \"Hey Hector, I see you're at the site. What's the status? You should be clocking in now\\u2014did the gate code work, and how are we on the uniform? Need to know what's blocking you from starting.\", \"date_created\": \"2026-08-04T23:00:27.563489Z\", \"date_created_local\": \"Tue Aug 4, 7:00 PM EDT\"}, {\"id\": 191635, \"room\": 124510, \"is_copilot_dm\": true, \"sender_guard\": 4069, \"sender_customer\": null, \"sender_name\": \"Copilot Assistant\", \"sender_type\": \"guard\", \"is_from_copilot\": true, \"message_type\": 0, \"text_content\": \"Good, you're clocked in. Before you head out, open the three attached site photos\\u2014photo 1 especially shows you the rear entry gap where the intruders have been coming through. Once you walk the perimeter and get a read on the rear yard and that fence, let me know what you see.\", \"date_created\": \"2026-08-04T23:23:57.799714Z\", \"date_created_local\": \"Tue Aug 4, 7:23 PM EDT\"}, {\"id\": 191787, \"room\": 124510, \"is_copilot_dm\": true, \"sender_guard\": 4069, \"sender_customer\": null, \"sender_name\": \"Copilot Assistant\", \"sender_type\": \"guard\", \"is_from_copilot\": true, \"message_type\": 0, \"text_content\": \"Hey, you're doing good getting settled. Photos got you oriented? Time to get moving and start walking the perimeter\\u2014weight it toward that rear area and the fence line. Let me know what you find back there.\", \"date_created\": \"2026-08-05T01:00:43.291535Z\", \"date_created_local\": \"Tue Aug 4, 9:00 PM EDT\"}], \"count\": 5}",
+      "ok": true,
+      "error": null
+    },
+    "turnRef": "job:56370:baseline:48",
+    "trigger": "scheduled_check_in",
+    "instructionFile": "instructions/scheduled_check_in.md"
+  },
+  {
+    "ref": "job:56370:baseline:52",
+    "source": "baseline",
+    "sourceIndex": 52,
+    "timestamp": "2026-08-05T02:01:41.656343+00:00",
+    "type": "tool_call",
+    "content": {
+      "tool": "mcp__calvis__get_guard_locations",
+      "input": {
+        "after": "2026-08-05T01:30:00Z",
+        "job_id": 56370,
+        "session_id": "16e10cc0-7f46-41c5-83e0-15c49e07deff",
+        "include_pings": true
+      },
+      "output": {
+        "locations": {
+          "omitted": true,
+          "count": 0
+        },
+        "guards": [],
+        "count": 0,
+        "summary": {
+          "total_pings": 0,
+          "unique_guards": 0,
+          "time_span_minutes": 0,
+          "avg_distance_from_site_meters": 0,
+          "geo_fence_radius_meters": 150
+        }
+      },
+      "ok": true,
+      "error": null
+    },
+    "turnRef": "job:56370:baseline:48",
+    "trigger": "scheduled_check_in",
+    "instructionFile": "instructions/scheduled_check_in.md"
+  },
+  {
+    "ref": "job:56370:baseline:53",
+    "source": "baseline",
+    "sourceIndex": 53,
+    "timestamp": "2026-08-05T02:01:41.658872+00:00",
+    "type": "tool_call",
+    "content": {
+      "tool": "mcp__calvis__get_guard_locations",
+      "input": {
+        "job_id": 56370,
+        "session_id": "16e10cc0-7f46-41c5-83e0-15c49e07deff",
+        "include_pings": true
+      },
+      "output": {
+        "omitted": "unparseable raw location or telemetry output",
+        "characterCount": 10197
+      },
+      "ok": true,
+      "error": null
+    },
+    "turnRef": "job:56370:baseline:48",
+    "trigger": "scheduled_check_in",
+    "instructionFile": "instructions/scheduled_check_in.md"
+  },
+  {
+    "ref": "job:56370:baseline:54",
+    "source": "baseline",
+    "sourceIndex": 54,
+    "timestamp": "2026-08-05T02:01:41.661046+00:00",
+    "type": "tool_call",
+    "content": {
+      "tool": "mcp__calvis__request_copilot_dm",
+      "input": {
+        "body": "Post your first patrol report—what'd you see at the rear yard and that fence line? Any activity, damage, or anything to flag?",
+        "meta": {
+          "copilot_action": {
+            "kind": "report"
+          }
+        },
+        "session_id": "16e10cc0-7f46-41c5-83e0-15c49e07deff",
+        "recipient_guard_id": 9674
+      },
+      "output": "{\"ok\": true, \"delivered_via\": \"streaming\", \"dm_request\": {\"status\": \"approved\"}}",
+      "ok": true,
+      "error": null
+    },
+    "turnRef": "job:56370:baseline:48",
+    "trigger": "scheduled_check_in",
+    "instructionFile": "instructions/scheduled_check_in.md"
+  },
+  {
+    "ref": "job:56370:events:663",
+    "source": "events",
+    "sourceIndex": 663,
+    "timestamp": "2026-08-05T02:01:58.937756+00:00",
+    "type": "guard_message",
+    "content": "There was nothing to report and there was nothing damage or any activity",
+    "turnRef": "job:56370:baseline:58",
+    "trigger": "guard_message",
+    "instructionFile": "instructions/guard_response.md"
+  },
+  {
+    "ref": "job:56370:baseline:55",
+    "source": "baseline",
+    "sourceIndex": 55,
+    "timestamp": "2026-08-05T02:02:25.322022+00:00",
+    "type": "copilot_message",
+    "content": "Good, rear area's clear. Did you get around the full perimeter and check both buildings, or just the rear? Want to make sure you've walked the whole site.",
+    "turnRef": "job:56370:baseline:58",
+    "trigger": "guard_message",
+    "instructionFile": "instructions/guard_response.md"
+  },
+  {
+    "ref": "job:56370:baseline:56",
+    "source": "baseline",
+    "sourceIndex": 56,
+    "timestamp": "2026-08-05T02:02:32.644798+00:00",
+    "type": "tool_call",
+    "content": {
+      "tool": "mcp__calvis__get_guard_locations",
+      "input": {
+        "after": "2026-08-05T01:45:00Z",
+        "job_id": 56370,
+        "session_id": "16e10cc0-7f46-41c5-83e0-15c49e07deff",
+        "include_pings": true
+      },
+      "output": {
+        "omitted": "unparseable raw location or telemetry output",
+        "characterCount": 10237
+      },
+      "ok": true,
+      "error": null
+    },
+    "turnRef": "job:56370:baseline:58",
+    "trigger": "guard_message",
+    "instructionFile": "instructions/guard_response.md"
+  },
+  {
+    "ref": "job:56370:baseline:57",
+    "source": "baseline",
+    "sourceIndex": 57,
+    "timestamp": "2026-08-05T02:02:32.644898+00:00",
+    "type": "tool_call",
+    "content": {
+      "tool": "mcp__calvis__get_job_logs",
+      "input": {
+        "after": "2026-08-05T01:45:00Z",
+        "job_id": 56370,
+        "session_id": "16e10cc0-7f46-41c5-83e0-15c49e07deff"
+      },
+      "output": "{\"logs\": [], \"count\": 0}",
+      "ok": true,
+      "error": null
+    },
+    "turnRef": "job:56370:baseline:58",
+    "trigger": "guard_message",
+    "instructionFile": "instructions/guard_response.md"
+  },
+  {
+    "ref": "job:56370:baseline:58",
+    "source": "baseline",
+    "sourceIndex": 58,
+    "timestamp": "2026-08-05T02:02:41.719042+00:00",
+    "type": "turn_start",
+    "content": {
+      "turn": 9
+    },
+    "turnRef": "job:56370:baseline:58",
+    "trigger": "guard_message",
+    "instructionFile": "instructions/guard_response.md",
+    "silent": false
+  },
+  {
+    "ref": "job:56370:baseline:59",
+    "source": "baseline",
+    "sourceIndex": 59,
+    "timestamp": "2026-08-05T02:02:48.047443+00:00",
+    "type": "tool_call",
+    "content": {
+      "tool": "mcp__calvis__request_copilot_dm",
+      "input": {
+        "body": "Good, rear area's clear. Did you get around the full perimeter and check both buildings, or just the rear? Want to make sure you've walked the whole site.",
+        "session_id": "16e10cc0-7f46-41c5-83e0-15c49e07deff",
+        "recipient_guard_id": 9674
+      },
+      "output": "{\"ok\": true, \"delivered_via\": \"streaming\", \"dm_request\": {\"status\": \"approved\"}}",
+      "ok": true,
+      "error": null
+    },
+    "turnRef": "job:56370:baseline:58",
+    "trigger": "guard_message",
+    "instructionFile": "instructions/guard_response.md"
+  },
+  {
+    "ref": "job:56370:baseline:60",
+    "source": "baseline",
+    "sourceIndex": 60,
+    "timestamp": "2026-08-05T02:02:48.047694+00:00",
+    "type": "tool_call",
+    "content": {
+      "tool": "Write",
+      "input": {
+        "content": {
+          "omitted": "internal workspace file contents",
+          "characterCount": 3516
+        },
+        "file_path": "workspace/analysis.md"
+      },
+      "output": "\"Wrote 3519 chars to workspace/analysis.md\"",
+      "ok": true,
+      "error": null
+    },
+    "turnRef": "job:56370:baseline:58",
+    "trigger": "guard_message",
+    "instructionFile": "instructions/guard_response.md"
+  },
+  {
+    "ref": "job:56370:events:668",
+    "source": "events",
+    "sourceIndex": 668,
+    "timestamp": "2026-08-05T02:03:28.102686+00:00",
+    "type": "guard_message",
+    "content": "Yes I walk the whole site and I check the rear and there was no activity",
+    "turnRef": "job:56370:baseline:62",
+    "trigger": "guard_message",
+    "instructionFile": "instructions/guard_response.md"
+  },
+  {
+    "ref": "job:56370:baseline:61",
+    "source": "baseline",
+    "sourceIndex": 61,
+    "timestamp": "2026-08-05T02:03:39.741445+00:00",
+    "type": "tool_call",
+    "content": {
+      "tool": "mcp__calvis__get_guard_locations",
+      "input": {
+        "job_id": 56370,
+        "session_id": "16e10cc0-7f46-41c5-83e0-15c49e07deff",
+        "include_pings": true
+      },
+      "output": {
+        "omitted": "unparseable raw location or telemetry output",
+        "characterCount": 10197
+      },
+      "ok": true,
+      "error": null
+    },
+    "turnRef": "job:56370:baseline:62",
+    "trigger": "guard_message",
+    "instructionFile": "instructions/guard_response.md"
+  },
+  {
+    "ref": "job:56370:baseline:62",
+    "source": "baseline",
+    "sourceIndex": 62,
+    "timestamp": "2026-08-05T02:03:51.791566+00:00",
+    "type": "turn_start",
+    "content": {
+      "turn": 10
+    },
+    "turnRef": "job:56370:baseline:62",
+    "trigger": "guard_message",
+    "instructionFile": "instructions/guard_response.md",
+    "silent": false
+  },
+  {
+    "ref": "job:56370:baseline:63",
+    "source": "baseline",
+    "sourceIndex": 63,
+    "timestamp": "2026-08-05T02:03:54.631867+00:00",
+    "type": "copilot_message",
+    "content": "Copy that. Just to make sure we're aligned—the job calls for walking the full perimeter and both buildings, not staying in one spot. My telemetry shows you've been in a tight area all shift. Can you do a full loop right now? Hit the front, sides, rear, and both buildings. This one's important.",
+    "turnRef": "job:56370:baseline:62",
+    "trigger": "guard_message",
+    "instructionFile": "instructions/guard_response.md"
+  },
+  {
+    "ref": "job:56370:baseline:64",
+    "source": "baseline",
+    "sourceIndex": 64,
+    "timestamp": "2026-08-05T02:04:00.140736+00:00",
+    "type": "tool_call",
+    "content": {
+      "tool": "mcp__calvis__flag_copilot_guard",
+      "input": {
+        "reason": "Guard reports completing full perimeter patrol and building checks at 10:03 PM with all-clear status. However, location telemetry shows continuous stationary positioning in single tight cluster (35.8258/-78.7715 area, ~50-80m spread) from 8:46 PM through 10:03 PM—over 1 hour 15 minutes—with no significant movement to other areas of property. Job requires roaming foot patrol of full perimeter and both buildings at irregular intervals. Reported patrol activity does not align with movement data. Requires verification of actual patrol completion.\",\n<parameter name=\"severity\">medium",
+        "category": "compliance",
+        "guard_id": 9674,
+        "session_id": "16e10cc0-7f46-41c5-83e0-15c49e07deff"
+      },
+      "output": "{\"task_id\": \"40818742-161b-4bb8-92bd-2c0a5f914414\", \"status\": \"pending_approval\", \"title\": \"Flag guard: Guard reports completing full perimeter patrol and building checks at 10:03 PM with all-clear status. However, location telemetry shows continuous stationary positioning in single tight cluster (35.8258/-78.7715 area, ~50-80m spread) from 8:46 PM through 10:03 PM\\u2014over 1 hour 15 minutes\\u2014with no significant movement to other areas of property. Job requires roaming foot patrol of full perimeter and both buildings at irregular intervals. Reported patrol activity does not align with movement data. Requires verification of actual patrol completion.\\\",\\n<parameter name=\\\"severity\\\">medium\", \"task_type\": \"flag_guard\"}",
+      "ok": true,
+      "error": null
+    },
+    "turnRef": "job:56370:baseline:62",
+    "trigger": "guard_message",
+    "instructionFile": "instructions/guard_response.md"
+  },
+  {
+    "ref": "job:56370:baseline:65",
+    "source": "baseline",
+    "sourceIndex": 65,
+    "timestamp": "2026-08-05T02:04:00.140856+00:00",
+    "type": "tool_call",
+    "content": {
+      "tool": "mcp__calvis__request_copilot_dm",
+      "input": {
+        "body": "Copy that. Just to make sure we're aligned—the job calls for walking the full perimeter and both buildings, not staying in one spot. My telemetry shows you've been in a tight area all shift. Can you do a full loop right now? Hit the front, sides, rear, and both buildings. This one's important.",
+        "meta": {
+          "copilot_action": {
+            "kind": "report"
+          }
+        },
+        "session_id": "16e10cc0-7f46-41c5-83e0-15c49e07deff",
+        "recipient_guard_id": 9674
+      },
+      "output": "{\"ok\": true, \"delivered_via\": \"streaming\", \"dm_request\": {\"status\": \"approved\"}}",
+      "ok": true,
+      "error": null
+    },
+    "turnRef": "job:56370:baseline:62",
+    "trigger": "guard_message",
+    "instructionFile": "instructions/guard_response.md"
+  },
+  {
+    "ref": "job:56370:baseline:66",
+    "source": "baseline",
+    "sourceIndex": 66,
+    "timestamp": "2026-08-05T02:04:20.560145+00:00",
+    "type": "tool_call",
+    "content": {
+      "tool": "Write",
+      "input": {
+        "content": {
+          "omitted": "internal workspace file contents",
+          "characterCount": 4297
+        },
+        "file_path": "workspace/analysis.md"
+      },
+      "output": "\"Wrote 4299 chars to workspace/analysis.md\"",
+      "ok": true,
+      "error": null
+    },
+    "turnRef": "job:56370:baseline:62",
+    "trigger": "guard_message",
+    "instructionFile": "instructions/guard_response.md"
+  },
+  {
+    "ref": "job:56370:events:674",
+    "source": "events",
+    "sourceIndex": 674,
+    "timestamp": "2026-08-05T02:05:14.329120+00:00",
+    "type": "guard_message",
+    "content": "Ok I going to need to leave my phone in my car so that I won’t get distracted from the internet",
+    "turnRef": "job:56370:baseline:70",
+    "trigger": "guard_message",
+    "instructionFile": "instructions/guard_response.md"
+  },
+  {
+    "ref": "job:56370:baseline:67",
+    "source": "baseline",
+    "sourceIndex": 67,
+    "timestamp": "2026-08-05T02:05:26.178877+00:00",
+    "type": "copilot_message",
+    "content": "Hold up—I can't have the post dark. The app needs to stay with you or we lose contact and location. I'm looping ops in now. They'll reach out to sort this out. For right now, keep the phone on you and do that full loop. We'll work out the distraction piece with your supervisor.",
+    "turnRef": "job:56370:baseline:70",
+    "trigger": "guard_message",
+    "instructionFile": "instructions/guard_response.md"
+  },
+  {
+    "ref": "job:56370:baseline:68",
+    "source": "baseline",
+    "sourceIndex": 68,
+    "timestamp": "2026-08-05T02:05:28.036689+00:00",
+    "type": "tool_call",
+    "content": {
+      "tool": "mcp__calvis__escalate_to_human",
+      "input": {
+        "details": "Hector Nguyen (ID 9674) just messaged: \"Ok I going to need to leave my phone in my car so that I won't get distracted from the internet.\" This signals intent to disconnect from the app and lose location telemetry during shift. Context: (1) Guard has been stationary in single tight cluster for 1h 17m despite two explicit patrol requests; (2) Just received direct instruction to do full perimeter loop immediately; (3) Now announcing intent to leave phone behind, which would disable both app communication and location tracking. Post is scheduled 7 PM–6 AM with only one guard (Larkspur, ID 9674). If he disconnects, there is no visibility or contact for remainder of shift. Requires immediate ops intervention to clarify expectations and address the underlying compliance/engagement issue.\",\n<parameter name=\"guard_id\">9674",
+        "summary": "Guard signaling intent to leave phone in vehicle and disconnect from app/telemetry during active shift. Post would go dark. Compliance issue also active (guard has not executed full perimeter patrol despite direct instruction). Coverage gap risk.",
+        "severity": "critical",
+        "session_id": "16e10cc0-7f46-41c5-83e0-15c49e07deff"
+      },
+      "output": "{\"posted\": true, \"status\": \"escalated\", \"severity\": \"critical\"}",
+      "ok": true,
+      "error": null
+    },
+    "turnRef": "job:56370:baseline:70",
+    "trigger": "guard_message",
+    "instructionFile": "instructions/guard_response.md"
+  },
+  {
+    "ref": "job:56370:baseline:69",
+    "source": "baseline",
+    "sourceIndex": 69,
+    "timestamp": "2026-08-05T02:05:28.036748+00:00",
+    "type": "tool_call",
+    "content": {
+      "tool": "mcp__calvis__request_copilot_dm",
+      "input": {
+        "body": "Hold up—I can't have the post dark. The app needs to stay with you or we lose contact and location. I'm looping ops in now. They'll reach out to sort this out. For right now, keep the phone on you and do that full loop. We'll work out the distraction piece with your supervisor.",
+        "session_id": "16e10cc0-7f46-41c5-83e0-15c49e07deff",
+        "recipient_guard_id": 9674
+      },
+      "output": "{\"ok\": true, \"delivered_via\": \"streaming\", \"dm_request\": {\"status\": \"approved\"}}",
+      "ok": true,
+      "error": null
+    },
+    "turnRef": "job:56370:baseline:70",
+    "trigger": "guard_message",
+    "instructionFile": "instructions/guard_response.md"
+  },
+  {
+    "ref": "job:56370:baseline:70",
+    "source": "baseline",
+    "sourceIndex": 70,
+    "timestamp": "2026-08-05T02:05:46.777284+00:00",
+    "type": "turn_start",
+    "content": {
+      "turn": 11
+    },
+    "turnRef": "job:56370:baseline:70",
+    "trigger": "guard_message",
+    "instructionFile": "instructions/guard_response.md",
+    "silent": false
+  },
+  {
+    "ref": "job:56370:baseline:71",
+    "source": "baseline",
+    "sourceIndex": 71,
+    "timestamp": "2026-08-05T02:05:48.703492+00:00",
+    "type": "tool_call",
+    "content": {
+      "tool": "Write",
+      "input": {
+        "content": {
+          "omitted": "internal workspace file contents",
+          "characterCount": 4540
+        },
+        "file_path": "workspace/analysis.md"
+      },
+      "output": "\"Wrote 4541 chars to workspace/analysis.md\"",
+      "ok": true,
+      "error": null
+    },
+    "turnRef": "job:56370:baseline:70",
+    "trigger": "guard_message",
+    "instructionFile": "instructions/guard_response.md"
+  }
+]

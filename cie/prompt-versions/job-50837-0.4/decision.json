@@ -1,0 +1,15 @@
+{
+  "jobId": "50837",
+  "version": "0.4",
+  "status": "rejected",
+  "createdAt": "2026-09-04T18:07:19.926Z",
+  "decidedAt": "2026-09-04T18:10:16.932Z",
+  "evaluation": {
+    "runId": "maya-50837-4",
+    "judgedAt": "2026-09-04T18:08:54.439Z",
+    "fixed": false,
+    "verdict": "no",
+    "confidence": 97,
+    "summary": "The historical baseline and old replay reproduce five silent scheduled check-ins from 3am through 7am. The candidate partially improved by sending one guard-directed message at turn 11 and adding a note at turn 12, but it remained silent for turns 8–10, never requested a patrol report, and sent no outbound message at the final turn. The called-out behavior was therefore not fully fixed."
+  }
+}

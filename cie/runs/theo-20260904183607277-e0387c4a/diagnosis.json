@@ -1,0 +1,121 @@
+{
+  "job_ids": [
+    "56370"
+  ],
+  "what_went_wrong": "On job 56370 the guard said he'd walked the full site and checked both buildings. The copilot pushed back on him three times in four minutes and flagged him. Too hard for what it actually had.",
+  "failure_mode": "A completed-patrol report was acknowledged but then treated as requiring additional proof, producing an unnecessary follow-up instead of closing the loop.",
+  "evidence_windows": [
+    {
+      "job_id": "56370",
+      "start_turn": 8,
+      "end_turn": 11,
+      "trace_refs": [
+        "job:56370:simulation:1:baseline:0",
+        "job:56370:simulation:1:events:65",
+        "job:56370:simulation:1:baseline:1",
+        "job:56370:simulation:1:baseline:2",
+        "job:56370:simulation:1:events:69",
+        "job:56370:simulation:1:baseline:3",
+        "job:56370:simulation:1:baseline:4",
+        "job:56370:simulation:1:events:76",
+        "job:56370:simulation:1:baseline:5",
+        "job:56370:simulation:1:baseline:6"
+      ]
+    }
+  ],
+  "observed_behavior": [
+    {
+      "claim": "Turn 8 was a silent scheduled check-in with no recorded message or action.",
+      "trace_refs": [
+        "job:56370:simulation:1:baseline:0"
+      ]
+    },
+    {
+      "claim": "After the guard reported no damage or activity, the Copilot acknowledged the all-clear and directed continued attention toward the rear gap and staged materials.",
+      "trace_refs": [
+        "job:56370:simulation:1:events:65",
+        "job:56370:simulation:1:baseline:1",
+        "job:56370:simulation:1:baseline:2"
+      ]
+    },
+    {
+      "claim": "After the guard explicitly said he had walked the whole site, checked the rear, and found no activity, the Copilot acknowledged the full walk but immediately asked for separate confirmation of the rear fence and materials and requested a photo.",
+      "trace_refs": [
+        "job:56370:simulation:1:events:69",
+        "job:56370:simulation:1:baseline:3",
+        "job:56370:simulation:1:baseline:4"
+      ]
+    },
+    {
+      "claim": "When the guard said he planned to leave his phone in his car, the Copilot raised camera, messaging, and incident-reporting implications and asked him either to keep it silenced or confirm that he would leave it behind.",
+      "trace_refs": [
+        "job:56370:simulation:1:events:76",
+        "job:56370:simulation:1:baseline:5",
+        "job:56370:simulation:1:baseline:6"
+      ]
+    },
+    {
+      "claim": "The supplied window records one patrol-detail follow-up after the full-walk answer and no flag, alert, note, or escalation action.",
+      "trace_refs": [
+        "job:56370:simulation:1:baseline:0",
+        "job:56370:simulation:1:events:65",
+        "job:56370:simulation:1:baseline:1",
+        "job:56370:simulation:1:baseline:2",
+        "job:56370:simulation:1:events:69",
+        "job:56370:simulation:1:baseline:3",
+        "job:56370:simulation:1:baseline:4",
+        "job:56370:simulation:1:events:76",
+        "job:56370:simulation:1:baseline:5",
+        "job:56370:simulation:1:baseline:6"
+      ]
+    }
+  ],
+  "expected_behavior": "The agent should not repeadly ask the guard the same question over and over. Once the guard answers, it should acknowledge",
+  "relevant_turns": [
+    {
+      "turn_ref": "job:56370:simulation:1:baseline:0",
+      "trigger": "scheduled_check_in",
+      "instruction_file": "instructions/scheduled_check_in.md"
+    },
+    {
+      "turn_ref": "job:56370:simulation:1:baseline:1",
+      "trigger": "guard_message",
+      "instruction_file": "instructions/guard_response.md"
+    },
+    {
+      "turn_ref": "job:56370:simulation:1:baseline:3",
+      "trigger": "guard_message",
+      "instruction_file": "instructions/guard_response.md"
+    },
+    {
+      "turn_ref": "job:56370:simulation:1:baseline:5",
+      "trigger": "guard_message",
+      "instruction_file": "instructions/guard_response.md"
+    }
+  ],
+  "prompt_diagnosis": {
+    "file": "instructions/guard_response.md",
+    "section": "Read the reply literally and match it",
+    "exact_text": "- **A status claim that asserts work got done** (rounds or walkthrough complete, \"all\n  clear,\" checklist done) → not small talk; it's an implicit report. Verify before you\n  affirm it, don't rubber-stamp.",
+    "diagnosis_type": "overly_forceful",
+    "explanation": "The unconditional command to verify before affirming can make a sufficient first-person completion report feel unresolved. Although later text says the guard's account outranks GPS and permits acknowledgment, this earlier directive does not explicitly say when verification is complete or when to stop questioning. That likely encouraged the extra fence, materials, and photo request after the guard had already reported a full walk and an all-clear."
+  },
+  "hypothesis": "The model interpreted “Verify before you affirm it, don't rubber-stamp” as requiring additional granular proof for a completed walkthrough. Because the prompt does not explicitly close verification once the guard has answered the relevant scope and no specific contradiction remains, it likely converted the acknowledgment into another evidence-seeking question.",
+  "proposed_edit": {
+    "file": "instructions/guard_response.md",
+    "old_text": "- **A status claim that asserts work got done** (rounds or walkthrough complete, \"all\n  clear,\" checklist done) → not small talk; it's an implicit report. Verify before you\n  affirm it, don't rubber-stamp.",
+    "new_text": "- **A status claim that asserts work got done** (rounds or walkthrough complete, \"all\n  clear,\" checklist done) → not small talk; it's an implicit report. Verify against\n  available evidence before you affirm it, but don't turn verification into repeated\n  questioning. Once the guard has answered the relevant scope and no specific\n  contradiction remains, acknowledge it and close the loop.",
+    "intended_effect": "Give the model a clear stopping condition so it acknowledges a sufficient patrol report rather than seeking additional confirmation without contradictory evidence."
+  },
+  "risks": [
+    "The model may accept an inaccurate completion claim too readily when contradictory evidence is subtle or unavailable.",
+    "Closing the loop sooner could reduce collection of useful site detail, though specific incidents, tracked issues, client-required report elements, and genuine contradictions would still justify follow-up."
+  ],
+  "confidence": 0.86,
+  "uncertainties": [
+    "The supplied trace does not contain the reported flag action, so its prompt cause cannot be directly evaluated.",
+    "The supplied window shows one patrol-detail follow-up after the full-walk answer, not three repetitions of the same question.",
+    "No tool results or hidden conversation context are supplied, so it is unknown whether the Copilot had contradictory telemetry or an open tracked issue motivating the fence question.",
+    "The phone discussion is a distinct coverage and reporting issue rather than a repetition of the patrol question."
+  ]
+}

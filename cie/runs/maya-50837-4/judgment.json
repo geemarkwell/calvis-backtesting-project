@@ -1,0 +1,86 @@
+{
+  "version": 1,
+  "runId": "maya-50837-4",
+  "judgedAt": "2026-09-04T18:08:54.439Z",
+  "jobId": "50837",
+  "callout": "On job 50837 the copilot went quiet after the first hour. It woke on schedule five times between 3am and 7am and sent nothing at all — no patrol report asked for, no check on the guard, all the way to the end of the shift.",
+  "oldReplay": {
+    "simulationNumber": null,
+    "logFile": null
+  },
+  "candidateReplay": {
+    "simulationNumber": 25,
+    "logFile": "database/simulate-25.json"
+  },
+  "verdict": {
+    "fixed": false,
+    "verdict": "no",
+    "summary": "The historical baseline and old replay reproduce five silent scheduled check-ins from 3am through 7am. The candidate partially improved by sending one guard-directed message at turn 11 and adding a note at turn 12, but it remained silent for turns 8–10, never requested a patrol report, and sent no outbound message at the final turn. The called-out behavior was therefore not fully fixed.",
+    "confidence": 97,
+    "criteria": [
+      {
+        "claim": "The Copilot should send at least one outbound guard message instead of remaining completely quiet across all five scheduled check-ins.",
+        "old_measurement": 0,
+        "candidate_measurement": 1,
+        "passed": true,
+        "evidence": [
+          "old:turn:8",
+          "old:turn:9",
+          "old:turn:10",
+          "old:turn:11",
+          "old:turn:12",
+          "candidate:turn:11:message:0",
+          "candidate:turn:12:action:0",
+          "historical:turn:8",
+          "historical:turn:9",
+          "historical:turn:10",
+          "historical:turn:11",
+          "historical:turn:12"
+        ]
+      },
+      {
+        "claim": "The Copilot should request the patrol report during the called-out scheduled-check window.",
+        "old_measurement": 0,
+        "candidate_measurement": 1,
+        "passed": false,
+        "evidence": [
+          "old:turn:8",
+          "old:turn:9",
+          "old:turn:10",
+          "old:turn:11",
+          "old:turn:12",
+          "candidate:turn:11:message:0",
+          "candidate:turn:12:action:0"
+        ]
+      },
+      {
+        "claim": "The Copilot should check in with the guard during the scheduled-check window.",
+        "old_measurement": 0,
+        "candidate_measurement": 1,
+        "passed": true,
+        "evidence": [
+          "old:turn:11",
+          "candidate:turn:11:message:0"
+        ]
+      },
+      {
+        "claim": "The Copilot should not lapse back into silence through the end of the shift window.",
+        "old_measurement": 0,
+        "candidate_measurement": 1,
+        "passed": false,
+        "evidence": [
+          "old:turn:12",
+          "candidate:turn:11:message:0",
+          "candidate:turn:12",
+          "candidate:turn:12:action:0"
+        ]
+      }
+    ],
+    "limitations": [
+      "Copilot model configurations differ: old used recorded-shift-trace with maxSteps 0, while candidate used openai/gpt-5-mini with maxSteps 8.",
+      "Full replay context parity could not be independently verified because one or both replay responses omit debug context.",
+      "The supplied action_count measurement counts the candidate's add_copilot_note tool action, not its outbound guard message; message behavior was assessed from the replay references.",
+      "No simulated guard replies were present, so the replay does not establish how a real guard would have responded to the candidate's message."
+    ]
+  }
+}

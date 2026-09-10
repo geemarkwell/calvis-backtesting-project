@@ -1,0 +1,15 @@
+{
+  "jobId": "56370",
+  "version": "0.5",
+  "status": "pending",
+  "createdAt": "2026-09-04T18:36:37.001Z",
+  "decidedAt": null,
+  "evaluation": {
+    "runId": "maya-56370-9",
+    "judgedAt": "2026-09-04T18:38:36.453Z",
+    "fixed": true,
+    "verdict": "yes",
+    "confidence": 82,
+    "summary": "The candidate no longer disputes the guard's full-site patrol report or directs another full loop, and it does not flag the guard. Its later phone question concerns reachability rather than renewing the patrol-compliance challenge."
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "jobId": "56370",
+  "version": "0.5",
+  "createdAt": "2026-09-04T18:36:37.001Z",
+  "sourceVersion": "original",
+  "runId": "theo-20260904183607277-e0387c4a",
+  "changedFile": "instructions/guard_response.md",
+  "oldText": "- **A status claim that asserts work got done** (rounds or walkthrough complete, \"all\n  clear,\" checklist done) → not small talk; it's an implicit report. Verify before you\n  affirm it, don't rubber-stamp.",
+  "newText": "- **A status claim that asserts work got done** (rounds or walkthrough complete, \"all\n  clear,\" checklist done) → not small talk; it's an implicit report. Verify against\n  available evidence before you affirm it, but don't turn verification into repeated\n  questioning. Once the guard has answered the relevant scope and no specific\n  contradiction remains, acknowledge it and close the loop.",
+  "intendedEffect": "Give the model a clear stopping condition so it acknowledges a sufficient patrol report rather than seeking additional confirmation without contradictory evidence.",
+  "sourceFileHash": "0ba3ea3918f7f78e4c27eec0f1eee108e858f856163c335b01edc73871ac4043",
+  "candidateFileHash": "4a22b8e125813f5d8c6efeafc2e87013c3db034990e3ab2409019b7696b95b10"
+}

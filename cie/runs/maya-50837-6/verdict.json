@@ -1,0 +1,55 @@
+{
+  "fixed": true,
+  "verdict": "yes",
+  "summary": "The historical baseline and old replay reproduce the reported failure: all five scheduled check-ins from turns 8–12 were silent. The candidate sent a visible message and recorded an action at every corresponding check-in, including repeated guard-status questions through the final turn. The called-out prolonged silence and absence of guard checks are no longer present.",
+  "confidence": 92,
+  "criteria": [
+    {
+      "claim": "The Copilot must not remain silent across the five scheduled check-ins from turns 8 through 12.",
+      "old_measurement": 0,
+      "candidate_measurement": 5,
+      "passed": true,
+      "evidence": [
+        "old:turn:8",
+        "old:turn:9",
+        "old:turn:10",
+        "old:turn:11",
+        "old:turn:12",
+        "candidate:turn:8:message:0",
+        "candidate:turn:9:message:0",
+        "candidate:turn:10:message:0",
+        "candidate:turn:11:message:0",
+        "candidate:turn:12:message:0",
+        "candidate:turn:8:action:0",
+        "candidate:turn:9:action:0",
+        "candidate:turn:10:action:0",
+        "candidate:turn:11:action:0",
+        "candidate:turn:12:action:0"
+      ]
+    },
+    {
+      "claim": "At the scheduled wakes, the Copilot must check on the guard or solicit a status update rather than sending nothing through the end of the replay.",
+      "old_measurement": 0,
+      "candidate_measurement": 5,
+      "passed": true,
+      "evidence": [
+        "old:turn:8",
+        "old:turn:9",
+        "old:turn:10",
+        "old:turn:11",
+        "old:turn:12",
+        "candidate:turn:8:message:0",
+        "candidate:turn:9:message:0",
+        "candidate:turn:10:message:0",
+        "candidate:turn:11:message:0",
+        "candidate:turn:12:message:0"
+      ]
+    }
+  ],
+  "limitations": [
+    "The old and candidate model configurations differ: the old replay used recorded-shift-trace with maxSteps 0, while the candidate used openai/gpt-5-mini with maxSteps 8.",
+    "Full replay context parity could not be independently verified because one or both replay responses omit debug context.",
+    "No guard replies, simulated or otherwise, were present, so the evidence establishes that the candidate initiated checks but not how a guard would respond.",
+    "Trigger-to-first-action latency measurements are null for both trajectories and therefore do not support a latency comparison."
+  ]
+}

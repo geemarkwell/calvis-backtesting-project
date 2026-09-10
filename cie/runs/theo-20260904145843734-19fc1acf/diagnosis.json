@@ -1,0 +1,102 @@
+{
+  "job_ids": [
+    "50837"
+  ],
+  "what_went_wrong": "On job 50837 the copilot went quiet after the first hour. It woke on schedule five times between 3am and 7am and sent nothing at all — no patrol report asked for, no check on the guard, all the way to the end of the shift.",
+  "failure_mode": "Repeated scheduled-wake silence caused by an overly forceful anti-nag rule that provides no exception for an extended absence of guard updates.",
+  "evidence_windows": [
+    {
+      "job_id": "50837",
+      "start_turn": 8,
+      "end_turn": 12,
+      "trace_refs": [
+        "job:50837:baseline:40",
+        "job:50837:baseline:41",
+        "job:50837:baseline:44",
+        "job:50837:baseline:45",
+        "job:50837:baseline:48",
+        "job:50837:baseline:49",
+        "job:50837:baseline:52",
+        "job:50837:baseline:53",
+        "job:50837:baseline:56",
+        "job:50837:baseline:57"
+      ]
+    }
+  ],
+  "observed_behavior": [
+    {
+      "claim": "At the 03:00 scheduled check-in, the communications rollup showed no inbound or human guard contact in the two-hour query window, and turn 8 then ended silently.",
+      "trace_refs": [
+        "job:50837:baseline:40",
+        "job:50837:baseline:41"
+      ]
+    },
+    {
+      "claim": "Turns 9 through 12 were all scheduled check-ins explicitly recorded as silent, despite repeated job-log queries returning no new logs during that period.",
+      "trace_refs": [
+        "job:50837:baseline:44",
+        "job:50837:baseline:45",
+        "job:50837:baseline:48",
+        "job:50837:baseline:49",
+        "job:50837:baseline:52",
+        "job:50837:baseline:53",
+        "job:50837:baseline:56",
+        "job:50837:baseline:57"
+      ]
+    }
+  ],
+  "expected_behavior": "At scheduled wakes, detect the extended lack of guard updates and send a concise check-in requesting the guard’s status and any required patrol report. NEVER remain silent across repeated scheduled wakes through the end of the shift.",
+  "relevant_turns": [
+    {
+      "turn_ref": "job:50837:baseline:41",
+      "trigger": "scheduled_check_in",
+      "instruction_file": "instructions/scheduled_check_in.md"
+    },
+    {
+      "turn_ref": "job:50837:baseline:45",
+      "trigger": "scheduled_check_in",
+      "instruction_file": "instructions/scheduled_check_in.md"
+    },
+    {
+      "turn_ref": "job:50837:baseline:48",
+      "trigger": "scheduled_check_in",
+      "instruction_file": "instructions/scheduled_check_in.md"
+    },
+    {
+      "turn_ref": "job:50837:baseline:52",
+      "trigger": "scheduled_check_in",
+      "instruction_file": "instructions/scheduled_check_in.md"
+    },
+    {
+      "turn_ref": "job:50837:baseline:57",
+      "trigger": "scheduled_check_in",
+      "instruction_file": "instructions/scheduled_check_in.md"
+    }
+  ],
+  "prompt_diagnosis": {
+    "file": "instructions/scheduled_check_in.md",
+    "section": "Anything else worth doing",
+    "exact_text": "Don't manufacture a DM to break a silence, and don't re-ping a guard you\n  already messaged unless something genuinely new and urgent came up.",
+    "diagnosis_type": "overly_forceful",
+    "explanation": "This language makes silence itself categorically insufficient grounds for outreach and permits another DM only for something new and urgent. Because the shift had no configured patrol or report frequency, the compliance pass could return nothing owed; the remaining instruction then likely classified prolonged absence of human updates as mere silence rather than a monitoring concern. That interpretation is consistent with five consecutive silent scheduled turns, though the trace does not prove the model's reasoning."
+  },
+  "hypothesis": "On a shift with no ledger-backed cadence, the Copilot likely treated the lack of updates as discretionary silence. The quoted anti-nag instruction then outweighed the general monitoring goal because no new urgent event appeared, producing repeated no-ops instead of a status check. Adding a narrow extended-silence exception should make prolonged lack of human contact actionable without inventing a patrol cadence or weakening normal anti-nag limits.",
+  "proposed_edit": {
+    "file": "instructions/scheduled_check_in.md",
+    "old_text": "Don't manufacture a DM to break a silence, and don't re-ping a guard you\n  already messaged unless something genuinely new and urgent came up.",
+    "new_text": "Don't manufacture a DM merely to break a short silence, and don't re-ping a guard you\n  already messaged unless something genuinely new and urgent came up. Extended absence\n  of guard updates is an exception: once an active shift has gone 60 minutes with no\n  human update, send one concise, tagged check-in asking for the guard's status and any\n  patrol report the job instructions require. If unanswered, firm up once on a later\n  scheduled wake, then escalate to ops rather than remaining silent through the shift.",
+    "intended_effect": "Make prolonged absence of guard updates trigger a bounded status check and follow-up path while preserving the prohibition on manufactured routine messages, invented patrol requirements, repeated nagging, and more than one firm-up before escalation."
+  },
+  "risks": [
+    "A 60-minute threshold may create an unnecessary check-in on posts where guards are expected to work quietly and no reporting cadence is configured.",
+    "If system-generated activity is mistaken for a human update, implementation of the instruction may still defer the check-in; the edit explicitly says human update to reduce that risk.",
+    "The added escalation path could increase non-urgent ops review if guards routinely do not answer the bounded check-in."
+  ],
+  "confidence": 0.9,
+  "uncertainties": [
+    "The raw location outputs are omitted, so the guard's movement and device-health signals cannot be assessed from the supplied evidence.",
+    "No get_open_obligations result appears in the selected window. The shift context shows null patrol and report frequencies, but the live ledger state is not directly recorded here.",
+    "The selected window does not include earlier guard-facing messages, so it is unknown what the Copilot had already asked before turn 8.",
+    "The trace establishes repeated silence but does not expose the Copilot's internal interpretation of the quoted instruction, so the causal link remains a hypothesis."
+  ]
+}

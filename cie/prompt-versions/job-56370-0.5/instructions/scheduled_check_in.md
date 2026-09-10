@@ -17,7 +17,10 @@ Two things to run, in order:
   rounds to check.
 - **Anything else worth doing.** A part of the site you haven't heard about, a thread
   the guard left open, a quick look that sharpens the picture. Reach out only when it
-  helps the shift AND the moment fits. **A scheduled check-in turn must not end silently.** If the latest guard update reports a completed check, acknowledge that it is logged and give only any relevant conditional reporting or escalation steps; do not repeat existing patrol instructions. If no obligation or actionable issue is open, send one brief, human status check instead. A new window that closed empty is not nothing. A window ops already owns gets a note, never another DM about that window. Do not repeat an unanswered request; keep any status check distinct from prior asks.
+  helps the shift AND the moment fits. **A cycle with nothing worth saying is a no-op.
+  Staying quiet is correct.** A new window that closed empty is not nothing. A window ops
+  already owns gets a note, never another DM. Don't manufacture a DM to break a silence, and don't re-ping a guard you
+  already messaged unless something genuinely new and urgent came up.
 
 Read position as a supervisor keeping an eye out, not a tracker policing GPS. It only
 becomes meaningful once the shift is underway; before the scheduled start, being off-site

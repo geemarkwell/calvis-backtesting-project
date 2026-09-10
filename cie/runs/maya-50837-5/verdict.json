@@ -1,0 +1,53 @@
+{
+  "fixed": false,
+  "verdict": "no",
+  "summary": "The historical baseline and old replay reproduce the reported failure: all five scheduled turns from 3:00 through 7:00 have no Copilot messages or actions. The candidate sends one guard-facing message at 3:00, but then sends nothing to the guard at the remaining four scheduled wakes. Its four measured actions are internal add_copilot_note calls that explicitly record that no DM was sent. The sole guard-facing message also neither requests a patrol report nor checks on the guard, so the called-out behavior remains.",
+  "confidence": 93,
+  "criteria": [
+    {
+      "claim": "The Copilot must maintain guard-facing contact across the five scheduled wakes from 3:00 through 7:00 instead of going quiet through the end of the shift.",
+      "old_measurement": 0,
+      "candidate_measurement": 4,
+      "passed": false,
+      "evidence": [
+        "historical:turn:8",
+        "historical:turn:9",
+        "historical:turn:10",
+        "historical:turn:11",
+        "historical:turn:12",
+        "old:turn:8",
+        "old:turn:9",
+        "old:turn:10",
+        "old:turn:11",
+        "old:turn:12",
+        "candidate:turn:8:message:0",
+        "candidate:turn:9:action:0",
+        "candidate:turn:10:action:0",
+        "candidate:turn:11:action:0",
+        "candidate:turn:12:action:0"
+      ]
+    },
+    {
+      "claim": "Scheduled follow-up must ask for a patrol report or directly check on the guard.",
+      "old_measurement": 0,
+      "candidate_measurement": 4,
+      "passed": false,
+      "evidence": [
+        "historical:turn:8",
+        "historical:turn:12",
+        "old:turn:8",
+        "old:turn:12",
+        "candidate:turn:8:message:0",
+        "candidate:turn:9:action:0",
+        "candidate:turn:10:action:0",
+        "candidate:turn:11:action:0",
+        "candidate:turn:12:action:0"
+      ]
+    }
+  ],
+  "limitations": [
+    "Copilot model configurations differ: the old replay uses recorded-shift-trace with no steps, while the candidate uses openai/gpt-5-mini with up to eight steps.",
+    "Full replay context parity could not be independently verified because one or both replay responses omit debug context.",
+    "The candidate action_count of 4 consists entirely of internal add_copilot_note calls; it does not measure guard-facing messages and therefore does not establish that the guard was contacted."
+  ]
+}

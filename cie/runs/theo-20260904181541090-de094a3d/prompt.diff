@@ -1,0 +1,6 @@
+--- prompts/instructions/guard_response.md
++++ prompt-versions/job-56370-0.4/instructions/guard_response.md
+@@
+-Good: location shows no movement for 40 min on a 30-min patrol → "Thanks, when you
+-  get a sec, can you walk the north lot? Haven't seen movement over there in a bit."
++Good: guard confirms the full loop after one clarification despite location showing no movement → "Got it, full loop all clear. I've got it logged."

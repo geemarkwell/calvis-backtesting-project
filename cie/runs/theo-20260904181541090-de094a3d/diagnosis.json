@@ -1,0 +1,115 @@
+{
+  "job_ids": [
+    "56370"
+  ],
+  "what_went_wrong": "On job 56370 the guard said he'd walked the full site and checked both buildings. The copilot pushed back on him three times in four minutes and flagged him. Too hard for what it actually had.",
+  "failure_mode": "After the guard answered the patrol clarification, Copilot treated conflicting telemetry as grounds to direct another patrol and flag the guard rather than acknowledging the answer and closing the loop.",
+  "evidence_windows": [
+    {
+      "job_id": "56370",
+      "start_turn": 8,
+      "end_turn": 11,
+      "trace_refs": [
+        "job:56370:baseline:47",
+        "job:56370:baseline:48",
+        "job:56370:events:663",
+        "job:56370:baseline:55",
+        "job:56370:baseline:58",
+        "job:56370:events:668",
+        "job:56370:baseline:62",
+        "job:56370:baseline:63",
+        "job:56370:baseline:64",
+        "job:56370:baseline:65",
+        "job:56370:events:674",
+        "job:56370:baseline:67",
+        "job:56370:baseline:68",
+        "job:56370:baseline:70"
+      ]
+    }
+  ],
+  "observed_behavior": [
+    {
+      "claim": "On the scheduled check-in, Copilot requested a patrol report about the rear yard and fence line, and the guard answered that there was no activity or damage.",
+      "trace_refs": [
+        "job:56370:baseline:47",
+        "job:56370:events:663"
+      ]
+    },
+    {
+      "claim": "Copilot then asked whether the guard had walked the full perimeter and checked both buildings; the guard replied that he had walked the whole site and checked the rear, with no activity.",
+      "trace_refs": [
+        "job:56370:baseline:55",
+        "job:56370:events:668"
+      ]
+    },
+    {
+      "claim": "Despite that answer, Copilot cited telemetry showing a tight area and directed the guard to perform another full loop immediately, including the front, sides, rear, and both buildings.",
+      "trace_refs": [
+        "job:56370:baseline:63",
+        "job:56370:baseline:65"
+      ]
+    },
+    {
+      "claim": "In the same turn, Copilot flagged the guard for a reported patrol that allegedly did not align with location telemetry.",
+      "trace_refs": [
+        "job:56370:baseline:64"
+      ]
+    },
+    {
+      "claim": "After the guard said he intended to leave his phone in his car, Copilot again directed him to do the full loop and separately escalated the stated loss-of-contact risk to operations.",
+      "trace_refs": [
+        "job:56370:events:674",
+        "job:56370:baseline:67",
+        "job:56370:baseline:68"
+      ]
+    }
+  ],
+  "expected_behavior": "The agent should not repeadly ask the guard the same question over and over. Once the guard answers, it should acknowledge",
+  "relevant_turns": [
+    {
+      "turn_ref": "job:56370:baseline:48",
+      "trigger": "scheduled_check_in",
+      "instruction_file": "instructions/scheduled_check_in.md"
+    },
+    {
+      "turn_ref": "job:56370:baseline:58",
+      "trigger": "guard_message",
+      "instruction_file": "instructions/guard_response.md"
+    },
+    {
+      "turn_ref": "job:56370:baseline:62",
+      "trigger": "guard_message",
+      "instruction_file": "instructions/guard_response.md"
+    },
+    {
+      "turn_ref": "job:56370:baseline:70",
+      "trigger": "guard_message",
+      "instruction_file": "instructions/guard_response.md"
+    }
+  ],
+  "prompt_diagnosis": {
+    "file": "instructions/guard_response.md",
+    "section": "### Examples",
+    "exact_text": "Good: location shows no movement for 40 min on a 30-min patrol → \"Thanks, when you\n  get a sec, can you walk the north lot? Haven't seen movement over there in a bit.\"",
+    "diagnosis_type": "conflicting",
+    "explanation": "This example teaches the model to respond to a completed-work claim plus telemetry inconsistency by assigning more patrol work. That conflicts with the preceding rule that telemetry alone must not cause Copilot to direct repeated work or escalate, and that the guard's account outranks GPS. The observed response closely followed the conflicting example by citing limited movement and ordering another loop after the guard answered."
+  },
+  "hypothesis": "The concrete few-shot example was likely weighted more strongly than the nearby abstract restriction. It encouraged Copilot to convert a telemetry discrepancy into another patrol directive, which then supported the telemetry-only flag, instead of treating the guard's answer as closing the clarification and acknowledging it.",
+  "proposed_edit": {
+    "file": "instructions/guard_response.md",
+    "old_text": "Good: location shows no movement for 40 min on a 30-min patrol → \"Thanks, when you\n  get a sec, can you walk the north lot? Haven't seen movement over there in a bit.\"",
+    "new_text": "Good: guard confirms the full loop after one clarification despite location showing no movement → \"Got it, full loop all clear. I've got it logged.\"",
+    "intended_effect": "Align the example with the governing rule and the requested behavior: after one clarification is answered, acknowledge the patrol report rather than using telemetry alone to assign the same work again or justify escalation."
+  },
+  "risks": [
+    "A model could become too willing to accept an inaccurate completion claim, although the surrounding prompt still permits one neutral clarification and escalation when evidence beyond telemetry shows noncompliance or post risk.",
+    "The edit does not reduce monitoring or escalation for an independently stated coverage risk, such as the guard's later intent to leave the phone behind."
+  ],
+  "confidence": 0.88,
+  "uncertainties": [
+    "The raw location trajectories are omitted or unparseable in the supplied window, so the strength and accuracy of the telemetry discrepancy cannot be independently assessed.",
+    "The first clarification was not necessarily repetitive because the guard's initial answer addressed conditions but did not explicitly confirm the full perimeter or both buildings; the clearest failure begins after the guard answered that clarification.",
+    "The turn-11 escalation followed the guard's separate statement that he would leave his phone in the car, which may independently justify contact-preservation action and is not the primary behavior targeted by this edit.",
+    "The trace does not expose model deliberation, so the causal role of the conflicting example is a prompt-grounded hypothesis rather than proven causation."
+  ]
+}

@@ -1,0 +1,102 @@
+{
+  "job_ids": [
+    "50837"
+  ],
+  "what_went_wrong": "On job 50837 the copilot went quiet after the first hour. It woke on schedule five times between 3am and 7am and sent nothing at all — no patrol report asked for, no check on the guard, all the way to the end of the shift.",
+  "failure_mode": "Repeated scheduled-check-in no-ops: the Copilot performed internal checks and updated its workspace but produced no guard-facing communication on turns 8 through 12.",
+  "evidence_windows": [
+    {
+      "job_id": "50837",
+      "start_turn": 8,
+      "end_turn": 12,
+      "trace_refs": [
+        "job:50837:baseline:41",
+        "job:50837:baseline:42",
+        "job:50837:baseline:45",
+        "job:50837:baseline:46",
+        "job:50837:baseline:48",
+        "job:50837:baseline:50",
+        "job:50837:baseline:52",
+        "job:50837:baseline:54",
+        "job:50837:baseline:57",
+        "job:50837:baseline:58"
+      ]
+    }
+  ],
+  "observed_behavior": [
+    {
+      "claim": "Scheduled-check-in turns 8, 9, 10, 11, and 12 are each explicitly recorded as silent.",
+      "trace_refs": [
+        "job:50837:baseline:41",
+        "job:50837:baseline:45",
+        "job:50837:baseline:48",
+        "job:50837:baseline:52",
+        "job:50837:baseline:57"
+      ]
+    },
+    {
+      "claim": "After each silent turn began, the Copilot wrote to its internal analysis workspace rather than sending a guard-facing message.",
+      "trace_refs": [
+        "job:50837:baseline:42",
+        "job:50837:baseline:46",
+        "job:50837:baseline:50",
+        "job:50837:baseline:54",
+        "job:50837:baseline:58"
+      ]
+    }
+  ],
+  "expected_behavior": "Acknowledge and log the completed check, then provide only the relevant conditional reporting and escalation steps. Do not repeat existing patrol instructions. It should NEVER be silent and always say something to the gaurd",
+  "relevant_turns": [
+    {
+      "turn_ref": "job:50837:baseline:41",
+      "trigger": "scheduled_check_in",
+      "instruction_file": "instructions/scheduled_check_in.md"
+    },
+    {
+      "turn_ref": "job:50837:baseline:45",
+      "trigger": "scheduled_check_in",
+      "instruction_file": "instructions/scheduled_check_in.md"
+    },
+    {
+      "turn_ref": "job:50837:baseline:48",
+      "trigger": "scheduled_check_in",
+      "instruction_file": "instructions/scheduled_check_in.md"
+    },
+    {
+      "turn_ref": "job:50837:baseline:52",
+      "trigger": "scheduled_check_in",
+      "instruction_file": "instructions/scheduled_check_in.md"
+    },
+    {
+      "turn_ref": "job:50837:baseline:57",
+      "trigger": "scheduled_check_in",
+      "instruction_file": "instructions/scheduled_check_in.md"
+    }
+  ],
+  "prompt_diagnosis": {
+    "file": "instructions/scheduled_check_in.md",
+    "section": "Anything else worth doing",
+    "exact_text": "**A cycle with nothing worth saying is a no-op.\n  Staying quiet is correct.** A new window that closed empty is not nothing. A window ops\n  already owns gets a note, never another DM. Don't manufacture a DM to break a silence, and don't re-ping a guard you\n  already messaged unless something genuinely new and urgent came up.",
+    "diagnosis_type": "overly_forceful",
+    "explanation": "This trigger-specific passage expressly labels silence as correct and prohibits creating a DM merely to break silence. That strongly favors repeated no-ops when the sweep finds no open obligation or new urgent issue, directly opposing the supplied requirement that every scheduled wake say something to the guard. The trace shows that interpretation recurring on all five turns governed by this file."
+  },
+  "hypothesis": "On each scheduled wake, the model interpreted the explicit no-op and anti-interruption language as higher priority than maintaining guard contact. Because the shift context had no configured patrol or report frequency and the selected trace records no new guard reply or incident, the model likely classified each sweep as having nothing worth saying, updated analysis.md, and ended silently.",
+  "proposed_edit": {
+    "file": "instructions/scheduled_check_in.md",
+    "old_text": "**A cycle with nothing worth saying is a no-op.\n  Staying quiet is correct.** A new window that closed empty is not nothing. A window ops\n  already owns gets a note, never another DM. Don't manufacture a DM to break a silence, and don't re-ping a guard you\n  already messaged unless something genuinely new and urgent came up.",
+    "new_text": "**A scheduled check-in turn must not end silently.** If the latest guard update reports a completed check, acknowledge that it is logged and give only any relevant conditional reporting or escalation steps; do not repeat existing patrol instructions. If no obligation or actionable issue is open, send one brief, human status check instead. A new window that closed empty is not nothing. A window ops already owns gets a note, never another DM about that window. Do not repeat an unanswered request; keep any status check distinct from prior asks.",
+    "intended_effect": "Make every scheduled-check-in turn produce concise guard-facing contact while preserving acknowledgment of completed reports, avoiding repeated patrol instructions, preventing duplicate obligation requests, and retaining internal monitoring and escalation handling."
+  },
+  "risks": [
+    "Mandatory outreach on every scheduled wake may feel repetitive or increase message volume, especially on short wake intervals.",
+    "The shared core identity still says silence is valid on proactive turns; although this edit is trigger-specific and more direct, some residual instruction tension remains.",
+    "Requiring a distinct status check could still be perceived as nagging if many scheduled turns occur without change."
+  ],
+  "confidence": 0.94,
+  "uncertainties": [
+    "The location-tool outputs are omitted, so the underlying telemetry cannot be independently assessed from the supplied evidence.",
+    "The trace does not show a get_open_obligations call despite the prompt requiring one on every proactive turn; whether the model believed the ledger was empty is therefore unknown.",
+    "No completed-check message appears inside turns 8 through 12, so the acknowledgment portion of the expected behavior cannot be evaluated in this selected window.",
+    "Earlier turns are outside the selected evidence window, so the exact content and frequency of prior guard-facing messages are unavailable."
+  ]
+}

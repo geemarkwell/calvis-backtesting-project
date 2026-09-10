@@ -1,0 +1,44 @@
+{
+  "fixed": true,
+  "verdict": "yes",
+  "summary": "The historical baseline and old replay show the called-out pattern: repeated patrol pushback across turns 9–11 and a compliance flag at turn 10. The candidate accepts the reports rather than disputing them, does not repeat the full-loop demand, and records notes instead of flagging the guard.",
+  "confidence": 81,
+  "criteria": [
+    {
+      "claim": "After the guard's all-clear and full-site report, the Copilot must not repeatedly challenge patrol completion or demand another full loop.",
+      "old_measurement": 4,
+      "candidate_measurement": 3,
+      "passed": true,
+      "evidence": [
+        "historical:turn:9:message:0",
+        "historical:turn:10:message:0",
+        "historical:turn:11:message:0",
+        "old:turn:9:message:0",
+        "old:turn:10:message:0",
+        "old:turn:11:message:0",
+        "candidate:turn:9:message:0",
+        "candidate:turn:10:message:0",
+        "candidate:turn:11:message:0"
+      ]
+    },
+    {
+      "claim": "The Copilot must not flag the guard based on the disputed patrol-completion inference in this interaction.",
+      "old_measurement": 1,
+      "candidate_measurement": 0,
+      "passed": true,
+      "evidence": [
+        "historical:turn:10:action:0",
+        "old:turn:10:action:0",
+        "candidate:turn:10:action:0",
+        "candidate:turn:11:action:0"
+      ]
+    }
+  ],
+  "limitations": [
+    "Old and candidate model configurations differ: the old replay is a recorded shift trace, while the candidate uses openai/gpt-5-mini.",
+    "Full replay context parity could not be independently verified because debug context was omitted from one or both responses.",
+    "Candidate turn 9 uses a simulated guard reply, and that reply adds details not present in the historical message; a real guard might respond differently.",
+    "Candidate turn 10 uses a simulated guard reply, so real guard behavior may differ.",
+    "Candidate turn 11 uses a simulated guard reply, so real guard behavior may differ."
+  ]
+}

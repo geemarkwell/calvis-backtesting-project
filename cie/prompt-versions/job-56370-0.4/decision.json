@@ -1,0 +1,15 @@
+{
+  "jobId": "56370",
+  "version": "0.4",
+  "status": "pending",
+  "createdAt": "2026-09-04T18:16:15.481Z",
+  "decidedAt": null,
+  "evaluation": {
+    "runId": "maya-56370-8",
+    "judgedAt": "2026-09-04T18:18:16.637Z",
+    "fixed": true,
+    "verdict": "yes",
+    "confidence": 81,
+    "summary": "The historical baseline and old replay show the called-out pattern: repeated patrol pushback across turns 9–11 and a compliance flag at turn 10. The candidate accepts the reports rather than disputing them, does not repeat the full-loop demand, and records notes instead of flagging the guard."
+  }
+}

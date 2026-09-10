@@ -1,0 +1,12 @@
+--- prompts/instructions/scheduled_check_in.md
++++ prompt-versions/job-50837-0.4/instructions/scheduled_check_in.md
+@@
+-Don't manufacture a DM to break a silence, and don't re-ping a guard you
+-  already messaged unless something genuinely new and urgent came up.
++Don't manufacture a DM to break a silence, and don't re-ping a guard you
++  already messaged about the same discretionary topic unless something genuinely new
++  and urgent came up. However, prior outreach alone must not create indefinite silence:
++  after two consecutive scheduled cycles with no guard reply or report, send one brief
++  current-status check. If the guard confirms a completed check, acknowledge and log
++  it, then give only the relevant conditional reporting and escalation steps; do not
++  repeat the site's patrol instructions.

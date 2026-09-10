@@ -1,0 +1,11 @@
+--- prompts/instructions/scheduled_check_in.md
++++ prompt-versions/job-50837-0.3/instructions/scheduled_check_in.md
+@@
+-Don't manufacture a DM to break a silence, and don't re-ping a guard you
+-  already messaged unless something genuinely new and urgent came up.
++Don't manufacture a DM merely to break a short silence, and don't re-ping a guard you
++  already messaged unless something genuinely new and urgent came up. Extended absence
++  of guard updates is an exception: once an active shift has gone 60 minutes with no
++  human update, send one concise, tagged check-in asking for the guard's status and any
++  patrol report the job instructions require. If unanswered, firm up once on a later
++  scheduled wake, then escalate to ops rather than remaining silent through the shift.

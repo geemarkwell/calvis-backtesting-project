@@ -1,0 +1,15 @@
+{
+  "jobId": "50837",
+  "version": "0.3",
+  "status": "pending",
+  "createdAt": "2026-09-04T14:59:18.683Z",
+  "decidedAt": null,
+  "evaluation": {
+    "runId": "maya-50837-3",
+    "judgedAt": "2026-09-04T15:01:42.272Z",
+    "fixed": true,
+    "verdict": "yes",
+    "confidence": 86,
+    "summary": "The historical baseline and old replay reproduce complete silence across all five scheduled check-ins. The candidate no longer remains quiet: it sends messages on four of five turns, continues through the final 07:00 turn, and explicitly asks the guard for an all-clear or brief patrol update."
+  }
+}

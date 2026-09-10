@@ -1,0 +1,15 @@
+{
+  "jobId": "50837",
+  "version": "0.5",
+  "status": "pending",
+  "createdAt": "2026-09-04T18:11:09.415Z",
+  "decidedAt": null,
+  "evaluation": {
+    "runId": "maya-50837-5",
+    "judgedAt": "2026-09-04T18:12:46.119Z",
+    "fixed": false,
+    "verdict": "no",
+    "confidence": 93,
+    "summary": "The historical baseline and old replay reproduce the reported failure: all five scheduled turns from 3:00 through 7:00 have no Copilot messages or actions. The candidate sends one guard-facing message at 3:00, but then sends nothing to the guard at the remaining four scheduled wakes. Its four measured actions are internal add_copilot_note calls that explicitly record that no DM was sent. The sole guard-facing message also neither requests a patrol report nor checks on the guard, so the called-out behavior remains."
+  }
+}

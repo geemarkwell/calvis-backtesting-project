@@ -1,0 +1,13 @@
+{
+  "jobId": "56370",
+  "version": "0.4",
+  "createdAt": "2026-09-04T18:16:15.481Z",
+  "sourceVersion": "original",
+  "runId": "theo-20260904181541090-de094a3d",
+  "changedFile": "instructions/guard_response.md",
+  "oldText": "Good: location shows no movement for 40 min on a 30-min patrol → \"Thanks, when you\n  get a sec, can you walk the north lot? Haven't seen movement over there in a bit.\"",
+  "newText": "Good: guard confirms the full loop after one clarification despite location showing no movement → \"Got it, full loop all clear. I've got it logged.\"",
+  "intendedEffect": "Align the example with the governing rule and the requested behavior: after one clarification is answered, acknowledge the patrol report rather than using telemetry alone to assign the same work again or justify escalation.",
+  "sourceFileHash": "0ba3ea3918f7f78e4c27eec0f1eee108e858f856163c335b01edc73871ac4043",
+  "candidateFileHash": "8229f5c2a6e6bb2877528ee67baf96e8956f3a1c4298daa965715ea4619111f4"
+}

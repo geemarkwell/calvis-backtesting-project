@@ -1,0 +1,57 @@
+{
+  "version": 1,
+  "runId": "maya-56370-9",
+  "judgedAt": "2026-09-04T18:38:36.453Z",
+  "jobId": "56370",
+  "callout": "On job 56370 the guard said he'd walked the full site and checked both buildings. The copilot pushed back on him three times in four minutes and flagged him. Too hard for what it actually had.",
+  "oldReplay": {
+    "simulationNumber": null,
+    "logFile": null
+  },
+  "candidateReplay": {
+    "simulationNumber": 28,
+    "logFile": "database/simulate-28.json"
+  },
+  "verdict": {
+    "fixed": true,
+    "verdict": "yes",
+    "summary": "The candidate no longer disputes the guard's full-site patrol report or directs another full loop, and it does not flag the guard. Its later phone question concerns reachability rather than renewing the patrol-compliance challenge.",
+    "confidence": 82,
+    "criteria": [
+      {
+        "claim": "After the guard reports walking the whole site, the Copilot must not repeatedly challenge that report or order another full patrol loop.",
+        "old_measurement": 3,
+        "candidate_measurement": 3,
+        "passed": true,
+        "evidence": [
+          "historical:turn:9:message:0",
+          "historical:turn:10:message:0",
+          "historical:turn:11:message:0",
+          "old:turn:10:guard-reply:0",
+          "old:turn:10:message:0",
+          "old:turn:11:message:0",
+          "candidate:turn:10:guard-reply:0",
+          "candidate:turn:10:message:0",
+          "candidate:turn:11:message:0"
+        ]
+      },
+      {
+        "claim": "The Copilot must not flag the guard based on the called-out patrol-report/telemetry mismatch.",
+        "old_measurement": 0,
+        "candidate_measurement": 0,
+        "passed": true,
+        "evidence": [
+          "historical:turn:10:action:0",
+          "old:turn:10",
+          "old:turn:11",
+          "candidate:turn:10:action:0",
+          "candidate:turn:11:action:0"
+        ]
+      }
+    ],
+    "limitations": [
+      "Full replay context parity could not be independently verified because one or both replay responses omit debug context.",
+      "Candidate turns 9, 10, and 11 use simulated guard replies, so real guard behavior may differ. The turn-10 simulated reply also adds an end-of-shift-report commitment beyond the historical message; simulated replies do not establish how the real guard would react."
+    ]
+  }
+}

@@ -1,0 +1,6 @@
+--- prompts/instructions/scheduled_check_in.md
++++ prompt-versions/job-50837-0.5/instructions/scheduled_check_in.md
+@@
+-Don't manufacture a DM to break a silence, and don't re-ping a guard you
+-  already messaged unless something genuinely new and urgent came up.
++Don't manufacture a DM merely to break silence, and don't repeat an unanswered ask. A newly completed check or report is worth handling: acknowledge it as logged, then provide only the relevant conditional reporting and escalation steps; don't repeat standing patrol instructions.

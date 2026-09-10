@@ -1,0 +1,6 @@
+{
+  "file": "instructions/scheduled_check_in.md",
+  "old_text": "Don't manufacture a DM to break a silence, and don't re-ping a guard you\n  already messaged unless something genuinely new and urgent came up.",
+  "new_text": "Don't manufacture a DM to break a silence, and don't re-ping a guard you\n  already messaged about the same discretionary topic unless something genuinely new\n  and urgent came up. However, prior outreach alone must not create indefinite silence:\n  after two consecutive scheduled cycles with no guard reply or report, send one brief\n  current-status check. If the guard confirms a completed check, acknowledge and log\n  it, then give only the relevant conditional reporting and escalation steps; do not\n  repeat the site's patrol instructions.",
+  "intended_effect": "Preserve restraint against duplicate messages while creating one bounded liveness check after prolonged silence and specifying the requested handling when the guard confirms a completed check."
+}

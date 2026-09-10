@@ -1,0 +1,134 @@
+{
+  "job_ids": [
+    "50837"
+  ],
+  "what_went_wrong": "On job 50837 the copilot went quiet after the first hour. It woke on schedule five times between 3am and 7am and sent nothing at all — no patrol report asked for, no check on the guard, all the way to the end of the shift.",
+  "failure_mode": "Repeated silent scheduled-check-in turns despite continued monitoring activity, with routine completed-check handling likely suppressed by an overly restrictive rule against follow-up messaging.",
+  "evidence_windows": [
+    {
+      "job_id": "50837",
+      "start_turn": 8,
+      "end_turn": 12,
+      "trace_refs": [
+        "job:50837:baseline:38",
+        "job:50837:baseline:39",
+        "job:50837:baseline:40",
+        "job:50837:baseline:41",
+        "job:50837:baseline:42",
+        "job:50837:baseline:43",
+        "job:50837:baseline:44",
+        "job:50837:baseline:45",
+        "job:50837:baseline:46",
+        "job:50837:baseline:47",
+        "job:50837:baseline:48",
+        "job:50837:baseline:49",
+        "job:50837:baseline:50",
+        "job:50837:baseline:51",
+        "job:50837:baseline:52",
+        "job:50837:baseline:53",
+        "job:50837:baseline:54",
+        "job:50837:baseline:55",
+        "job:50837:baseline:56",
+        "job:50837:baseline:57",
+        "job:50837:baseline:58"
+      ]
+    }
+  ],
+  "observed_behavior": [
+    {
+      "claim": "Turns 8 through 12 were all scheduled_check_in turns explicitly recorded as silent.",
+      "trace_refs": [
+        "job:50837:baseline:41",
+        "job:50837:baseline:45",
+        "job:50837:baseline:48",
+        "job:50837:baseline:52",
+        "job:50837:baseline:57"
+      ]
+    },
+    {
+      "claim": "The Copilot continued checking location and job-log data during the window but produced only internal workspace writes; the supplied entries contain no guard-facing message, note, alert, or escalation.",
+      "trace_refs": [
+        "job:50837:baseline:38",
+        "job:50837:baseline:39",
+        "job:50837:baseline:40",
+        "job:50837:baseline:42",
+        "job:50837:baseline:43",
+        "job:50837:baseline:44",
+        "job:50837:baseline:46",
+        "job:50837:baseline:47",
+        "job:50837:baseline:49",
+        "job:50837:baseline:50",
+        "job:50837:baseline:51",
+        "job:50837:baseline:53",
+        "job:50837:baseline:54",
+        "job:50837:baseline:55",
+        "job:50837:baseline:56",
+        "job:50837:baseline:58"
+      ]
+    },
+    {
+      "claim": "The job-log queries after 02:00, 04:00, 05:00, and 06:00 returned no new logs.",
+      "trace_refs": [
+        "job:50837:baseline:44",
+        "job:50837:baseline:49",
+        "job:50837:baseline:53",
+        "job:50837:baseline:56"
+      ]
+    }
+  ],
+  "expected_behavior": "Acknowledge and log the completed check, then provide only the relevant conditional reporting and escalation steps. Do not repeat existing patrol instructions.",
+  "relevant_turns": [
+    {
+      "turn_ref": "job:50837:baseline:41",
+      "trigger": "scheduled_check_in",
+      "instruction_file": "instructions/scheduled_check_in.md"
+    },
+    {
+      "turn_ref": "job:50837:baseline:45",
+      "trigger": "scheduled_check_in",
+      "instruction_file": "instructions/scheduled_check_in.md"
+    },
+    {
+      "turn_ref": "job:50837:baseline:48",
+      "trigger": "scheduled_check_in",
+      "instruction_file": "instructions/scheduled_check_in.md"
+    },
+    {
+      "turn_ref": "job:50837:baseline:52",
+      "trigger": "scheduled_check_in",
+      "instruction_file": "instructions/scheduled_check_in.md"
+    },
+    {
+      "turn_ref": "job:50837:baseline:57",
+      "trigger": "scheduled_check_in",
+      "instruction_file": "instructions/scheduled_check_in.md"
+    }
+  ],
+  "prompt_diagnosis": {
+    "file": "instructions/scheduled_check_in.md",
+    "section": "Anything else worth doing",
+    "exact_text": "Don't manufacture a DM to break a silence, and don't re-ping a guard you\n  already messaged unless something genuinely new and urgent came up.",
+    "diagnosis_type": "overly_forceful",
+    "explanation": "This sentence makes any follow-up after an earlier message contingent on information being both new and urgent. A routine completed check is new but normally not urgent, so the model can interpret the rule as requiring silence instead of acknowledging the check and giving concise conditional next steps. Its placement immediately after repeated no-op guidance likely gives that interpretation more weight than the shared instruction to acknowledge reports as logged."
+  },
+  "hypothesis": "On these scheduled turns, the Copilot likely treated the strong prohibition on re-pinging without something both new and urgent as controlling. That interpretation favors internal monitoring plus silence for routine check/report activity, producing the five silent turns. Clarifying that a newly completed check warrants a concise acknowledgment would test whether this wording is suppressing the requested behavior; the trace establishes the repeated silence but does not establish causation.",
+  "proposed_edit": {
+    "file": "instructions/scheduled_check_in.md",
+    "old_text": "Don't manufacture a DM to break a silence, and don't re-ping a guard you\n  already messaged unless something genuinely new and urgent came up.",
+    "new_text": "Don't manufacture a DM merely to break silence, and don't repeat an unanswered ask. A newly completed check or report is worth handling: acknowledge it as logged, then provide only the relevant conditional reporting and escalation steps; don't repeat standing patrol instructions.",
+    "intended_effect": "Preserve the anti-nagging rule while making routine completed-check handling an explicit exception, directing the Copilot toward the requested acknowledgment and concise conditional guidance rather than silence or repeated patrol instructions."
+  },
+  "risks": [
+    "The exception could increase acknowledgment messages for routine reports if the model applies “completed check” too broadly.",
+    "Replacing the “new and urgent” threshold may modestly weaken suppression of discretionary follow-ups, although the replacement still forbids silence-filling messages and repeated unanswered asks.",
+    "The edit will not create a patrol or reporting cadence where the obligation ledger and shift configuration define none."
+  ],
+  "confidence": 0.58,
+  "uncertainties": [
+    "The supplied window contains no recorded guard message or other explicit completed-check report to acknowledge, so the expected behavior appears to depend on context outside the selected trace.",
+    "No get_open_obligations call appears in the supplied turns, even though the governing instruction requires it; the trace does not reveal whether that omission or an empty ledger was the more immediate reason no patrol-report ask was sent.",
+    "The location outputs are omitted as unparseable raw telemetry, so it is not possible to determine whether they showed a completed check, sustained presence, or a condition warranting outreach.",
+    "The job configuration has no patrol_frequency_minutes or report_frequency_minutes, and its prose specifies only walking “every once in a while”; shared prompts prohibit inventing a cadence. That may independently explain why no patrol report was requested.",
+    "The first-hour conversation and any prior unanswered ask are outside the selected window, so the model's basis for treating later contact as a prohibited re-ping is not directly visible."
+  ]
+}

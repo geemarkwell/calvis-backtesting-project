@@ -1,0 +1,15 @@
+{
+  "jobId": "50837",
+  "version": "0.6",
+  "status": "accepted",
+  "createdAt": "2026-09-04T18:44:36.112Z",
+  "decidedAt": "2026-09-04T18:48:13.411Z",
+  "evaluation": {
+    "runId": "maya-50837-6",
+    "judgedAt": "2026-09-04T18:46:22.300Z",
+    "fixed": true,
+    "verdict": "yes",
+    "confidence": 92,
+    "summary": "The historical baseline and old replay reproduce the reported failure: all five scheduled check-ins from turns 8–12 were silent. The candidate sent a visible message and recorded an action at every corresponding check-in, including repeated guard-status questions through the final turn. The called-out prolonged silence and absence of guard checks are no longer present."
+  }
+}

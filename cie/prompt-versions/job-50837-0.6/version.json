@@ -1,0 +1,13 @@
+{
+  "jobId": "50837",
+  "version": "0.6",
+  "createdAt": "2026-09-04T18:44:36.112Z",
+  "sourceVersion": "original",
+  "runId": "theo-20260904184356042-01f87cf2",
+  "changedFile": "instructions/scheduled_check_in.md",
+  "oldText": "**A cycle with nothing worth saying is a no-op.\n  Staying quiet is correct.** A new window that closed empty is not nothing. A window ops\n  already owns gets a note, never another DM. Don't manufacture a DM to break a silence, and don't re-ping a guard you\n  already messaged unless something genuinely new and urgent came up.",
+  "newText": "**A scheduled check-in turn must not end silently.** If the latest guard update reports a completed check, acknowledge that it is logged and give only any relevant conditional reporting or escalation steps; do not repeat existing patrol instructions. If no obligation or actionable issue is open, send one brief, human status check instead. A new window that closed empty is not nothing. A window ops already owns gets a note, never another DM about that window. Do not repeat an unanswered request; keep any status check distinct from prior asks.",
+  "intendedEffect": "Make every scheduled-check-in turn produce concise guard-facing contact while preserving acknowledgment of completed reports, avoiding repeated patrol instructions, preventing duplicate obligation requests, and retaining internal monitoring and escalation handling.",
+  "sourceFileHash": "dfb09f2521fdff5134798162f717a9adee46220ee100860e863487ae5a3ad5a2",
+  "candidateFileHash": "dcb732ed9b00461ebead48d8470716e858a3b2103880e8f2c3e40ad2d286c81a"
+}

@@ -1,0 +1,118 @@
+{
+  "job_ids": [
+    "50837"
+  ],
+  "what_went_wrong": "On job 50837 the copilot went quiet after the first hour. It woke on schedule five times between 3am and 7am and sent nothing at all — no patrol report asked for, no check on the guard, all the way to the end of the shift.",
+  "failure_mode": "An overly broad anti-repetition instruction likely turned one earlier message into a standing reason to suppress all later discretionary outreach, with no bounded exception for prolonged guard silence.",
+  "evidence_windows": [
+    {
+      "job_id": "50837",
+      "start_turn": 8,
+      "end_turn": 12,
+      "trace_refs": [
+        "job:50837:baseline:39",
+        "job:50837:baseline:41",
+        "job:50837:baseline:42",
+        "job:50837:baseline:44",
+        "job:50837:baseline:45",
+        "job:50837:baseline:46",
+        "job:50837:baseline:48",
+        "job:50837:baseline:49",
+        "job:50837:baseline:50",
+        "job:50837:baseline:52",
+        "job:50837:baseline:53",
+        "job:50837:baseline:54",
+        "job:50837:baseline:56",
+        "job:50837:baseline:57",
+        "job:50837:baseline:58"
+      ]
+    }
+  ],
+  "observed_behavior": [
+    {
+      "claim": "All five scheduled turns in the selected window are explicitly recorded as silent.",
+      "trace_refs": [
+        "job:50837:baseline:41",
+        "job:50837:baseline:45",
+        "job:50837:baseline:48",
+        "job:50837:baseline:52",
+        "job:50837:baseline:57"
+      ]
+    },
+    {
+      "claim": "Despite ending silently, the Copilot updated its internal analysis workspace after each scheduled turn.",
+      "trace_refs": [
+        "job:50837:baseline:42",
+        "job:50837:baseline:46",
+        "job:50837:baseline:50",
+        "job:50837:baseline:54",
+        "job:50837:baseline:58"
+      ]
+    },
+    {
+      "claim": "The visible job-log checks showed the pre-shift check-in but no new logs during the selected hours.",
+      "trace_refs": [
+        "job:50837:baseline:39",
+        "job:50837:baseline:44",
+        "job:50837:baseline:49",
+        "job:50837:baseline:53",
+        "job:50837:baseline:56"
+      ]
+    }
+  ],
+  "expected_behavior": "Acknowledge and log the completed check, then provide only the relevant conditional reporting and escalation steps. Do not repeat existing patrol instructions.",
+  "relevant_turns": [
+    {
+      "turn_ref": "job:50837:baseline:41",
+      "trigger": "scheduled_check_in",
+      "instruction_file": "instructions/scheduled_check_in.md"
+    },
+    {
+      "turn_ref": "job:50837:baseline:45",
+      "trigger": "scheduled_check_in",
+      "instruction_file": "instructions/scheduled_check_in.md"
+    },
+    {
+      "turn_ref": "job:50837:baseline:48",
+      "trigger": "scheduled_check_in",
+      "instruction_file": "instructions/scheduled_check_in.md"
+    },
+    {
+      "turn_ref": "job:50837:baseline:52",
+      "trigger": "scheduled_check_in",
+      "instruction_file": "instructions/scheduled_check_in.md"
+    },
+    {
+      "turn_ref": "job:50837:baseline:57",
+      "trigger": "scheduled_check_in",
+      "instruction_file": "instructions/scheduled_check_in.md"
+    }
+  ],
+  "prompt_diagnosis": {
+    "file": "instructions/scheduled_check_in.md",
+    "section": "Anything else worth doing",
+    "exact_text": "Don't manufacture a DM to break a silence, and don't re-ping a guard you\n  already messaged unless something genuinely new and urgent came up.",
+    "diagnosis_type": "overly_forceful",
+    "explanation": "This rule makes any prior message a broad suppression condition and permits renewed outreach only for something both new and urgent. Read together with the repeated statements that silence is correct, it provides no bounded liveness exception when several scheduled cycles pass without any guard reply or report. That interpretation is consistent with five consecutive silent scheduled turns, though the trace does not prove the model's internal reasoning."
+  },
+  "hypothesis": "The Copilot likely treated the earlier guard contact as activating the blanket “don't re-ping” rule, then classified a routine status or reporting check as neither new nor urgent. Adding a narrow exception after two fully silent scheduled cycles should test whether that language caused the prolonged silence while retaining the anti-nagging policy and avoiding repeated patrol instructions.",
+  "proposed_edit": {
+    "file": "instructions/scheduled_check_in.md",
+    "old_text": "Don't manufacture a DM to break a silence, and don't re-ping a guard you\n  already messaged unless something genuinely new and urgent came up.",
+    "new_text": "Don't manufacture a DM to break a silence, and don't re-ping a guard you\n  already messaged about the same discretionary topic unless something genuinely new\n  and urgent came up. However, prior outreach alone must not create indefinite silence:\n  after two consecutive scheduled cycles with no guard reply or report, send one brief\n  current-status check. If the guard confirms a completed check, acknowledge and log\n  it, then give only the relevant conditional reporting and escalation steps; do not\n  repeat the site's patrol instructions.",
+    "intended_effect": "Preserve restraint against duplicate messages while creating one bounded liveness check after prolonged silence and specifying the requested handling when the guard confirms a completed check."
+  },
+  "risks": [
+    "The added two-cycle threshold could produce an unnecessary status check on a legitimately quiet post with no client-defined reporting cadence.",
+    "If “one brief current-status check” is not tracked across later cycles, the model could repeat it; the existing anti-repetition language should limit that risk.",
+    "The edit may increase guard messaging even when telemetry appears normal, so responses should remain neutral and non-surveillance-oriented."
+  ],
+  "confidence": 0.75,
+  "uncertainties": [
+    "The selected window contains no guard message explicitly reporting a completed check, so the exact acknowledgment required by expectedBehavior cannot be tied to an observed initiating message here.",
+    "The first-hour interaction referenced by whatWentWrong is outside the selected window, so its topic and wording are unavailable.",
+    "The raw location outputs and internal analysis contents are omitted, preventing assessment of whether telemetry supplied a concrete reason to contact the guard.",
+    "No get_open_obligations result appears in the supplied window, so it is unknown whether any formal client-defined reporting window was open; the shift data shows no configured patrol or report frequency.",
+    "The trace establishes repeated silence but cannot establish that the quoted anti-repetition language caused it rather than another model interpretation."
+  ]
+}

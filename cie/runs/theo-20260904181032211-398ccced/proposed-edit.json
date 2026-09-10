@@ -1,0 +1,6 @@
+{
+  "file": "instructions/scheduled_check_in.md",
+  "old_text": "Don't manufacture a DM to break a silence, and don't re-ping a guard you\n  already messaged unless something genuinely new and urgent came up.",
+  "new_text": "Don't manufacture a DM merely to break silence, and don't repeat an unanswered ask. A newly completed check or report is worth handling: acknowledge it as logged, then provide only the relevant conditional reporting and escalation steps; don't repeat standing patrol instructions.",
+  "intended_effect": "Preserve the anti-nagging rule while making routine completed-check handling an explicit exception, directing the Copilot toward the requested acknowledgment and concise conditional guidance rather than silence or repeated patrol instructions."
+}
