@@ -1,14 +1,18 @@
 import type {
   BacktestRequest,
   BacktestResponse,
+  DraftTestCriteriaResponse,
   CandidateDecisionResult,
   MayaJudgeRequest,
   MayaJudgeResponse,
   MayaJudgmentHistory,
   OriginalRequest,
   OriginalSourcesResponse,
+  SavedTestFailure,
+  SavedTestSpec,
   SimulationRequest,
   SimulationResponse,
+  TestEvaluationResponse,
   TheoRequest,
   TheoResponse,
 } from "./types";
@@ -30,6 +34,107 @@ export async function decideCandidate(
   const payload: unknown = await response.json();
   if (!isCandidateDecisionResult(payload)) {
     throw new Error(`Candidate ${action} API returned an invalid response.`);
+  }
+  return payload;
+}
+
+export async function draftTestCriteria(
+  userQuestion: string,
+  signal?: AbortSignal,
+): Promise<DraftTestCriteriaResponse> {
+  const response = await fetch("/api/test-criteria/draft", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ userQuestion }),
+    signal,
+  });
+  if (!response.ok) {
+    throw new Error(await errorMessage(response, "Test criteria draft failed"));
+  }
+  const payload: unknown = await response.json();
+  if (!isDraftTestCriteriaResponse(payload)) {
+    throw new Error("Test criteria API returned an invalid response.");
+  }
+  return payload;
+}
+
+export async function saveTestSpec(
+  request: DraftTestCriteriaResponse["testSpec"],
+  signal?: AbortSignal,
+): Promise<SavedTestSpec> {
+  const { id: _id, version: _version, ...specToSave } = request;
+  const response = await fetch("/api/test-specs", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(specToSave),
+    signal,
+  });
+  if (!response.ok) {
+    throw new Error(await errorMessage(response, "Test spec save failed"));
+  }
+  const payload: unknown = await response.json();
+  if (!isSavedTestSpec(payload)) {
+    throw new Error("Test specs API returned an invalid response.");
+  }
+  return payload;
+}
+
+export async function runTestEvaluation(
+  request: {
+    testSpecId: string;
+    jobId: string;
+    startTurn: number;
+    endTurn: number;
+  },
+  signal?: AbortSignal,
+): Promise<TestEvaluationResponse> {
+  const response = await fetch("/api/test-evaluations", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(request),
+    signal,
+  });
+  if (!response.ok) {
+    throw new Error(await errorMessage(response, "Test evaluation failed"));
+  }
+  const payload: unknown = await response.json();
+  if (!isTestEvaluationResponse(payload)) {
+    throw new Error("Test evaluations API returned an invalid response.");
+  }
+  return payload;
+}
+
+export async function saveFailedEvaluation(
+  evaluation: TestEvaluationResponse,
+  signal?: AbortSignal,
+): Promise<SavedTestFailure> {
+  const failedCriteria = evaluation.verdict.criteriaResults.filter(
+    (criterion): criterion is typeof criterion & { status: "fail" } =>
+      criterion.status === "fail",
+  );
+  const response = await fetch("/api/test-failures", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      evaluationRunId: evaluation.runId,
+      testSpecId: evaluation.testSpecId,
+      jobId: evaluation.jobId,
+      startTurn: evaluation.startTurn,
+      endTurn: evaluation.endTurn,
+      verdict: evaluation.verdict.verdict,
+      summary: evaluation.verdict.summary,
+      suggestedFix: evaluation.verdict.suggestedFix,
+      failedCriteria,
+      artifactDirectory: evaluation.artifactDirectory,
+    }),
+    signal,
+  });
+  if (!response.ok) {
+    throw new Error(await errorMessage(response, "Failed evaluation save failed"));
+  }
+  const payload: unknown = await response.json();
+  if (!isSavedTestFailure(payload)) {
+    throw new Error("Test failures API returned an invalid response.");
   }
   return payload;
 }
@@ -326,6 +431,122 @@ function isMayaJudgeResponse(value: unknown): value is MayaJudgeResponse {
     typeof value.artifactDirectory === "string" &&
     isMayaVerdict(value.verdict) &&
     isMayaJudgment(value.judgment)
+  );
+}
+
+function isDraftTestCriteriaResponse(
+  value: unknown,
+): value is DraftTestCriteriaResponse {
+  return (
+    isRecord(value) &&
+    typeof value.runId === "string" &&
+    typeof value.artifactDirectory === "string" &&
+    isDraftTestSpec(value.testSpec)
+  );
+}
+
+function isDraftTestSpec(value: unknown): value is DraftTestCriteriaResponse["testSpec"] {
+  return (
+    isRecord(value) &&
+    typeof value.id === "string" &&
+    value.version === "draft" &&
+    typeof value.name === "string" &&
+    typeof value.userQuestion === "string" &&
+    typeof value.agentSurface === "string" &&
+    Array.isArray(value.criteria) &&
+    value.criteria.every(isTestCriterion) &&
+    Array.isArray(value.requiredEvidence) &&
+    value.requiredEvidence.every((item) => typeof item === "string") &&
+    typeof value.passCondition === "string" &&
+    Array.isArray(value.assumptions) &&
+    value.assumptions.every((item) => typeof item === "string") &&
+    Array.isArray(value.limitations) &&
+    value.limitations.every((item) => typeof item === "string")
+  );
+}
+
+function isSavedTestSpec(value: unknown): value is SavedTestSpec {
+  return (
+    isRecord(value) &&
+    typeof value.version === "string" &&
+    typeof value.createdAt === "string" &&
+    typeof value.updatedAt === "string" &&
+    isDraftTestSpec({ ...value, version: "draft" })
+  );
+}
+
+function isTestCriterion(value: unknown): boolean {
+  return (
+    isRecord(value) &&
+    typeof value.id === "string" &&
+    (value.importance === "critical" ||
+      value.importance === "major" ||
+      value.importance === "minor") &&
+    typeof value.description === "string" &&
+    typeof value.passRule === "string" &&
+    (value.evidenceNeeded === undefined ||
+      (Array.isArray(value.evidenceNeeded) &&
+        value.evidenceNeeded.every((item) => typeof item === "string")))
+  );
+}
+
+function isTestEvaluationResponse(
+  value: unknown,
+): value is TestEvaluationResponse {
+  return (
+    isRecord(value) &&
+    typeof value.runId === "string" &&
+    typeof value.artifactDirectory === "string" &&
+    typeof value.testSpecId === "string" &&
+    typeof value.jobId === "string" &&
+    typeof value.startTurn === "number" &&
+    typeof value.endTurn === "number" &&
+    isRecord(value.verdict) &&
+    (value.verdict.verdict === "good" || value.verdict.verdict === "bad") &&
+    typeof value.verdict.passed === "boolean" &&
+    typeof value.verdict.confidence === "number" &&
+    typeof value.verdict.summary === "string" &&
+    Array.isArray(value.verdict.criteriaResults) &&
+    value.verdict.criteriaResults.every(isTestEvaluationCriterion) &&
+    isRecord(value.verdict.suggestedFix) &&
+    typeof value.verdict.suggestedFix.category === "string" &&
+    typeof value.verdict.suggestedFix.summary === "string" &&
+    Array.isArray(value.verdict.limitations) &&
+    value.verdict.limitations.every((item) => typeof item === "string")
+  );
+}
+
+function isTestEvaluationCriterion(value: unknown): boolean {
+  return (
+    isRecord(value) &&
+    typeof value.criterionId === "string" &&
+    (value.status === "pass" ||
+      value.status === "fail" ||
+      value.status === "warning") &&
+    typeof value.summary === "string" &&
+    Array.isArray(value.evidenceRefs) &&
+    value.evidenceRefs.every((item) => typeof item === "string")
+  );
+}
+
+function isSavedTestFailure(value: unknown): value is SavedTestFailure {
+  return (
+    isRecord(value) &&
+    typeof value.id === "string" &&
+    typeof value.savedAt === "string" &&
+    typeof value.evaluationRunId === "string" &&
+    typeof value.testSpecId === "string" &&
+    typeof value.jobId === "string" &&
+    typeof value.startTurn === "number" &&
+    typeof value.endTurn === "number" &&
+    value.verdict === "bad" &&
+    typeof value.summary === "string" &&
+    isRecord(value.suggestedFix) &&
+    typeof value.suggestedFix.category === "string" &&
+    typeof value.suggestedFix.summary === "string" &&
+    Array.isArray(value.failedCriteria) &&
+    value.failedCriteria.every(isTestEvaluationCriterion) &&
+    typeof value.artifactDirectory === "string"
   );
 }
 

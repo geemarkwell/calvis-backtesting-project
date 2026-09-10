@@ -15,10 +15,22 @@ import { copilot } from './agents/copilot-agent';
 import { theoAgent } from './agents/theo-agent';
 import { nikoAgent } from './agents/niko-agent';
 import { mayaAgent } from './agents/maya-agent';
+import { testCriteriaAgent } from './agents/test-criteria-agent';
+import { testEvaluatorAgent } from './agents/test-evaluator-agent';
+import { diagnoseAgent } from './agents/diagnose-agent';
 
 export const mastra = new Mastra({
   workflows: { weatherWorkflow },
-  agents: { weatherAgent, copilot, theoAgent, nikoAgent, mayaAgent },
+  agents: {
+    weatherAgent,
+    copilot,
+    theoAgent,
+    nikoAgent,
+    mayaAgent,
+    testCriteriaAgent,
+    testEvaluatorAgent,
+    diagnoseAgent,
+  },
   storage: new MastraCompositeStore({
     id: 'composite-storage',
     default: new LibSQLStore({
@@ -52,4 +64,12 @@ export const mastra = new Mastra({
   }),
 });
 
-export { copilot, theoAgent, nikoAgent, mayaAgent };
+export {
+  copilot,
+  theoAgent,
+  nikoAgent,
+  mayaAgent,
+  testCriteriaAgent,
+  testEvaluatorAgent,
+  diagnoseAgent,
+};

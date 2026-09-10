@@ -2,9 +2,13 @@
 
 import { useEffect, useRef, useState, type UIEvent } from "react";
 import {
+  draftTestCriteria,
   getOriginalCopilot,
   listOriginalSources,
   runCopilotBacktest,
+  runTestEvaluation,
+  saveFailedEvaluation,
+  saveTestSpec,
 } from "./api";
 import { ControlDeck, type BacktestFormState } from "./components/ControlDeck";
 import { ChatPanel } from "./components/ChatPanel";
@@ -19,6 +23,7 @@ import type {
   OriginalSourceOption,
   SimulationRequest,
   SimulationResponse,
+  TestEvaluationResponse,
   TheoContext,
 } from "./types";
 
@@ -41,6 +46,7 @@ const INITIAL_FORM: BacktestFormState = {
   baselineSource: "shift",
   replayMode: "candidate",
   debug: false,
+  evaluate: false,
   callNiko: false,
 };
 
@@ -59,6 +65,9 @@ export default function BacktestConsole() {
   const [backtestResult, setBacktestResult] = useState<BacktestResponse | null>(
     null,
   );
+  const [evaluationResult, setEvaluationResult] =
+    useState<TestEvaluationResponse | null>(null);
+  const [savedFailureId, setSavedFailureId] = useState<string | null>(null);
   const requestRef = useRef<AbortController | null>(null);
   const originalScrollRef = useRef<HTMLDivElement>(null);
   const comparisonScrollRef = useRef<HTMLDivElement>(null);
@@ -151,6 +160,37 @@ export default function BacktestConsole() {
     requestRef.current = controller;
     setValidationError(null);
     setBacktestResult(null);
+    setEvaluationResult(null);
+    setSavedFailureId(null);
+
+    if (form.evaluate) {
+      setComparison({ status: "loading", data: null, error: null });
+      try {
+        const draft = await draftTestCriteria(parsed.callout, controller.signal);
+        const savedSpec = await saveTestSpec(draft.testSpec, controller.signal);
+        const result = await runTestEvaluation(
+          {
+            testSpecId: savedSpec.id,
+            jobId: parsed.simulation.jobId,
+            startTurn: parsed.simulation.startTurn,
+            endTurn: parsed.simulation.endTurn,
+          },
+          controller.signal,
+        );
+        if (controller.signal.aborted) {
+          return;
+        }
+        setEvaluationResult(result);
+        setComparison({ status: "success", data: null, error: null });
+      } catch (error: unknown) {
+        if (!controller.signal.aborted) {
+          const message = error instanceof Error ? error.message : String(error);
+          setComparison({ status: "error", data: null, error: message });
+        }
+      }
+      return;
+    }
+
     setOriginal({ status: "loading", data: null, error: null });
     setComparison({ status: "loading", data: null, error: null });
     const originalResult = loadOriginalPanel(
@@ -274,26 +314,35 @@ export default function BacktestConsole() {
           onEvaluation={() => setView("evaluation")}
         />
 
-        <section className="comparison-grid">
-          <ChatPanel
-            title="Original agent"
-            state={original}
-            scrollRef={originalScrollRef}
-            onScroll={(event) =>
-              synchronizeScroll(event, comparisonScrollRef.current)
-            }
-          />
-          <ChatPanel
-            title="New agent"
+        {form.evaluate ? (
+          <BehaviorEvaluationResult
             state={comparison}
-            scrollRef={comparisonScrollRef}
-            onScroll={(event) =>
-              synchronizeScroll(event, originalScrollRef.current)
-            }
+            result={evaluationResult}
+            savedFailureId={savedFailureId}
+            onSaved={setSavedFailureId}
           />
-        </section>
+        ) : (
+          <section className="comparison-grid">
+            <ChatPanel
+              title="Original agent"
+              state={original}
+              scrollRef={originalScrollRef}
+              onScroll={(event) =>
+                synchronizeScroll(event, comparisonScrollRef.current)
+              }
+            />
+            <ChatPanel
+              title="New agent"
+              state={comparison}
+              scrollRef={comparisonScrollRef}
+              onScroll={(event) =>
+                synchronizeScroll(event, originalScrollRef.current)
+              }
+            />
+          </section>
+        )}
 
-        {backtestResult && (
+        {!form.evaluate && backtestResult && (
           <CandidateReview
             result={backtestResult}
             onDecision={(decision) =>
@@ -330,6 +379,175 @@ export default function BacktestConsole() {
         <span>REV 01.0.0</span>
       </footer>
     </main>
+  );
+}
+
+function BehaviorEvaluationResult({
+  state,
+  result,
+  savedFailureId,
+  onSaved,
+}: {
+  state: PanelState;
+  result: TestEvaluationResponse | null;
+  savedFailureId: string | null;
+  onSaved: (id: string) => void;
+}) {
+  const [savingFailure, setSavingFailure] = useState(false);
+  const [saveError, setSaveError] = useState<string | null>(null);
+
+  async function saveFailure() {
+    if (!result || result.verdict.passed || savingFailure || savedFailureId) {
+      return;
+    }
+    setSavingFailure(true);
+    setSaveError(null);
+    try {
+      const saved = await saveFailedEvaluation(result);
+      onSaved(saved.id);
+    } catch (error: unknown) {
+      setSaveError(error instanceof Error ? error.message : String(error));
+    } finally {
+      setSavingFailure(false);
+    }
+  }
+  if (state.status === "idle") {
+    return (
+      <section className="candidate-review" aria-label="Behavior evaluation">
+        <header>
+          <div>
+            <span className="candidate-review__kicker">BEHAVIOUR EVALUATION</span>
+            <h2>READY</h2>
+          </div>
+        </header>
+        <div className="candidate-review__grid">
+          <section>
+            <span>STATUS</span>
+            <h3>WAITING</h3>
+            <p>Enter a user question and execute the backtest.</p>
+          </section>
+        </div>
+      </section>
+    );
+  }
+
+  if (state.status === "loading") {
+    return (
+      <section className="candidate-review" aria-label="Behavior evaluation">
+        <header>
+          <div>
+            <span className="candidate-review__kicker">BEHAVIOUR EVALUATION</span>
+            <h2>RUNNING</h2>
+          </div>
+        </header>
+        <div className="candidate-review__grid">
+          <section>
+            <span>STATUS</span>
+            <h3>DRAFTING + EVALUATING</h3>
+            <p>Creating criteria, saving the test, and grading the trace.</p>
+          </section>
+        </div>
+      </section>
+    );
+  }
+
+  if (state.status === "error") {
+    return (
+      <section className="candidate-review" aria-label="Behavior evaluation">
+        <header>
+          <div>
+            <span className="candidate-review__kicker">BEHAVIOUR EVALUATION</span>
+            <h2>FAILED</h2>
+          </div>
+          <strong data-status="rejected">ERROR</strong>
+        </header>
+        <p className="candidate-review__error" role="alert">
+          {state.error}
+        </p>
+      </section>
+    );
+  }
+
+  if (!result) {
+    return null;
+  }
+
+  return (
+    <section className="candidate-review" aria-label="Behavior evaluation">
+      <header>
+        <div>
+          <span className="candidate-review__kicker">BEHAVIOUR EVALUATION</span>
+          <h2>
+            JOB {result.jobId} / TURNS {result.startTurn}-{result.endTurn}
+          </h2>
+        </div>
+        <strong data-status={result.verdict.passed ? "accepted" : "rejected"}>
+          {result.verdict.verdict.toUpperCase()}
+        </strong>
+      </header>
+
+      <div className="candidate-review__grid">
+        <section>
+          <span>RESULT</span>
+          <h3>{result.verdict.passed ? "GOOD" : "BAD"}</h3>
+          <p>{result.verdict.summary}</p>
+        </section>
+        <section>
+          <span>SUGGESTED FIX</span>
+          <h3>{result.verdict.suggestedFix.category.toUpperCase()}</h3>
+          <p>{result.verdict.suggestedFix.summary}</p>
+        </section>
+      </div>
+
+      <div className="candidate-review__change">
+        <small>
+          {result.testSpecId} / confidence {Math.round(result.verdict.confidence * 100)}%
+        </small>
+        <div>
+          {result.verdict.criteriaResults.map((criterion) => (
+            <section key={criterion.criterionId}>
+              <span>{criterion.status.toUpperCase()}</span>
+              <p>
+                <strong>{criterion.criterionId}</strong>: {criterion.summary}
+              </p>
+              {criterion.evidenceRefs.length > 0 && (
+                <small>{criterion.evidenceRefs.join(", ")}</small>
+              )}
+            </section>
+          ))}
+        </div>
+      </div>
+
+      <footer>
+        <p>
+          {savedFailureId
+            ? `Saved failed result: ${savedFailureId}`
+            : result.artifactDirectory}
+        </p>
+        {!result.verdict.passed && (
+          <div>
+            <button
+              type="button"
+              className="candidate-review__reject"
+              disabled={savingFailure || savedFailureId !== null}
+              onClick={() => void saveFailure()}
+            >
+              {savedFailureId
+                ? "FAIL SAVED"
+                : savingFailure
+                  ? "SAVING…"
+                  : "SAVE FAIL"}
+            </button>
+          </div>
+        )}
+      </footer>
+
+      {saveError && (
+        <p className="candidate-review__error" role="alert">
+          {saveError}
+        </p>
+      )}
+    </section>
   );
 }
 
@@ -443,18 +661,20 @@ function parseForm(form: BacktestFormState): ParsedBacktest | string {
     return "START TURN CANNOT EXCEED END TURN.";
   }
   if (!callout) {
-    return "MAYA CALLOUT IS REQUIRED.";
+    return form.evaluate
+      ? "USER QUESTION IS REQUIRED."
+      : "MAYA CALLOUT IS REQUIRED.";
   }
-  if (!expectedBehavior) {
+  if (!form.evaluate && !expectedBehavior) {
     return "EXPECTED BEHAVIOUR IS REQUIRED.";
   }
-  if (form.replayMode !== "candidate") {
+  if (!form.evaluate && form.replayMode !== "candidate") {
     return "NEW AGENT MODE MUST BE CANDIDATE FOR MAYA EVALUATION.";
   }
 
   return {
     callout,
-    expectedBehavior,
+    expectedBehavior: form.evaluate ? callout : expectedBehavior,
     simulation: {
       jobId,
       startTurn,

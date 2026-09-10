@@ -9,6 +9,11 @@ import { MemoryModule } from './memory/memory.module';
 import { CopilotSimulationModule } from './copilot-simulation/copilot-simulation.module';
 import { TheoModule } from './mastra/theo/theo.module';
 import { MayaModule } from './mastra/maya/maya.module';
+import { TestCriteriaModule } from './test-criteria/test-criteria.module';
+import { TestSpecsModule } from './test-specs/test-specs.module';
+import { TestEvaluationsModule } from './test-evaluations/test-evaluations.module';
+import { TestFailuresModule } from './test-failures/test-failures.module';
+import { DiagnoseModule } from './diagnose/diagnose.module';
 
 @Module({
   imports: [
@@ -16,6 +21,11 @@ import { MayaModule } from './mastra/maya/maya.module';
     CopilotSimulationModule,
     TheoModule,
     MayaModule,
+    TestCriteriaModule,
+    TestSpecsModule,
+    TestEvaluationsModule,
+    TestFailuresModule,
+    DiagnoseModule,
     MastraModule.register({ mastra }),
     AgentModule,
     MemoryModule,

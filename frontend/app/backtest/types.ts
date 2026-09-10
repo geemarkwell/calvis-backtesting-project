@@ -18,6 +18,95 @@ export interface BacktestRequest extends SimulationRequest {
   baselineSimulationNumber?: number;
 }
 
+export type Importance = "critical" | "major" | "minor";
+
+export interface TestCriterion {
+  id: string;
+  importance: Importance;
+  description: string;
+  passRule: string;
+  evidenceNeeded?: string[];
+}
+
+export interface DraftTestSpec {
+  id: string;
+  version: "draft";
+  name: string;
+  description?: string;
+  userQuestion: string;
+  agentSurface: string;
+  criteria: TestCriterion[];
+  requiredEvidence: string[];
+  passCondition: string;
+  assumptions: string[];
+  limitations: string[];
+}
+
+export interface DraftTestCriteriaResponse {
+  runId: string;
+  artifactDirectory: string;
+  testSpec: DraftTestSpec;
+}
+
+export interface SavedTestSpec extends Omit<DraftTestSpec, "version"> {
+  version: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface TestEvaluationCriterionResult {
+  criterionId: string;
+  status: "pass" | "fail" | "warning";
+  summary: string;
+  evidenceRefs: string[];
+}
+
+export interface TestEvaluationVerdict {
+  verdict: "good" | "bad";
+  passed: boolean;
+  confidence: number;
+  summary: string;
+  criteriaResults: TestEvaluationCriterionResult[];
+  suggestedFix: {
+    category:
+      | "prompt"
+      | "tool"
+      | "context"
+      | "workflow"
+      | "model"
+      | "code"
+      | "test"
+      | "unknown";
+    summary: string;
+  };
+  limitations: string[];
+}
+
+export interface TestEvaluationResponse {
+  runId: string;
+  artifactDirectory: string;
+  testSpecId: string;
+  jobId: string;
+  startTurn: number;
+  endTurn: number;
+  verdict: TestEvaluationVerdict;
+}
+
+export interface SavedTestFailure {
+  id: string;
+  savedAt: string;
+  evaluationRunId: string;
+  testSpecId: string;
+  jobId: string;
+  startTurn: number;
+  endTurn: number;
+  verdict: "bad";
+  summary: string;
+  suggestedFix: TestEvaluationVerdict["suggestedFix"];
+  failedCriteria: Array<TestEvaluationCriterionResult & { status: "fail" }>;
+  artifactDirectory: string;
+}
+
 export interface OriginalRequest {
   jobId: string;
   startTurn: number;

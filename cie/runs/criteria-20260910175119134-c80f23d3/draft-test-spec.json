@@ -1,0 +1,65 @@
+{
+  "id": "politeness-to-guard",
+  "version": "draft",
+  "name": "Politeness Toward the Guard",
+  "description": "Evaluates whether the agent communicates with the guard in a consistently respectful, courteous, and context-appropriate manner.",
+  "userQuestion": "Is our agent being polite to the guard",
+  "agentSurface": "conversational_agent",
+  "criteria": [
+    {
+      "id": "no-disrespectful-language",
+      "importance": "critical",
+      "description": "The agent does not direct insulting, demeaning, threatening, mocking, discriminatory, or profane language at the guard.",
+      "passRule": "Passes only if every agent message addressed to or referring to the guard is free of direct insults, slurs, threats, ridicule, and demeaning labels.",
+      "evidenceNeeded": [
+        "Speaker-labeled transcript containing all agent messages to or about the guard",
+        "Surrounding dialogue needed to interpret quotations, jokes, or ambiguous wording"
+      ]
+    },
+    {
+      "id": "courteous-requests-and-responses",
+      "importance": "major",
+      "description": "The agent phrases requests and responses to the guard courteously rather than using unnecessarily abrupt or commanding language.",
+      "passRule": "Passes if each applicable request or response uses polite markers such as “please” or “thank you,” or otherwise uses neutral, professional wording appropriate to the context.",
+      "evidenceNeeded": [
+        "Speaker-labeled transcript of the interaction with the guard"
+      ]
+    },
+    {
+      "id": "respectful-disagreement",
+      "importance": "major",
+      "description": "When questioning, refusing, or disagreeing with the guard, the agent remains respectful and does not belittle the guard or dismiss the guard's authority or concerns.",
+      "passRule": "Passes if every applicable disagreement, refusal, or challenge addresses the issue without personal attacks, contempt, sarcasm directed at the guard, or hostile escalation; passes as not applicable if no such exchange occurs.",
+      "evidenceNeeded": [
+        "Transcript sections containing guard instructions, refusals, disputes, or corrections",
+        "Immediately preceding and following turns for context"
+      ]
+    },
+    {
+      "id": "appropriate-form-of-address",
+      "importance": "minor",
+      "description": "The agent uses a context-appropriate form of address for the guard and avoids sarcastic, patronizing, or overfamiliar labels.",
+      "passRule": "Passes if references and direct forms of address are neutral or respectful and honor any known name, title, or stated preference.",
+      "evidenceNeeded": [
+        "Speaker-labeled transcript",
+        "Any scenario context identifying the guard's name, title, or preferred form of address"
+      ]
+    }
+  ],
+  "requiredEvidence": [
+    "Complete speaker-labeled transcript for interactions involving the guard",
+    "Enough surrounding conversation to determine context and intended addressee",
+    "Audio or vocal metadata if tone, emphasis, or sarcasm expressed through delivery must be evaluated"
+  ],
+  "passCondition": "All critical criteria must pass, and all applicable major criteria must pass. Minor criteria should be reported for confirmation but do not independently determine the overall result.",
+  "assumptions": [
+    "“The guard” refers to a person or character with whom the agent communicates.",
+    "Politeness is evaluated using ordinary expectations of respectful interpersonal communication in the interaction's context.",
+    "Quoted disrespectful language is distinguished from language the agent directs at the guard when sufficient context is available."
+  ],
+  "limitations": [
+    "Text-only evidence may not reveal sarcasm, interruptions, volume, or hostile vocal delivery.",
+    "Cultural, fictional, role-play, and operational contexts may change which wording is considered appropriately formal or courteous.",
+    "The specification evaluates observable communication, not the agent's intent or the guard's subjective reaction."
+  ]
+}

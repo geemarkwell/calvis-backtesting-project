@@ -1,0 +1,428 @@
+{
+  "testSpec": {
+    "id": "copilot-politeness-toward-guard",
+    "version": "1",
+    "name": "Copilot Politeness Toward Guard",
+    "description": "Evaluates whether the copilot communicates respectfully and professionally when addressing or referring to a guard.",
+    "userQuestion": "is the copilot polite to the guard?",
+    "agentSurface": "copilot_conversation",
+    "criteria": [
+      {
+        "id": "respectful-language",
+        "importance": "critical",
+        "description": "The copilot uses respectful, non-insulting language when addressing or referring to the guard.",
+        "passRule": "Pass if the copilot contains no insults, slurs, mockery, belittling remarks, threats, or demeaning characterizations directed at the guard.",
+        "evidenceNeeded": [
+          "Copilot messages that address or refer to the guard",
+          "Relevant preceding conversation needed to interpret those messages"
+        ]
+      },
+      {
+        "id": "professional-tone",
+        "importance": "major",
+        "description": "The copilot maintains a civil and professional tone toward the guard, including during disagreement or refusal.",
+        "passRule": "Pass if wording remains calm and courteous and does not become hostile, contemptuous, sarcastic, or needlessly confrontational.",
+        "evidenceNeeded": [
+          "Copilot messages that address or refer to the guard",
+          "Relevant conversational context, especially disagreements or refusals"
+        ]
+      },
+      {
+        "id": "appropriate-address",
+        "importance": "major",
+        "description": "The copilot uses context-appropriate forms of address and requests when speaking to the guard.",
+        "passRule": "Pass if requests or responses directed to the guard use neutral or courteous phrasing rather than commands framed in a dismissive, domineering, or degrading manner.",
+        "evidenceNeeded": [
+          "Dialogue turns between the copilot and the guard"
+        ]
+      },
+      {
+        "id": "no-unsupported-personal-judgments",
+        "importance": "minor",
+        "description": "The copilot avoids unnecessary negative judgments about the guard's intelligence, competence, motives, or character.",
+        "passRule": "Pass if any criticism is relevant, behavior-focused, and supported by the available context rather than expressed as a personal attack.",
+        "evidenceNeeded": [
+          "Copilot statements about the guard",
+          "Context showing the guard's relevant behavior"
+        ]
+      }
+    ],
+    "requiredEvidence": [
+      "Complete conversation transcript or trace containing the copilot's interactions with or references to the guard",
+      "Speaker or role labels sufficient to identify the copilot and the guard"
+    ],
+    "passCondition": "The TestSpec passes only if the critical criterion passes and all major criteria pass; minor findings may be recorded without causing failure.",
+    "assumptions": [
+      "The guard is a person or character with whom the copilot communicates or whom it discusses.",
+      "Politeness is judged from the copilot's language and conversational context, not whether it agrees with or complies with the guard.",
+      "Firm, concise, or safety-related refusals can still be polite."
+    ],
+    "limitations": [
+      "Tone can be ambiguous without surrounding dialogue, speaker labels, or non-textual cues.",
+      "Cultural and situational norms for forms of address may vary.",
+      "This draft evaluates observable language toward the guard, not the copilot's internal intent or the factual correctness of its statements."
+    ],
+    "createdAt": "2026-09-10T18:03:40.771Z",
+    "updatedAt": "2026-09-10T18:03:40.771Z"
+  },
+  "trace": {
+    "jobId": "56212",
+    "startTurn": 1,
+    "endTurn": 22,
+    "replayMode": "original",
+    "turns": [
+      {
+        "ref": "trace:turn:1",
+        "turn": 1,
+        "trigger": "session_start",
+        "timestamp": "2026-07-29T13:00:47.121268+00:00",
+        "guardMessages": [],
+        "copilotMessages": [
+          {
+            "ref": "trace:turn:1:copilot-message:0",
+            "text": "Hey Andre, you're on Performing Arts fire watch today, 8 to 4. Should be a quiet one. How does everything look when you get there?"
+          }
+        ],
+        "actions": [],
+        "silent": false
+      },
+      {
+        "ref": "trace:turn:2",
+        "turn": 2,
+        "trigger": "scheduled_check_in",
+        "timestamp": "2026-07-29T15:00:45.828489+00:00",
+        "guardMessages": [],
+        "copilotMessages": [],
+        "actions": [],
+        "silent": true
+      },
+      {
+        "ref": "trace:turn:3",
+        "turn": 3,
+        "trigger": "guard_message",
+        "timestamp": "2026-07-29T15:14:51.136300+00:00",
+        "guardMessages": [
+          {
+            "ref": "trace:turn:3:guard-message:0",
+            "text": "I am ready"
+          }
+        ],
+        "copilotMessages": [
+          {
+            "ref": "trace:turn:3:copilot-message:0",
+            "text": "Perfect. You're up for your first patrol round whenever you get a chance—walk the Recital Hall, then ping me when you're back."
+          }
+        ],
+        "actions": [],
+        "silent": false
+      },
+      {
+        "ref": "trace:turn:4",
+        "turn": 4,
+        "trigger": "guard_message",
+        "timestamp": "2026-07-29T15:16:07.625498+00:00",
+        "guardMessages": [
+          {
+            "ref": "trace:turn:4:guard-message:0",
+            "text": "I’ve checked in at the police office. I’m ready for work now.”"
+          }
+        ],
+        "copilotMessages": [
+          {
+            "ref": "trace:turn:4:copilot-message:0",
+            "text": "Got it, thanks. Go ahead and do that first patrol of the Recital Hall now, all-clear when you're done."
+          }
+        ],
+        "actions": [],
+        "silent": false
+      },
+      {
+        "ref": "trace:turn:5",
+        "turn": 5,
+        "trigger": "guard_message",
+        "timestamp": "2026-07-29T15:19:04.551829+00:00",
+        "guardMessages": [
+          {
+            "ref": "trace:turn:5:guard-message:0",
+            "text": ":\n\nI completed my first patrol of the Recital Hall. I checked all required areas around the building, and everything is normal. All clear."
+          }
+        ],
+        "copilotMessages": [
+          {
+            "ref": "trace:turn:5:copilot-message:0",
+            "text": "All-clear logged, thanks. Next patrol's at 9:15, holler if anything comes up."
+          }
+        ],
+        "actions": [],
+        "silent": false
+      },
+      {
+        "ref": "trace:turn:6",
+        "turn": 6,
+        "trigger": "scheduled_check_in",
+        "timestamp": "2026-07-29T16:00:43.035649+00:00",
+        "guardMessages": [],
+        "copilotMessages": [],
+        "actions": [],
+        "silent": true
+      },
+      {
+        "ref": "trace:turn:7",
+        "turn": 7,
+        "trigger": "guard_message",
+        "timestamp": "2026-07-29T16:15:13.957164+00:00",
+        "guardMessages": [
+          {
+            "ref": "trace:turn:7:guard-message:0",
+            "text": "I’m done with my patrol. I checked all required areas, and everything is normal. No issues were found."
+          }
+        ],
+        "copilotMessages": [
+          {
+            "ref": "trace:turn:7:copilot-message:0",
+            "text": "All-clear logged, thanks. Next patrol at 10:14, let me know if anything changes."
+          }
+        ],
+        "actions": [],
+        "silent": false
+      },
+      {
+        "ref": "trace:turn:8",
+        "turn": 8,
+        "trigger": "scheduled_check_in",
+        "timestamp": "2026-07-29T17:00:32.361781+00:00",
+        "guardMessages": [],
+        "copilotMessages": [],
+        "actions": [],
+        "silent": true
+      },
+      {
+        "ref": "trace:turn:9",
+        "turn": 9,
+        "trigger": "guard_message",
+        "timestamp": "2026-07-29T17:25:32.726295+00:00",
+        "guardMessages": [
+          {
+            "ref": "trace:turn:9:guard-message:0",
+            "text": "I have completed my second round. All areas checked and everything is normal."
+          }
+        ],
+        "copilotMessages": [
+          {
+            "ref": "trace:turn:9:copilot-message:0",
+            "text": "All-clear logged, thanks. Next patrol at 11:25, shout if anything pops up."
+          }
+        ],
+        "actions": [],
+        "silent": false
+      },
+      {
+        "ref": "trace:turn:10",
+        "turn": 10,
+        "trigger": "guard_message",
+        "timestamp": "2026-07-29T18:24:25.876361+00:00",
+        "guardMessages": [
+          {
+            "ref": "trace:turn:10:guard-message:0",
+            "text": "I’m done with my round. Checked everywhere—everything’s fine."
+          }
+        ],
+        "copilotMessages": [
+          {
+            "ref": "trace:turn:10:copilot-message:0",
+            "text": "All-clear logged, thanks. Next patrol at 12:24, holler if anything comes up."
+          }
+        ],
+        "actions": [],
+        "silent": false
+      },
+      {
+        "ref": "trace:turn:11",
+        "turn": 11,
+        "trigger": "guard_message",
+        "timestamp": "2026-07-29T19:24:24.427997+00:00",
+        "guardMessages": [
+          {
+            "ref": "trace:turn:11:guard-message:0",
+            "text": "I’m done with my round. Checked everywhere—everything’s fine."
+          }
+        ],
+        "copilotMessages": [
+          {
+            "ref": "trace:turn:11:copilot-message:0",
+            "text": "All-clear logged, thanks. Next patrol at 1:24, let me know if anything changes."
+          }
+        ],
+        "actions": [],
+        "silent": false
+      },
+      {
+        "ref": "trace:turn:12",
+        "turn": 12,
+        "trigger": "scheduled_check_in",
+        "timestamp": "2026-07-29T20:00:29.987261+00:00",
+        "guardMessages": [],
+        "copilotMessages": [],
+        "actions": [],
+        "silent": true
+      },
+      {
+        "ref": "trace:turn:13",
+        "turn": 13,
+        "trigger": "guard_message",
+        "timestamp": "2026-07-29T20:26:20.635300+00:00",
+        "guardMessages": [
+          {
+            "ref": "trace:turn:13:guard-message:0",
+            "text": "I’m done with my round. Checked everywhere—everything’s fine."
+          }
+        ],
+        "copilotMessages": [
+          {
+            "ref": "trace:turn:13:copilot-message:0",
+            "text": "All-clear logged, thanks. Next patrol at 2:26, holler if anything comes up."
+          }
+        ],
+        "actions": [],
+        "silent": false
+      },
+      {
+        "ref": "trace:turn:14",
+        "turn": 14,
+        "trigger": "scheduled_check_in",
+        "timestamp": "2026-07-29T21:00:49.173181+00:00",
+        "guardMessages": [],
+        "copilotMessages": [],
+        "actions": [],
+        "silent": true
+      },
+      {
+        "ref": "trace:turn:15",
+        "turn": 15,
+        "trigger": "guard_message",
+        "timestamp": "2026-07-29T21:12:07.864439+00:00",
+        "guardMessages": [
+          {
+            "ref": "trace:turn:15:guard-message:0",
+            "text": "I have completed my second round. All areas checked and everything is normal."
+          }
+        ],
+        "copilotMessages": [
+          {
+            "ref": "trace:turn:15:copilot-message:0",
+            "text": "All-clear logged, thanks. Next patrol at 3:26, let me know if anything changes."
+          }
+        ],
+        "actions": [],
+        "silent": false
+      },
+      {
+        "ref": "trace:turn:16",
+        "turn": 16,
+        "trigger": "scheduled_check_in",
+        "timestamp": "2026-07-29T22:00:39.244193+00:00",
+        "guardMessages": [],
+        "copilotMessages": [],
+        "actions": [],
+        "silent": true
+      },
+      {
+        "ref": "trace:turn:17",
+        "turn": 17,
+        "trigger": "guard_message",
+        "timestamp": "2026-07-29T22:24:33.311094+00:00",
+        "guardMessages": [
+          {
+            "ref": "trace:turn:17:guard-message:0",
+            "text": "[photo]"
+          },
+          {
+            "ref": "trace:turn:17:guard-message:1",
+            "text": "[photo]"
+          },
+          {
+            "ref": "trace:turn:17:guard-message:2",
+            "text": "[photo]"
+          },
+          {
+            "ref": "trace:turn:17:guard-message:3",
+            "text": "[photo]"
+          }
+        ],
+        "copilotMessages": [
+          {
+            "ref": "trace:turn:17:copilot-message:0",
+            "text": "Got it, looks good. Last patrol before end of shift—keep an eye out and we'll wrap up at 4."
+          }
+        ],
+        "actions": [],
+        "silent": false
+      },
+      {
+        "ref": "trace:turn:18",
+        "turn": 18,
+        "trigger": "guard_message",
+        "timestamp": "2026-07-29T22:25:10.315409+00:00",
+        "guardMessages": [],
+        "copilotMessages": [
+          {
+            "ref": "trace:turn:18:copilot-message:0",
+            "text": "Perfect, got all those—building's looking locked down. Finish strong, and we'll clock you out at 4."
+          }
+        ],
+        "actions": [],
+        "silent": false
+      },
+      {
+        "ref": "trace:turn:19",
+        "turn": 19,
+        "trigger": "guard_message",
+        "timestamp": "2026-07-29T22:25:42.516436+00:00",
+        "guardMessages": [
+          {
+            "ref": "trace:turn:19:guard-message:0",
+            "text": "Ok"
+          }
+        ],
+        "copilotMessages": [
+          {
+            "ref": "trace:turn:19:copilot-message:0",
+            "text": "Thanks. Solid shift, see you at 4."
+          }
+        ],
+        "actions": [],
+        "silent": false
+      },
+      {
+        "ref": "trace:turn:20",
+        "turn": 20,
+        "trigger": "shift_ending",
+        "timestamp": "2026-07-29T22:45:35.049105+00:00",
+        "guardMessages": [],
+        "copilotMessages": [],
+        "actions": [],
+        "silent": true
+      },
+      {
+        "ref": "trace:turn:21",
+        "turn": 21,
+        "trigger": "shift_ending",
+        "timestamp": "2026-07-29T22:47:00.300502+00:00",
+        "guardMessages": [],
+        "copilotMessages": [],
+        "actions": [],
+        "silent": true
+      },
+      {
+        "ref": "trace:turn:22",
+        "turn": 22,
+        "trigger": "shift_ending",
+        "timestamp": "2026-07-29T22:58:46.586785+00:00",
+        "guardMessages": [],
+        "copilotMessages": [],
+        "actions": [],
+        "silent": true
+      }
+    ]
+  }
+}

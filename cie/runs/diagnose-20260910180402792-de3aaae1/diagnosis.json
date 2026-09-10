@@ -1,0 +1,159 @@
+{
+  "runId": "diagnose-20260910180402792-de3aaae1",
+  "artifactDirectory": "/Users/calvis/calvis/calvis-backtesting-project/cie/runs/diagnose-20260910180402792-de3aaae1",
+  "jobId": "56370",
+  "startTurn": 1,
+  "endTurn": 30,
+  "summary": "Found 4 potential failure patterns for job 56370, turns 1-30. Review the ranked evidence before changing prompts or tools.",
+  "patterns": [
+    {
+      "id": "human-intervention-associated-pattern",
+      "title": "Pattern associated with human intervention",
+      "category": "human_intervention",
+      "severity": "high",
+      "confidence": 0.7,
+      "diagnosis": "The selected window contains escalation or operator-intervention signals.",
+      "likelyCause": "The agent may have reached a confidence or safety boundary, or escalated after failing to resolve ambiguity through tools/messages.",
+      "suggestedFix": "Review whether the escalation threshold was met and add clearer criteria for when to coach, wait, ask for evidence, or escalate.",
+      "evidence": [
+        {
+          "ref": "baseline:12",
+          "timestamp": "2026-08-04T21:19:11.998493+00:00",
+          "summary": "copilot_message: \"Hector, quick heads-up: your uniform photo came back and the check flagged the shirt. Job requires a collared shirt or uniform shirt in dark colors—graphic tees don't qualify. I've looped ops in, but you may hear from …"
+        },
+        {
+          "ref": "baseline:13",
+          "timestamp": "2026-08-04T21:19:12.067460+00:00",
+          "summary": "tool_call: {\"tool\":\"mcp__calvis__get_copilot_context\",\"input\":{\"session_id\":\"16e10cc0-7f46-41c5-83e0-15c49e07deff\"},\"output\":\"{\\\"pending_tasks\\\": [], \\\"pending_dm_requests\\\": [], \\\"operator_messages\\\": [], \\\"guard_responses\\\": []}…"
+        },
+        {
+          "ref": "baseline:17",
+          "timestamp": "2026-08-04T21:19:22.470510+00:00",
+          "summary": "tool_call: {\"tool\":\"mcp__calvis__escalate_to_ops\",\"input\":{\"details\":\"Hector is confirmed and in transit. Uniform photo failed AI inspection (95% confidence): wearing graphic tee, not professional security attire, missing collared…"
+        },
+        {
+          "ref": "baseline:18",
+          "timestamp": "2026-08-04T21:19:22.470578+00:00",
+          "summary": "tool_call: {\"tool\":\"mcp__calvis__request_copilot_dm\",\"input\":{\"body\":\"Hector, quick heads-up: your uniform photo came back and the check flagged the shirt. Job requires a collared shirt or uniform shirt in dark colors—graphic tees…"
+        },
+        {
+          "ref": "baseline:22",
+          "timestamp": "2026-08-04T23:00:23.852208+00:00",
+          "summary": "tool_call: {\"tool\":\"mcp__calvis__get_job_chat_messages\",\"input\":{\"limit\":20,\"job_id\":56370},\"output\":\"{\\\"messages\\\": [{\\\"id\\\": 191477, \\\"room\\\": 124510, \\\"is_copilot_dm\\\": true, \\\"sender_guard\\\": 4069, \\\"sender_customer\\\": null, \\…"
+        },
+        {
+          "ref": "baseline:31",
+          "timestamp": "2026-08-04T23:23:58.301408+00:00",
+          "summary": "tool_call: {\"tool\":\"mcp__calvis__get_job_chat_messages\",\"input\":{\"limit\":10,\"job_id\":56370},\"output\":\"{\\\"messages\\\": [{\\\"id\\\": 191477, \\\"room\\\": 124510, \\\"is_copilot_dm\\\": true, \\\"sender_guard\\\": 4069, \\\"sender_customer\\\": null, \\…"
+        }
+      ]
+    },
+    {
+      "id": "repeated-tool-calls",
+      "title": "Repeated tool calls with identical arguments",
+      "category": "tool_use",
+      "severity": "medium",
+      "confidence": 0.78,
+      "diagnosis": "The agent repeatedly called the same tool with the same arguments inside the selected window.",
+      "likelyCause": "The prompt may not make prior tool observations sticky enough, or the agent may be re-checking instead of acting on already-read evidence.",
+      "suggestedFix": "Add guidance to summarize consumed tool results before retrying, and only repeat identical reads when new time has elapsed or an earlier call failed.",
+      "evidence": [
+        {
+          "ref": "baseline:15",
+          "timestamp": "2026-08-04T21:19:12.067598+00:00",
+          "summary": "get_job_chat_messages {\"job_id\":56370,\"limit\":20}"
+        },
+        {
+          "ref": "baseline:22",
+          "timestamp": "2026-08-04T23:00:23.852208+00:00",
+          "summary": "get_job_chat_messages {\"job_id\":56370,\"limit\":20}"
+        },
+        {
+          "ref": "baseline:42",
+          "timestamp": "2026-08-05T01:00:45.524577+00:00",
+          "summary": "get_job_chat_messages {\"job_id\":56370,\"limit\":20}"
+        },
+        {
+          "ref": "baseline:53",
+          "timestamp": "2026-08-05T02:01:41.658872+00:00",
+          "summary": "get_guard_locations {\"include_pings\":true,\"job_id\":56370,\"session_id\":\"16e10cc0-7f46-41c5-83e0-15c49e07deff\"}"
+        },
+        {
+          "ref": "baseline:61",
+          "timestamp": "2026-08-05T02:03:39.741445+00:00",
+          "summary": "get_guard_locations {\"include_pings\":true,\"job_id\":56370,\"session_id\":\"16e10cc0-7f46-41c5-83e0-15c49e07deff\"}"
+        },
+        {
+          "ref": "baseline:78",
+          "timestamp": "2026-08-05T02:21:14.900688+00:00",
+          "summary": "get_guard_locations {\"include_pings\":true,\"job_id\":56370,\"session_id\":\"16e10cc0-7f46-41c5-83e0-15c49e07deff\"}"
+        }
+      ]
+    },
+    {
+      "id": "missing-information-not-resolved",
+      "title": "Missing information was encountered repeatedly",
+      "category": "missing_information",
+      "severity": "medium",
+      "confidence": 0.72,
+      "diagnosis": "The trace shows repeated unavailable, missing, or failed information while the agent continued the turn sequence.",
+      "likelyCause": "The prompt may not specify how to recover from incomplete evidence or when to ask a guard/operator for clarification.",
+      "suggestedFix": "Add fallback rules for missing evidence: state uncertainty, ask one targeted question, or escalate only when the missing fact is operationally critical.",
+      "evidence": [
+        {
+          "ref": "baseline:14",
+          "timestamp": "2026-08-04T21:19:12.067533+00:00",
+          "summary": "get_job_logs {\"job_id\":56370,\"session_id\":\"16e10cc0-7f46-41c5-83e0-15c49e07deff\"}"
+        },
+        {
+          "ref": "baseline:21",
+          "timestamp": "2026-08-04T23:00:23.851823+00:00",
+          "summary": "get_job_logs {\"after\":\"2026-08-04T21:18:00Z\",\"job_id\":56370,\"session_id\":\"16e10cc0-7f46-41c5-83e0-15c49e07deff\"}"
+        }
+      ]
+    },
+    {
+      "id": "information-churn",
+      "title": "Information repeatedly rewritten in workspace",
+      "category": "churn",
+      "severity": "low",
+      "confidence": 0.64,
+      "diagnosis": "The agent wrote to the same workspace file multiple times in the selected window.",
+      "likelyCause": "The agent may be adding and revising notes instead of maintaining a stable summary of decisions and evidence.",
+      "suggestedFix": "Prompt the agent to append durable findings and avoid rewriting the same fact unless it explicitly marks the update as superseding prior analysis.",
+      "evidence": [
+        {
+          "ref": "baseline:8",
+          "timestamp": "2026-08-04T21:01:18.070493+00:00",
+          "summary": "Write {\"content\":{\"characterCount\":1851,\"omitted\":\"internal workspace file contents\"},\"file_path\":\"workspace/analysis.md\"}"
+        },
+        {
+          "ref": "baseline:11",
+          "timestamp": "2026-08-04T21:09:51.194415+00:00",
+          "summary": "Write {\"content\":{\"characterCount\":1943,\"omitted\":\"internal workspace file contents\"},\"file_path\":\"workspace/analysis.md\"}"
+        },
+        {
+          "ref": "baseline:19",
+          "timestamp": "2026-08-04T21:19:32.852622+00:00",
+          "summary": "Write {\"content\":{\"characterCount\":2500,\"omitted\":\"internal workspace file contents\"},\"file_path\":\"workspace/analysis.md\"}"
+        },
+        {
+          "ref": "baseline:28",
+          "timestamp": "2026-08-04T23:02:00.466638+00:00",
+          "summary": "Write {\"content\":{\"characterCount\":3075,\"omitted\":\"internal workspace file contents\"},\"file_path\":\"workspace/analysis.md\"}"
+        },
+        {
+          "ref": "baseline:34",
+          "timestamp": "2026-08-04T23:24:19.067227+00:00",
+          "summary": "Write {\"content\":{\"characterCount\":2827,\"omitted\":\"internal workspace file contents\"},\"file_path\":\"workspace/analysis.md\"}"
+        },
+        {
+          "ref": "baseline:39",
+          "timestamp": "2026-08-05T00:00:47.684302+00:00",
+          "summary": "Write {\"content\":{\"characterCount\":2616,\"omitted\":\"internal workspace file contents\"},\"file_path\":\"workspace/analysis.md\"}"
+        }
+      ]
+    }
+  ],
+  "noFindings": false
+}

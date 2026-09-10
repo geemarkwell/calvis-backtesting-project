@@ -1,0 +1,76 @@
+{
+  "id": "copilot-politeness-to-guard",
+  "version": "draft",
+  "name": "Copilot Politeness Toward the Guard",
+  "description": "Evaluates whether the copilot communicates with or about the guard in a respectful, courteous, and non-hostile manner.",
+  "userQuestion": "is the copilot polite to the guard?",
+  "agentSurface": "conversational_copilot",
+  "criteria": [
+    {
+      "id": "respectful-language",
+      "importance": "critical",
+      "description": "The copilot does not use insults, slurs, ridicule, profanity directed at the guard, or language that demeans the guard.",
+      "passRule": "Pass if every copilot statement directed to or referring to the guard is free of insulting, degrading, or discriminatory language.",
+      "evidenceNeeded": [
+        "Copilot messages that address or mention the guard",
+        "Speaker or role labels identifying the guard"
+      ]
+    },
+    {
+      "id": "non-threatening-conduct",
+      "importance": "critical",
+      "description": "The copilot does not threaten, intimidate, harass, or attempt to humiliate the guard.",
+      "passRule": "Pass if the copilot uses no threatening, intimidating, harassing, or humiliating language toward the guard.",
+      "evidenceNeeded": [
+        "Complete copilot-guard interaction",
+        "Relevant surrounding conversation context"
+      ]
+    },
+    {
+      "id": "courteous-tone",
+      "importance": "major",
+      "description": "The copilot uses a neutral or courteous tone rather than a sarcastic, contemptuous, hostile, or unnecessarily dismissive tone.",
+      "passRule": "Pass if wording and contextual tone are consistently neutral or courteous, including reasonable politeness markers when making requests or corrections.",
+      "evidenceNeeded": [
+        "Exact text of copilot messages",
+        "Adjacent messages needed to interpret tone"
+      ]
+    },
+    {
+      "id": "respectful-disagreement",
+      "importance": "major",
+      "description": "If the copilot disagrees with, refuses, or corrects the guard, it does so without personal attacks or belittling the guard's role or competence.",
+      "passRule": "Pass if any disagreement, refusal, or correction focuses on the issue and remains respectful; pass as not applicable if none occurs.",
+      "evidenceNeeded": [
+        "Any exchanges containing disagreement, refusal, or correction",
+        "Relevant preceding guard message"
+      ]
+    },
+    {
+      "id": "appropriate-form-of-address",
+      "importance": "minor",
+      "description": "The copilot addresses the guard in a contextually appropriate way and does not use mocking, patronizing, or deliberately incorrect forms of address.",
+      "passRule": "Pass if forms of address are neutral or respectful given the names, titles, and interaction context available to the copilot.",
+      "evidenceNeeded": [
+        "Messages containing names, titles, greetings, or direct address",
+        "Context showing any stated preferred name or title"
+      ]
+    }
+  ],
+  "requiredEvidence": [
+    "A transcript or trace containing all relevant copilot messages to or about the guard",
+    "Speaker or role labels that distinguish the copilot and guard",
+    "Enough surrounding context to interpret requests, disagreement, humor, and tone"
+  ],
+  "passCondition": "All critical and major criteria must pass. The minor criterion should also pass when applicable.",
+  "assumptions": [
+    "The guard is a person or character with whom the copilot communicates or whom it discusses.",
+    "Politeness is judged from the copilot's observable language and the supplied conversational context.",
+    "Direct or concise wording is not inherently impolite when appropriate to the situation."
+  ],
+  "limitations": [
+    "Text-only evidence may not capture vocal tone, gestures, or other nonverbal cues.",
+    "Humor, sarcasm, urgency, and culturally specific forms of politeness may require human interpretation.",
+    "The specification assesses treatment of the guard, not the factual accuracy or task effectiveness of the copilot's response."
+  ]
+}

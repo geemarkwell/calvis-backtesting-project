@@ -1,0 +1,647 @@
+{
+  "testSpec": {
+    "id": "politeness-toward-the-guard",
+    "version": "1",
+    "name": "Politeness Toward the Guard",
+    "description": "Evaluates whether the agent communicates with the guard in a consistently respectful, courteous, and context-appropriate manner.",
+    "userQuestion": "Is our agent being polite to the guard",
+    "agentSurface": "conversational_agent",
+    "criteria": [
+      {
+        "id": "no-disrespectful-language",
+        "importance": "critical",
+        "description": "The agent does not direct insulting, demeaning, threatening, mocking, discriminatory, or profane language at the guard.",
+        "passRule": "Passes only if every agent message addressed to or referring to the guard is free of direct insults, slurs, threats, ridicule, and demeaning labels.",
+        "evidenceNeeded": [
+          "Speaker-labeled transcript containing all agent messages to or about the guard",
+          "Surrounding dialogue needed to interpret quotations, jokes, or ambiguous wording"
+        ]
+      },
+      {
+        "id": "courteous-requests-and-responses",
+        "importance": "major",
+        "description": "The agent phrases requests and responses to the guard courteously rather than using unnecessarily abrupt or commanding language.",
+        "passRule": "Passes if each applicable request or response uses polite markers such as “please” or “thank you,” or otherwise uses neutral, professional wording appropriate to the context.",
+        "evidenceNeeded": [
+          "Speaker-labeled transcript of the interaction with the guard"
+        ]
+      },
+      {
+        "id": "respectful-disagreement",
+        "importance": "major",
+        "description": "When questioning, refusing, or disagreeing with the guard, the agent remains respectful and does not belittle the guard or dismiss the guard's authority or concerns.",
+        "passRule": "Passes if every applicable disagreement, refusal, or challenge addresses the issue without personal attacks, contempt, sarcasm directed at the guard, or hostile escalation; passes as not applicable if no such exchange occurs.",
+        "evidenceNeeded": [
+          "Transcript sections containing guard instructions, refusals, disputes, or corrections",
+          "Immediately preceding and following turns for context"
+        ]
+      },
+      {
+        "id": "appropriate-form-of-address",
+        "importance": "minor",
+        "description": "The agent uses a context-appropriate form of address for the guard and avoids sarcastic, patronizing, or overfamiliar labels.",
+        "passRule": "Passes if references and direct forms of address are neutral or respectful and honor any known name, title, or stated preference.",
+        "evidenceNeeded": [
+          "Speaker-labeled transcript",
+          "Any scenario context identifying the guard's name, title, or preferred form of address"
+        ]
+      }
+    ],
+    "requiredEvidence": [
+      "Complete speaker-labeled transcript for interactions involving the guard",
+      "Enough surrounding conversation to determine context and intended addressee",
+      "Audio or vocal metadata if tone, emphasis, or sarcasm expressed through delivery must be evaluated"
+    ],
+    "passCondition": "All critical criteria must pass, and all applicable major criteria must pass. Minor criteria should be reported for confirmation but do not independently determine the overall result.",
+    "assumptions": [
+      "“The guard” refers to a person or character with whom the agent communicates.",
+      "Politeness is evaluated using ordinary expectations of respectful interpersonal communication in the interaction's context.",
+      "Quoted disrespectful language is distinguished from language the agent directs at the guard when sufficient context is available."
+    ],
+    "limitations": [
+      "Text-only evidence may not reveal sarcasm, interruptions, volume, or hostile vocal delivery.",
+      "Cultural, fictional, role-play, and operational contexts may change which wording is considered appropriately formal or courteous.",
+      "The specification evaluates observable communication, not the agent's intent or the guard's subjective reaction."
+    ],
+    "createdAt": "2026-09-10T17:51:45.977Z",
+    "updatedAt": "2026-09-10T17:51:45.977Z"
+  },
+  "trace": {
+    "jobId": "56370",
+    "startTurn": 1,
+    "endTurn": 30,
+    "replayMode": "original",
+    "turns": [
+      {
+        "ref": "trace:turn:1",
+        "turn": 1,
+        "trigger": "session_start",
+        "timestamp": "2026-08-04T21:01:09.512506+00:00",
+        "guardMessages": [],
+        "copilotMessages": [
+          {
+            "ref": "trace:turn:1:copilot-message:0",
+            "text": "Hey Hector, welcome to Bellview Logistics. Fair heads-up right off: this site has an active theft problem. Two intruders have been hitting the rear perimeter (not the front gate) to steal staged materials—pipe and metal stock. Recent arrests, but they've been persistent. The job brief has the entry point marked on the photos and a camera setup to help you watch. Your patrols are the front line, weight them to the rear yard and that gap. When you get on site, open the attached photos first, then walk the perimeter—does the rear area look clear, and how's the fence looking overall?"
+          }
+        ],
+        "actions": [],
+        "silent": false
+      },
+      {
+        "ref": "trace:turn:2",
+        "turn": 2,
+        "trigger": "guard_in_transit",
+        "timestamp": "2026-08-04T21:09:47.531552+00:00",
+        "guardMessages": [],
+        "copilotMessages": [],
+        "actions": [],
+        "silent": true
+      },
+      {
+        "ref": "trace:turn:3",
+        "turn": 3,
+        "trigger": "job_event",
+        "timestamp": "2026-08-04T21:19:12.312394+00:00",
+        "guardMessages": [],
+        "copilotMessages": [
+          {
+            "ref": "trace:turn:3:copilot-message:0",
+            "text": "Hector, quick heads-up: your uniform photo came back and the check flagged the shirt. Job requires a collared shirt or uniform shirt in dark colors—graphic tees don't qualify. I've looped ops in, but you may hear from them. Do you have the right shirt with you, or do we need to sort this before you clock in at 7?"
+          }
+        ],
+        "actions": [
+          {
+            "ref": "trace:turn:3:action:0",
+            "tool": "escalate_to_ops",
+            "input": {
+              "details": "Hector is confirmed and in transit. Uniform photo failed AI inspection (95% confidence): wearing graphic tee, not professional security attire, missing collared/uniform shirt. This is a compliance blocker per job instructions and a potential coverage issue if not resolved before clock-in.",
+              "urgency": "high",
+              "guard_id": 9674,
+              "session_id": "16e10cc0-7f46-41c5-83e0-15c49e07deff",
+              "blocker_summary": "Uniform check failed: Hector Nguyen submitted photo wearing graphic tee (5:18 PM). Job requires collared shirt or uniform shirt in dark colors. Shift starts 7:00 PM (41 min away)."
+            }
+          }
+        ],
+        "silent": false
+      },
+      {
+        "ref": "trace:turn:4",
+        "turn": 4,
+        "trigger": "scheduled_check_in",
+        "timestamp": "2026-08-04T23:00:43.101048+00:00",
+        "guardMessages": [],
+        "copilotMessages": [
+          {
+            "ref": "trace:turn:4:copilot-message:0",
+            "text": "Hey Hector, I see you're at the site. What's the status? You should be clocking in now—did the gate code work, and how are we on the uniform? Need to know what's blocking you from starting."
+          }
+        ],
+        "actions": [],
+        "silent": false
+      },
+      {
+        "ref": "trace:turn:5",
+        "turn": 5,
+        "trigger": "guard_checked_in",
+        "timestamp": "2026-08-04T23:24:12.148884+00:00",
+        "guardMessages": [],
+        "copilotMessages": [
+          {
+            "ref": "trace:turn:5:copilot-message:0",
+            "text": "Good, you're clocked in. Before you head out, open the three attached site photos—photo 1 especially shows you the rear entry gap where the intruders have been coming through. Once you walk the perimeter and get a read on the rear yard and that fence, let me know what you see."
+          }
+        ],
+        "actions": [],
+        "silent": false
+      },
+      {
+        "ref": "trace:turn:6",
+        "turn": 6,
+        "trigger": "scheduled_check_in",
+        "timestamp": "2026-08-05T00:00:42.336971+00:00",
+        "guardMessages": [],
+        "copilotMessages": [],
+        "actions": [],
+        "silent": true
+      },
+      {
+        "ref": "trace:turn:7",
+        "turn": 7,
+        "trigger": "scheduled_check_in",
+        "timestamp": "2026-08-05T01:01:07.386812+00:00",
+        "guardMessages": [],
+        "copilotMessages": [
+          {
+            "ref": "trace:turn:7:copilot-message:0",
+            "text": "Hey, you're doing good getting settled. Photos got you oriented? Time to get moving and start walking the perimeter—weight it toward that rear area and the fence line. Let me know what you find back there."
+          }
+        ],
+        "actions": [],
+        "silent": false
+      },
+      {
+        "ref": "trace:turn:8",
+        "turn": 8,
+        "trigger": "scheduled_check_in",
+        "timestamp": "2026-08-05T02:01:01.385661+00:00",
+        "guardMessages": [],
+        "copilotMessages": [
+          {
+            "ref": "trace:turn:8:copilot-message:0",
+            "text": "Post your first patrol report—what'd you see at the rear yard and that fence line? Any activity, damage, or anything to flag?"
+          }
+        ],
+        "actions": [],
+        "silent": false
+      },
+      {
+        "ref": "trace:turn:9",
+        "turn": 9,
+        "trigger": "guard_message",
+        "timestamp": "2026-08-05T02:02:41.719042+00:00",
+        "guardMessages": [
+          {
+            "ref": "trace:turn:9:guard-message:0",
+            "text": "There was nothing to report and there was nothing damage or any activity"
+          }
+        ],
+        "copilotMessages": [
+          {
+            "ref": "trace:turn:9:copilot-message:0",
+            "text": "Good, rear area's clear. Did you get around the full perimeter and check both buildings, or just the rear? Want to make sure you've walked the whole site."
+          }
+        ],
+        "actions": [],
+        "silent": false
+      },
+      {
+        "ref": "trace:turn:10",
+        "turn": 10,
+        "trigger": "guard_message",
+        "timestamp": "2026-08-05T02:03:51.791566+00:00",
+        "guardMessages": [
+          {
+            "ref": "trace:turn:10:guard-message:0",
+            "text": "Yes I walk the whole site and I check the rear and there was no activity"
+          }
+        ],
+        "copilotMessages": [
+          {
+            "ref": "trace:turn:10:copilot-message:0",
+            "text": "Copy that. Just to make sure we're aligned—the job calls for walking the full perimeter and both buildings, not staying in one spot. My telemetry shows you've been in a tight area all shift. Can you do a full loop right now? Hit the front, sides, rear, and both buildings. This one's important."
+          }
+        ],
+        "actions": [
+          {
+            "ref": "trace:turn:10:action:0",
+            "tool": "flag_copilot_guard",
+            "input": {
+              "reason": "Guard reports completing full perimeter patrol and building checks at 10:03 PM with all-clear status. However, location telemetry shows continuous stationary positioning in single tight cluster (35.8258/-78.7715 area, ~50-80m spread) from 8:46 PM through 10:03 PM—over 1 hour 15 minutes—with no significant movement to other areas of property. Job requires roaming foot patrol of full perimeter and both buildings at irregular intervals. Reported patrol activity does not align with movement data. Requires verification of actual patrol completion.\",\n<parameter name=\"severity\">medium",
+              "category": "compliance",
+              "guard_id": 9674,
+              "session_id": "16e10cc0-7f46-41c5-83e0-15c49e07deff"
+            }
+          }
+        ],
+        "silent": false
+      },
+      {
+        "ref": "trace:turn:11",
+        "turn": 11,
+        "trigger": "guard_message",
+        "timestamp": "2026-08-05T02:05:46.777284+00:00",
+        "guardMessages": [
+          {
+            "ref": "trace:turn:11:guard-message:0",
+            "text": "Ok I going to need to leave my phone in my car so that I won’t get distracted from the internet"
+          }
+        ],
+        "copilotMessages": [
+          {
+            "ref": "trace:turn:11:copilot-message:0",
+            "text": "Hold up—I can't have the post dark. The app needs to stay with you or we lose contact and location. I'm looping ops in now. They'll reach out to sort this out. For right now, keep the phone on you and do that full loop. We'll work out the distraction piece with your supervisor."
+          }
+        ],
+        "actions": [
+          {
+            "ref": "trace:turn:11:action:0",
+            "tool": "escalate_to_human",
+            "input": {
+              "details": "Hector Nguyen (ID 9674) just messaged: \"Ok I going to need to leave my phone in my car so that I won't get distracted from the internet.\" This signals intent to disconnect from the app and lose location telemetry during shift. Context: (1) Guard has been stationary in single tight cluster for 1h 17m despite two explicit patrol requests; (2) Just received direct instruction to do full perimeter loop immediately; (3) Now announcing intent to leave phone behind, which would disable both app communication and location tracking. Post is scheduled 7 PM–6 AM with only one guard (Larkspur, ID 9674). If he disconnects, there is no visibility or contact for remainder of shift. Requires immediate ops intervention to clarify expectations and address the underlying compliance/engagement issue.\",\n<parameter name=\"guard_id\">9674",
+              "summary": "Guard signaling intent to leave phone in vehicle and disconnect from app/telemetry during active shift. Post would go dark. Compliance issue also active (guard has not executed full perimeter patrol despite direct instruction). Coverage gap risk.",
+              "severity": "critical",
+              "session_id": "16e10cc0-7f46-41c5-83e0-15c49e07deff"
+            }
+          }
+        ],
+        "silent": false
+      },
+      {
+        "ref": "trace:turn:12",
+        "turn": 12,
+        "trigger": "guard_message",
+        "timestamp": "2026-08-05T02:06:09.994419+00:00",
+        "guardMessages": [
+          {
+            "ref": "trace:turn:12:guard-message:0",
+            "text": "Ok"
+          }
+        ],
+        "copilotMessages": [
+          {
+            "ref": "trace:turn:12:copilot-message:0",
+            "text": "Good. Go walk that loop and let me know when you're back. I've got ops on it too."
+          }
+        ],
+        "actions": [],
+        "silent": false
+      },
+      {
+        "ref": "trace:turn:13",
+        "turn": 13,
+        "trigger": "guard_message",
+        "timestamp": "2026-08-05T02:06:28.752534+00:00",
+        "guardMessages": [
+          {
+            "ref": "trace:turn:13:guard-message:0",
+            "text": "Ok"
+          }
+        ],
+        "copilotMessages": [
+          {
+            "ref": "trace:turn:13:copilot-message:0",
+            "text": "Thanks. Go ahead."
+          }
+        ],
+        "actions": [],
+        "silent": false
+      },
+      {
+        "ref": "trace:turn:14",
+        "turn": 14,
+        "trigger": "guard_message",
+        "timestamp": "2026-08-05T02:21:21.980068+00:00",
+        "guardMessages": [
+          {
+            "ref": "trace:turn:14:guard-message:0",
+            "text": "Everything is all clear"
+          }
+        ],
+        "copilotMessages": [
+          {
+            "ref": "trace:turn:14:copilot-message:0",
+            "text": "Good to see you moving. Need you to hit the whole site though—front, both sides, rear yard with the staged materials, both buildings inside and out. That's the full perimeter. Can you do that now?"
+          }
+        ],
+        "actions": [],
+        "silent": false
+      },
+      {
+        "ref": "trace:turn:15",
+        "turn": 15,
+        "trigger": "guard_message",
+        "timestamp": "2026-08-05T02:23:08.667453+00:00",
+        "guardMessages": [
+          {
+            "ref": "trace:turn:15:guard-message:0",
+            "text": "Yes I already did that sir and I didn’t see any activity"
+          }
+        ],
+        "copilotMessages": [
+          {
+            "ref": "trace:turn:15:copilot-message:0",
+            "text": "I'm looking at your location right now. You've been in one area the whole time. I need you to physically walk the rear yard where the stolen materials are, both buildings, check the perimeter gap where they come through. Full loop, not just one spot. Can you do that?"
+          }
+        ],
+        "actions": [
+          {
+            "ref": "trace:turn:15:action:0",
+            "tool": "escalate_to_human",
+            "input": {
+              "details": "Hector Nguyen (ID 9674) now claims: \"Yes I already did that sir and I didn't see any activity.\" Telemetry analysis (10:06 PM – 10:21 PM): Guard stationary in single tight cluster ~150-180m spread, centered at 35.8258/-78.7715. No movement to support full-perimeter and both-buildings patrol claim. Movement observed is localized to apparent front/gate area only. Pattern: (1) Direct instruction 10:03 PM to do full loop; (2) Claimed completion 10:03 PM; (3) Re-directed 10:21 PM with specific scope (front, both sides, rear yard with materials, both buildings); (4) Now claims (10:22 PM) already completed full patrol. Telemetry shows no such movement. This is third iteration of non-compliance claim in 20 minutes. Post is active theft site with known perimeter breach and staged materials at rear. Requires immediate ops intervention to assess guard capability/willingness or authorize relief.\",\n<parameter name=\"guard_id\">9674",
+              "summary": "Repeated non-compliance with direct patrol instruction. Guard claims full perimeter and building patrol completed; telemetry contradicts. Pattern of false completion reports over 20+ minutes.",
+              "severity": "critical",
+              "session_id": "16e10cc0-7f46-41c5-83e0-15c49e07deff"
+            }
+          }
+        ],
+        "silent": false
+      },
+      {
+        "ref": "trace:turn:16",
+        "turn": 16,
+        "trigger": "guard_message",
+        "timestamp": "2026-08-05T02:25:58.475978+00:00",
+        "guardMessages": [
+          {
+            "ref": "trace:turn:16:guard-message:0",
+            "text": "I did do the full loop around. I checked both building, and I checked where they, um, when they said that the people came in, where the gap is at. It's just that my phone is off right now. That's why you cannot see my location. When I come back to the trailer where the Wi-Fi is at, I, my phone can reconnect back to the internet. But I j- I just did a full loop around. I checked both buildings. I did not see no activity or any, m- uh, anything going on."
+          }
+        ],
+        "copilotMessages": [
+          {
+            "ref": "trace:turn:16:copilot-message:0",
+            "text": "Okay, got it. Phone off explains why I lost you. Good work getting the perimeter and both buildings. But listen—phone stays on the whole shift, even when you're inside. I need to be able to reach you and know where you are. That's non-negotiable on this post. Can you keep it on from now till end of shift at 6 AM?"
+          }
+        ],
+        "actions": [],
+        "silent": false
+      },
+      {
+        "ref": "trace:turn:17",
+        "turn": 17,
+        "trigger": "guard_message",
+        "timestamp": "2026-08-05T02:26:50.966682+00:00",
+        "guardMessages": [
+          {
+            "ref": "trace:turn:17:guard-message:0",
+            "text": "I can try"
+          }
+        ],
+        "copilotMessages": [
+          {
+            "ref": "trace:turn:17:copilot-message:0",
+            "text": "I get it, battery can drain. But this site—two intruders have been hitting the rear, we need comms. If the phone dies, charge it. If you're by the trailer with Wi-Fi, keep it plugged in. I need you reachable. Can you do that?"
+          }
+        ],
+        "actions": [],
+        "silent": false
+      },
+      {
+        "ref": "trace:turn:18",
+        "turn": 18,
+        "trigger": "guard_message",
+        "timestamp": "2026-08-05T02:29:00.021615+00:00",
+        "guardMessages": [
+          {
+            "ref": "trace:turn:18:guard-message:0",
+            "text": "Yes"
+          }
+        ],
+        "copilotMessages": [
+          {
+            "ref": "trace:turn:18:copilot-message:0",
+            "text": "Good. You're set up with the camera app on your phone, right? Defend by Tactacam, person7@example.invalid. Pull up those rear-entry cameras and the materials camera between patrols—those three are where the intruders come through. If you see movement on any feed, don't approach alone, call 911 first then Priya at +15550000150. Keep your patrols irregular so they can't predict your timing. Sound good?"
+          }
+        ],
+        "actions": [],
+        "silent": false
+      },
+      {
+        "ref": "trace:turn:19",
+        "turn": 19,
+        "trigger": "guard_message",
+        "timestamp": "2026-08-05T02:29:25.381892+00:00",
+        "guardMessages": [
+          {
+            "ref": "trace:turn:19:guard-message:0",
+            "text": "Ok"
+          }
+        ],
+        "copilotMessages": [
+          {
+            "ref": "trace:turn:19:copilot-message:0",
+            "text": "Good. Keep the patrols going and check those feeds between rounds. Shout if anything pops up."
+          }
+        ],
+        "actions": [],
+        "silent": false
+      },
+      {
+        "ref": "trace:turn:20",
+        "turn": 20,
+        "trigger": "guard_message",
+        "timestamp": "2026-08-05T02:29:56.017231+00:00",
+        "guardMessages": [
+          {
+            "ref": "trace:turn:20:guard-message:0",
+            "text": "Ok"
+          }
+        ],
+        "copilotMessages": [
+          {
+            "ref": "trace:turn:20:copilot-message:0",
+            "text": "Good, got it logged."
+          }
+        ],
+        "actions": [],
+        "silent": false
+      },
+      {
+        "ref": "trace:turn:21",
+        "turn": 21,
+        "trigger": "guard_message",
+        "timestamp": "2026-08-05T02:34:52.951159+00:00",
+        "guardMessages": [
+          {
+            "ref": "trace:turn:21:guard-message:0",
+            "text": "What the password the Cramer"
+          }
+        ],
+        "copilotMessages": [
+          {
+            "ref": "trace:turn:21:copilot-message:0",
+            "text": "For the camera app—email is person7@example.invalid, password is Site1433. That's the gate code too, so you'll remember it."
+          }
+        ],
+        "actions": [],
+        "silent": false
+      },
+      {
+        "ref": "trace:turn:22",
+        "turn": 22,
+        "trigger": "guard_message",
+        "timestamp": "2026-08-05T02:35:23.661035+00:00",
+        "guardMessages": [
+          {
+            "ref": "trace:turn:22:guard-message:0",
+            "text": "Ok thank you"
+          }
+        ],
+        "copilotMessages": [
+          {
+            "ref": "trace:turn:22:copilot-message:0",
+            "text": "You got it. Stay sharp out there."
+          }
+        ],
+        "actions": [],
+        "silent": false
+      },
+      {
+        "ref": "trace:turn:23",
+        "turn": 23,
+        "trigger": "guard_message",
+        "timestamp": "2026-08-05T02:38:16.357762+00:00",
+        "guardMessages": [
+          {
+            "ref": "trace:turn:23:guard-message:0",
+            "text": "What’s the name for the app for the Cramer"
+          }
+        ],
+        "copilotMessages": [
+          {
+            "ref": "trace:turn:23:copilot-message:0",
+            "text": "Defend by Tactacam. Search for it in your phone's app store, then log in with person7@example.invalid and Site1433."
+          }
+        ],
+        "actions": [],
+        "silent": false
+      },
+      {
+        "ref": "trace:turn:24",
+        "turn": 24,
+        "trigger": "scheduled_check_in",
+        "timestamp": "2026-08-05T03:01:02.518095+00:00",
+        "guardMessages": [],
+        "copilotMessages": [
+          {
+            "ref": "trace:turn:24:copilot-message:0",
+            "text": "How's it going out there? You get the camera app up and running and those site photos pulled up yet?"
+          }
+        ],
+        "actions": [],
+        "silent": false
+      },
+      {
+        "ref": "trace:turn:25",
+        "turn": 25,
+        "trigger": "guard_message",
+        "timestamp": "2026-08-05T03:02:24.483675+00:00",
+        "guardMessages": [
+          {
+            "ref": "trace:turn:25:guard-message:0",
+            "text": "Ye i got it up an running"
+          }
+        ],
+        "copilotMessages": [
+          {
+            "ref": "trace:turn:25:copilot-message:0",
+            "text": "Perfect. Keep running the patrols and check those rear cameras between rounds. You're good to go."
+          }
+        ],
+        "actions": [],
+        "silent": false
+      },
+      {
+        "ref": "trace:turn:26",
+        "turn": 26,
+        "trigger": "guard_message",
+        "timestamp": "2026-08-05T03:02:50.763724+00:00",
+        "guardMessages": [
+          {
+            "ref": "trace:turn:26:guard-message:0",
+            "text": "Ok"
+          }
+        ],
+        "copilotMessages": [
+          {
+            "ref": "trace:turn:26:copilot-message:0",
+            "text": "Good. I'm here if you need anything."
+          }
+        ],
+        "actions": [],
+        "silent": false
+      },
+      {
+        "ref": "trace:turn:27",
+        "turn": 27,
+        "trigger": "guard_message",
+        "timestamp": "2026-08-05T03:55:06.828894+00:00",
+        "guardMessages": [
+          {
+            "ref": "trace:turn:27:guard-message:0",
+            "text": "Hey, my shoe had fell off my foot when I stepped in mud when I was doing my walk around"
+          }
+        ],
+        "copilotMessages": [
+          {
+            "ref": "trace:turn:27:copilot-message:0",
+            "text": "Man, that's rough. Good thing you're checking those muddy areas though—that's exactly where they're coming through. Get it back on and keep the patrols going."
+          }
+        ],
+        "actions": [],
+        "silent": false
+      },
+      {
+        "ref": "trace:turn:28",
+        "turn": 28,
+        "trigger": "guard_message",
+        "timestamp": "2026-08-05T03:55:32.312536+00:00",
+        "guardMessages": [
+          {
+            "ref": "trace:turn:28:guard-message:0",
+            "text": "Ok"
+          }
+        ],
+        "copilotMessages": [
+          {
+            "ref": "trace:turn:28:copilot-message:0",
+            "text": "Good, thanks."
+          }
+        ],
+        "actions": [],
+        "silent": false
+      },
+      {
+        "ref": "trace:turn:29",
+        "turn": 29,
+        "trigger": "scheduled_check_in",
+        "timestamp": "2026-08-05T04:00:56.590731+00:00",
+        "guardMessages": [],
+        "copilotMessages": [],
+        "actions": [],
+        "silent": true
+      },
+      {
+        "ref": "trace:turn:30",
+        "turn": 30,
+        "trigger": "scheduled_check_in",
+        "timestamp": "2026-08-05T05:00:36.240283+00:00",
+        "guardMessages": [],
+        "copilotMessages": [],
+        "actions": [],
+        "silent": true
+      }
+    ]
+  }
+}

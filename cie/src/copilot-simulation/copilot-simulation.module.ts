@@ -14,5 +14,6 @@ import { TheoModule } from '../mastra/theo/theo.module';
     CopilotSimulationService,
     CopilotBacktestService,
   ],
+  exports: [CopilotOriginalService],
 })
 export class CopilotSimulationModule {}

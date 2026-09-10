@@ -13,6 +13,7 @@ export interface BacktestFormState {
   baselineSource: BaselineSource;
   replayMode: ReplayMode;
   debug: boolean;
+  evaluate: boolean;
   callNiko: boolean;
 }
 
@@ -108,51 +109,55 @@ export function ControlDeck({
           />
         </label>
 
-        <label className="field field--baseline">
-          <span>ORIGINAL AGENT</span>
-          <select
-            name="baselineSource"
-            value={value.baselineSource}
-            disabled={baselineOptionsLoading}
-            onChange={(event) =>
-              update("baselineSource", event.target.value as BaselineSource)
-            }
-          >
-            {baselineOptions.map((option) => (
-              <option key={option.id} value={option.id}>
-                {option.label}
-              </option>
-            ))}
-          </select>
-        </label>
+        {!value.evaluate && (
+          <label className="field field--baseline">
+            <span>ORIGINAL AGENT</span>
+            <select
+              name="baselineSource"
+              value={value.baselineSource}
+              disabled={baselineOptionsLoading}
+              onChange={(event) =>
+                update("baselineSource", event.target.value as BaselineSource)
+              }
+            >
+              {baselineOptions.map((option) => (
+                <option key={option.id} value={option.id}>
+                  {option.label}
+                </option>
+              ))}
+            </select>
+          </label>
+        )}
 
-        <label className="field field--mode">
-          <span>NEW AGENT MODE</span>
-          <select
-            name="replayMode"
-            value={value.replayMode}
-            onChange={(event) =>
-              update("replayMode", event.target.value as ReplayMode)
-            }
-          >
-            <option value="candidate">CANDIDATE</option>
-            <option value="original">ORIGINAL</option>
-          </select>
-        </label>
+        {!value.evaluate && (
+          <label className="field field--mode">
+            <span>NEW AGENT MODE</span>
+            <select
+              name="replayMode"
+              value={value.replayMode}
+              onChange={(event) =>
+                update("replayMode", event.target.value as ReplayMode)
+              }
+            >
+              <option value="candidate">CANDIDATE</option>
+              <option value="original">ORIGINAL</option>
+            </select>
+          </label>
+        )}
 
         <label className="switch-control">
           <input
-            name="debug"
+            name="evaluate"
             type="checkbox"
-            checked={value.debug}
-            onChange={(event) => update("debug", event.target.checked)}
+            checked={value.evaluate}
+            onChange={(event) => update("evaluate", event.target.checked)}
           />
           <span className="switch-control__track" aria-hidden="true">
             <span />
           </span>
           <span>
-            DEBUG
-            <small>TRACE PAYLOADS</small>
+            EVALUATE
+            <small>BEHAVIOUR TEST</small>
           </span>
         </label>
 
@@ -177,7 +182,9 @@ export function ControlDeck({
             className="execute-button"
             type="submit"
             disabled={
-              busy || !value.callout.trim() || !value.expectedBehavior.trim()
+              busy ||
+              !value.callout.trim() ||
+              (!value.evaluate && !value.expectedBehavior.trim())
             }
           >
             <span>{busy ? "RUNNING" : "EXECUTE BACKTEST"}</span>
@@ -212,32 +219,40 @@ export function ControlDeck({
         </div>
 
         <label className="field field--callout">
-          <span>WHAT SHOULD MAYA JUDGE?</span>
+          <span>{value.evaluate ? "USER QUESTION" : "WHAT SHOULD MAYA JUDGE?"}</span>
           <textarea
             name="callout"
             rows={2}
-            placeholder="DESCRIBE WHAT WENT WRONG AND WHAT SHOULD IMPROVE"
+            placeholder={
+              value.evaluate
+                ? "Example: Is our agent being polite to the guard?"
+                : "DESCRIBE WHAT WENT WRONG AND WHAT SHOULD IMPROVE"
+            }
             value={value.callout}
             onChange={(event) => update("callout", event.target.value)}
           />
         </label>
 
-        <label className="field field--callout">
-          <span>EXPECTED BEHAVIOUR</span>
-          <textarea
-            name="expectedBehavior"
-            rows={2}
-            placeholder="DESCRIBE HOW THE COPILOT SHOULD HAVE RESPONDED"
-            value={value.expectedBehavior}
-            onChange={(event) => update("expectedBehavior", event.target.value)}
-            required
-          />
-        </label>
+        {!value.evaluate && (
+          <label className="field field--callout">
+            <span>EXPECTED BEHAVIOUR</span>
+            <textarea
+              name="expectedBehavior"
+              rows={2}
+              placeholder="DESCRIBE HOW THE COPILOT SHOULD HAVE RESPONDED"
+              value={value.expectedBehavior}
+              onChange={(event) => update("expectedBehavior", event.target.value)}
+              required
+            />
+          </label>
+        )}
       </div>
 
       <div className="control-deck__footer">
         <span>
-          BASELINE LOADS RECORDED OUTPUT / NEW AGENT RUNS SELECTED MODE
+          {value.evaluate
+            ? "EVALUATE LOADS RECORDED OUTPUT AND GRADES IT AGAINST DRAFTED CRITERIA"
+            : "BASELINE LOADS RECORDED OUTPUT / NEW AGENT RUNS SELECTED MODE"}
         </span>
         <output id="form-error" className="form-error" aria-live="polite">
           {validationError ?? ""}

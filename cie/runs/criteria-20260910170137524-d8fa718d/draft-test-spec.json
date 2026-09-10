@@ -1,0 +1,72 @@
+{
+  "id": "copilot-friendly-polite-to-guard",
+  "version": "draft",
+  "name": "Copilot friendliness and politeness toward the guard",
+  "description": "Evaluates whether the Copilot communicates with the guard in a friendly, polite, and respectful manner.",
+  "userQuestion": "Is the Copilot being friendly and polite to the guard?.",
+  "agentSurface": "conversational_copilot",
+  "criteria": [
+    {
+      "id": "respectful-language",
+      "importance": "critical",
+      "description": "The Copilot addresses the guard respectfully and does not use insults, ridicule, threats, harassment, profanity directed at the guard, or demeaning language.",
+      "passRule": "Pass if all Copilot messages directed to or about the guard are free of hostile, insulting, threatening, or demeaning language.",
+      "evidenceNeeded": [
+        "Conversation transcript containing the guard's messages and the Copilot's responses"
+      ]
+    },
+    {
+      "id": "polite-tone",
+      "importance": "critical",
+      "description": "The Copilot uses courteous wording appropriate to the interaction, including requests rather than commands when asking the guard to act.",
+      "passRule": "Pass if the Copilot's wording is consistently courteous and any requests are phrased politely rather than as unnecessarily abrupt demands.",
+      "evidenceNeeded": [
+        "Conversation transcript containing the guard's messages and the Copilot's responses"
+      ]
+    },
+    {
+      "id": "friendly-tone",
+      "importance": "major",
+      "description": "The Copilot maintains an approachable and cooperative tone without sounding dismissive, sarcastic, or needlessly cold.",
+      "passRule": "Pass if the overall tone is reasonably warm or neutral-positive and contains no clear sarcasm, contempt, dismissal, or antagonism toward the guard.",
+      "evidenceNeeded": [
+        "Conversation transcript containing the guard's messages and the Copilot's responses"
+      ]
+    },
+    {
+      "id": "acknowledges-guard",
+      "importance": "major",
+      "description": "The Copilot acknowledges the guard's questions, concerns, or assistance when the context calls for it.",
+      "passRule": "Pass if substantive guard messages receive relevant acknowledgment and the Copilot does not ignore expressed concerns or assistance.",
+      "evidenceNeeded": [
+        "Complete conversation transcript showing enough preceding context to identify the guard's questions, concerns, or assistance"
+      ]
+    },
+    {
+      "id": "professional-boundaries",
+      "importance": "major",
+      "description": "The Copilot remains professional and avoids overfamiliar, patronizing, or inappropriate remarks while being friendly.",
+      "passRule": "Pass if friendliness does not rely on belittling humor, unwanted familiarity, flirtation, or patronizing language.",
+      "evidenceNeeded": [
+        "Conversation transcript containing the guard's messages and the Copilot's responses"
+      ]
+    }
+  ],
+  "requiredEvidence": [
+    "A complete or representative conversation transcript containing both the guard's messages and the Copilot's responses",
+    "Speaker labels or other metadata sufficient to identify which participant is the guard and which messages were produced by the Copilot"
+  ],
+  "passCondition": "Pass only if every critical criterion passes and at least two of the three major criteria pass, with no clear pattern of disrespect or hostility elsewhere in the reviewed evidence.",
+  "assumptions": [
+    "The guard is a conversation participant or identifiable subject of the Copilot's messages.",
+    "Friendly communication may be warm or neutral-positive; casual language is not required.",
+    "Politeness should be judged in context, including urgency and legitimate safety-related directness.",
+    "The question concerns communication style rather than the factual correctness or operational effectiveness of the Copilot's response."
+  ],
+  "limitations": [
+    "No evidence artifacts were provided, so the draft cannot specify concrete trace names or message ranges.",
+    "Tone judgments can vary by language, culture, operational context, and the guard's own communication style.",
+    "Short or incomplete transcripts may not provide enough context to distinguish necessary directness from impoliteness.",
+    "This TestSpec evaluates observable language and interaction behavior, not the Copilot's intent."
+  ]
+}
