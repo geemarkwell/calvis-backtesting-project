@@ -1,6 +1,7 @@
 import { randomUUID } from 'node:crypto';
 import { mkdir, writeFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
+import type { ShiftBundle, ShiftBundleMessageEvidence } from '../copilot-simulation/copilot-simulation.types';
 import { eventsInInterval } from '../copilot-simulation/historical-turn-data';
 import { baseToolName } from '../copilot-simulation/output-comparison';
 import { selectTurnWindow } from '../copilot-simulation/episode-builder';
@@ -122,7 +123,7 @@ export async function runDiagnose(
       entry.timestamp <= lastTurn.ts,
   );
   const patterns = analyzeDiagnoseWindow({ trace, intervalEvents }).map((finding) =>
-    withMessageEvidence(enrichDiagnosisFinding(withExpectedBehavior(finding)), trace),
+    withMessageEvidence(enrichDiagnosisFinding(withExpectedBehavior(finding)), trace, bundle),
   );
   const toolCalls = buildToolCalls(trace);
   const toolSummary = buildToolSummary(toolCalls);
@@ -161,7 +162,7 @@ export async function runDiagnose(
   const enrichedReports = evaluatorReports.map((report) => ({
     ...report,
     findings: report.findings.map((finding) =>
-      withMessageEvidence(enrichDiagnosisFinding(withExpectedBehavior(finding)), trace),
+      withMessageEvidence(enrichDiagnosisFinding(withExpectedBehavior(finding)), trace, bundle),
     ),
   }));
   const llmFindings = enrichedReports.flatMap((report) => report.findings);
@@ -345,10 +346,10 @@ function withMessageEvidence<T extends {
   diagnosis: string;
   likelyCause: string;
   suggestedFix: string;
-}>(finding: T, trace: NormalizedTraceEntry[]): T & { messages: DiagnoseMessageEvidenceDto[] } {
+}>(finding: T, trace: NormalizedTraceEntry[], bundle?: ShiftBundle): T & { messages: DiagnoseMessageEvidenceDto[] } {
   return {
     ...finding,
-    messages: buildMessageEvidence(finding, trace),
+    messages: buildMessageEvidence(finding, trace, bundle),
   };
 }
 
@@ -360,6 +361,7 @@ function buildMessageEvidence(
     suggestedFix: string;
   },
   trace: NormalizedTraceEntry[],
+  bundle?: ShiftBundle,
 ): DiagnoseMessageEvidenceDto[] {
   const byRef = new Map(trace.map((entry) => [entry.ref, entry]));
   const turnByRef = new Map<string, number>();
@@ -370,6 +372,25 @@ function buildMessageEvidence(
   }
 
   const evidenceRefs = new Set(finding.evidence?.map((item) => item.ref) ?? []);
+  const relevantTurns = new Set<number>();
+  for (const ref of evidenceRefs) {
+    const entry = byRef.get(ref);
+    const turn = entry?.turnRef ? turnByRef.get(entry.turnRef) : undefined;
+    if (turn) relevantTurns.add(turn);
+    if (entry?.type === 'turn_start' && isRecord(entry.content) && typeof entry.content.turn === 'number') {
+      relevantTurns.add(entry.content.turn);
+    }
+  }
+
+  const directMessages = messagesFromBundleEvidence(
+    bundle?.messageEvidence,
+    relevantTurns,
+    finding,
+  );
+  if (directMessages.length) {
+    return directMessages;
+  }
+
   const candidates = trace.filter((entry) => {
     if (evidenceRefs.has(entry.ref)) return true;
     if (entry.turnRef && evidenceRefs.has(entry.turnRef)) return true;
@@ -385,6 +406,48 @@ function buildMessageEvidence(
     if (seen.has(key)) continue;
     seen.add(key);
     messages.push(converted);
+    if (messages.length >= 12) break;
+  }
+  return messages;
+}
+
+function messagesFromBundleEvidence(
+  evidence: ShiftBundleMessageEvidence[] | undefined,
+  relevantTurns: Set<number>,
+  finding: { diagnosis: string; likelyCause: string; suggestedFix: string },
+): DiagnoseMessageEvidenceDto[] {
+  if (!evidence?.length || !relevantTurns.size) {
+    return [];
+  }
+  const messages: DiagnoseMessageEvidenceDto[] = [];
+  const seen = new Set<string>();
+  for (const item of evidence) {
+    const turn = typeof item.turn === 'number' ? item.turn : undefined;
+    if (!turn || !relevantTurns.has(turn)) continue;
+    if (!item.message?.trim()) continue;
+    const role = item.senderType === 'copilot'
+      ? 'copilot'
+      : item.senderType === 'tool'
+        ? 'tool'
+        : item.senderType === 'system'
+          ? 'system'
+          : 'guard';
+    const sourceTable = item.source?.table ?? 'message';
+    const sourceId = item.source?.id ?? `${item.ts}:${item.displayName}`;
+    const key = `${sourceTable}:${sourceId}:${role}:${item.message}`;
+    if (seen.has(key)) continue;
+    seen.add(key);
+    messages.push({
+      ref: `${sourceTable}:${sourceId}`,
+      turn,
+      timestamp: item.ts,
+      role,
+      speaker: item.displayName || (role === 'copilot' ? 'Copilot' : 'Guard'),
+      message: item.message,
+      reasoning: role === 'copilot'
+        ? `This actual copilot message is tied to turn ${turn} for this finding. ${finding.likelyCause}`
+        : `This actual job message is tied to turn ${turn} for this finding: ${finding.diagnosis}`,
+    });
     if (messages.length >= 12) break;
   }
   return messages;

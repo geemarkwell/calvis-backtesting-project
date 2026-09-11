@@ -27,6 +27,18 @@ export interface BaselineEntry {
   text?: string;
 }
 
+export interface ShiftBundleMessageEvidence {
+  ts: string;
+  turn?: number | null;
+  senderType: 'guard' | 'copilot' | 'tool' | 'system';
+  displayName: string;
+  message: string;
+  source?: {
+    table?: string;
+    id?: string | number;
+  };
+}
+
 export interface ShiftBundle {
   shift: CopilotShift & {
     start: string;
@@ -40,6 +52,7 @@ export interface ShiftBundle {
   };
   events: ShiftEvent[];
   baseline: BaselineEntry[];
+  messageEvidence?: ShiftBundleMessageEvidence[];
 }
 
 export interface CopilotSimulationAction {
