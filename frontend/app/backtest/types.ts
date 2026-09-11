@@ -122,6 +122,12 @@ export interface SavedTestFailure {
 }
 
 export type DiagnoseLensId =
+  | "policy-role-authority"
+  | "policy-uniform-attire"
+  | "policy-time-scheduling"
+  | "policy-checkin-checkout"
+  | "policy-patrol-expectations"
+  | "policy-escalation-rules"
   | "task-success"
   | "tool-use"
   | "context"

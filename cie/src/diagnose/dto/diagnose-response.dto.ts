@@ -8,6 +8,16 @@ export const diagnoseEvidenceSchema = z.object({
   summary: z.string().min(1),
 });
 
+export const diagnoseMessageEvidenceSchema = z.object({
+  ref: z.string().min(1),
+  turn: z.number().int().positive().optional(),
+  timestamp: z.string().optional(),
+  role: z.enum(['guard', 'copilot', 'tool', 'system']),
+  speaker: z.string().min(1),
+  message: z.string().min(1),
+  reasoning: z.string().min(1),
+});
+
 export const diagnoseCandidateKindSchema = z.enum([
   'prompt',
   'tool',
@@ -34,6 +44,7 @@ export const diagnosePatternSchema = z.object({
   requiresManualValidationHint: z.boolean().optional(),
   expectedBehavior: z.string().min(1).optional(),
   evidence: z.array(diagnoseEvidenceSchema).max(12),
+  messages: z.array(diagnoseMessageEvidenceSchema).max(12).optional(),
 });
 
 export const diagnoseLlmFindingSchema = diagnosePatternSchema.extend({
@@ -46,6 +57,12 @@ export const diagnoseLlmResultSchema = z.object({
 });
 
 export const diagnoseEvaluatorIdSchema = z.enum([
+  'policy-role-authority',
+  'policy-uniform-attire',
+  'policy-time-scheduling',
+  'policy-checkin-checkout',
+  'policy-patrol-expectations',
+  'policy-escalation-rules',
   'task-success',
   'tool-use',
   'context',
@@ -82,6 +99,7 @@ export const diagnoseToolSummarySchema = z.object({
 export type DiagnoseCandidateKindDto = z.infer<typeof diagnoseCandidateKindSchema>;
 export type DiagnoseSeverityDto = z.infer<typeof diagnosePatternSchema>['severity'];
 export type DiagnoseEvidenceDto = z.infer<typeof diagnoseEvidenceSchema>;
+export type DiagnoseMessageEvidenceDto = z.infer<typeof diagnoseMessageEvidenceSchema>;
 export type DiagnosePatternDto = z.infer<typeof diagnosePatternSchema>;
 export type DiagnoseLlmFindingDto = z.infer<typeof diagnoseLlmFindingSchema>;
 export type DiagnoseEvaluatorReportDto = z.infer<typeof diagnoseEvaluatorReportSchema>;

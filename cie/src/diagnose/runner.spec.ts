@@ -81,7 +81,7 @@ describe('diagnose runner', () => {
     expect(generateFindings).toHaveBeenCalledTimes(6);
     expect(result.lenses).toHaveLength(6);
     expect(result.evaluatorReports).toHaveLength(6);
-    expect(result.evaluatorReports[0].lens?.id).toBe('task-success');
+    expect(result.evaluatorReports[0].lens?.id).toBe('policy-role-authority');
     expect(result.llmFindings).toEqual([
       expect.objectContaining({
         ...finding,

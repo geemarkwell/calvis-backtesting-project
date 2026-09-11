@@ -293,6 +293,9 @@ export async function loadPromptFiles(
   const promptFiles: Record<string, string> = {};
 
   for (const relativeFile of await listFiles(resolve(promptRoot, 'core'))) {
+    if (relativeFile === 'MASTER_POLICY.md') {
+      continue;
+    }
     const stableName = `core/${relativeFile}`;
     promptFiles[stableName] = await readRequiredFile(
       resolve(promptRoot, ...stableName.split('/')),

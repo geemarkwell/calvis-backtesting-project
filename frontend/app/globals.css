@@ -3498,3 +3498,129 @@ pre {
 .diagnose-pattern-card__urgency {
   font-size: 11px;
 }
+
+.diagnose-message-evidence {
+  display: grid;
+  gap: 14px;
+}
+
+.diagnose-message-evidence > strong {
+  color: var(--muted);
+  font-family: var(--mono);
+  font-size: 12px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.diagnose-message-evidence__stack {
+  display: grid;
+  gap: 10px;
+  max-height: 420px;
+  overflow: auto;
+  padding-right: 6px;
+}
+
+.diagnose-message-bubble {
+  border: 1px solid var(--border);
+  background: #202020;
+  border-radius: 14px;
+  color: var(--fg);
+  display: grid;
+  gap: 8px;
+  max-width: 560px;
+  padding: 10px 12px;
+}
+
+.diagnose-message-bubble--copilot {
+  border-color: rgba(255, 76, 66, 0.45);
+  background: #261f1d;
+}
+
+.diagnose-message-bubble--guard {
+  border-color: rgba(166, 197, 255, 0.36);
+}
+
+.diagnose-message-bubble--tool {
+  border-style: dashed;
+  background: #171717;
+  max-width: none;
+}
+
+.diagnose-message-bubble header {
+  align-items: baseline;
+  display: flex;
+  gap: 12px;
+  justify-content: space-between;
+}
+
+.diagnose-message-bubble header span {
+  color: var(--fg);
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.diagnose-message-bubble header small {
+  color: var(--muted);
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.diagnose-message-bubble > p {
+  color: var(--fg);
+  font-size: clamp(14px, 1.35vw, 18px);
+  line-height: 1.4;
+  margin: 0;
+  white-space: pre-wrap;
+}
+
+.diagnose-message-reasoning {
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  padding-top: 7px;
+}
+
+.diagnose-message-reasoning summary {
+  color: var(--muted);
+  cursor: pointer;
+  font-family: var(--mono);
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.diagnose-message-reasoning p {
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.45;
+  margin: 8px 0 0;
+  white-space: pre-wrap;
+}
+
+.diagnose-message-meta-row {
+  align-items: baseline;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.diagnose-message-meta-row .diagnose-pattern-card__urgency {
+  font-size: 9px;
+  letter-spacing: 0.1em;
+  line-height: 1;
+  margin-bottom: 0;
+}
+
+.diagnose-message-meta-row .diagnose-message-meta-row__lens {
+  color: #ff6ce9;
+  font-family: var(--mono);
+  font-size: 9px;
+  font-weight: 900;
+  letter-spacing: 0.1em;
+  line-height: 1;
+  padding: 0;
+  text-transform: uppercase;
+}

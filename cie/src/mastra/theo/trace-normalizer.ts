@@ -362,14 +362,17 @@ function eventContent(event: ShiftEvent): unknown {
   if (event.type === 'guard_message') {
     const text =
       event.text?.trim() || event.audio_transcription?.trim() || event.image;
-    return event.replySource === 'historical' ||
-      event.replySource === 'simulated'
-      ? {
-          text,
-          replySource: event.replySource,
-          historicalReply: event.historicalReply ?? null,
-        }
-      : text;
+    if (event.replySource === 'historical' || event.replySource === 'simulated') {
+      return {
+        text,
+        replySource: event.replySource,
+        historicalReply: event.historicalReply ?? null,
+      };
+    }
+    if (typeof event.sender_name === 'string' && event.sender_name.trim()) {
+      return { text, senderName: event.sender_name };
+    }
+    return text;
   }
   if (event.type === 'job_log') {
     return { category: event.category, notes: event.notes ?? null };

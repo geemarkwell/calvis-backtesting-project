@@ -1,6 +1,13 @@
 import { z } from 'zod';
 
 export const diagnoseLensIdSchema = z.enum([
+  'policy-role-authority',
+  'policy-uniform-attire',
+  'policy-time-scheduling',
+  'policy-checkin-checkout',
+  'policy-patrol-expectations',
+  'policy-escalation-rules',
+  // Legacy lens IDs are accepted so old saved runs and explicit callers do not break.
   'task-success',
   'tool-use',
   'context',
