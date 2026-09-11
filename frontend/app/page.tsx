@@ -1,5 +1,10 @@
+import { Suspense } from "react";
 import BacktestConsole from "./backtest/BacktestConsole";
 
 export default function Home() {
-  return <BacktestConsole />;
+  return (
+    <Suspense fallback={null}>
+      <BacktestConsole />
+    </Suspense>
+  );
 }

@@ -36,6 +36,7 @@ interface ControlDeckProps {
   onSubmit: () => void;
   onTheo: () => void;
   onEvaluation: () => void;
+  debugMode?: boolean;
 }
 
 export function ControlDeck({
@@ -52,6 +53,7 @@ export function ControlDeck({
   onSubmit,
   onTheo,
   onEvaluation,
+  debugMode = true,
 }: ControlDeckProps) {
   const update = <Key extends keyof BacktestFormState>(
     key: Key,
@@ -78,50 +80,54 @@ export function ControlDeck({
       </div> */}
 
       {/* FIELD and BUTTONS */}
-      <div className="control-grid">
-        <label className="field field--job">
-          <span>JOB ID</span>
-          <input
-            name="jobId"
-            inputMode="numeric"
-            autoComplete="off"
-            placeholder={value.evaluate ? "AUTO" : "ENTER ID"}
-            value={value.jobId}
-            disabled={value.evaluate}
-            onChange={(event) => update("jobId", event.target.value)}
-            aria-describedby={validationError ? "form-error" : undefined}
-          />
-        </label>
+      <div className={debugMode ? "control-grid" : "control-grid control-grid--guided"}>
+        {debugMode && (
+          <>
+            <label className="field field--job">
+              <span>JOB ID</span>
+              <input
+                name="jobId"
+                inputMode="numeric"
+                autoComplete="off"
+                placeholder={value.evaluate ? "AUTO" : "ENTER ID"}
+                value={value.jobId}
+                disabled={value.evaluate}
+                onChange={(event) => update("jobId", event.target.value)}
+                aria-describedby={validationError ? "form-error" : undefined}
+              />
+            </label>
 
-        <label className="field">
-          <span>START TURN</span>
-          <input
-            name="startTurn"
-            type="number"
-            min="1"
-            step="1"
-            placeholder="—"
-            value={value.startTurn}
-            onChange={(event) => update("startTurn", event.target.value)}
-          />
-        </label>
+            <label className="field">
+              <span>START TURN</span>
+              <input
+                name="startTurn"
+                type="number"
+                min="1"
+                step="1"
+                placeholder="—"
+                value={value.startTurn}
+                onChange={(event) => update("startTurn", event.target.value)}
+              />
+            </label>
 
-        <label className="field">
-          <span>END TURN</span>
-          <input
-            name="endTurn"
-            type="number"
-            min="1"
-            step="1"
-            placeholder="—"
-            value={value.endTurn}
-            onChange={(event) => update("endTurn", event.target.value)}
-          />
-        </label>
+            <label className="field">
+              <span>END TURN</span>
+              <input
+                name="endTurn"
+                type="number"
+                min="1"
+                step="1"
+                placeholder="—"
+                value={value.endTurn}
+                onChange={(event) => update("endTurn", event.target.value)}
+              />
+            </label>
+          </>
+        )}
 
         <label className="field field--baseline">
-          <span>{value.evaluate ? "DIAGNOSIS RUN" : "ORIGINAL AGENT"}</span>
-          {value.evaluate ? (
+          <span>{value.evaluate || !debugMode ? "DIAGNOSIS RUN" : "ORIGINAL AGENT"}</span>
+          {value.evaluate || !debugMode ? (
             <select
               name="diagnosisRunId"
               value={value.diagnosisRunId}
@@ -158,7 +164,7 @@ export function ControlDeck({
           <input name="replaySource" value="PRODUCTION DATA" disabled readOnly />
         </label>
 
-        {!value.evaluate && (
+        {debugMode && !value.evaluate && (
           <label className="field field--mode">
             <span>NEW AGENT MODE</span>
             <select
@@ -174,55 +180,59 @@ export function ControlDeck({
           </label>
         )}
 
-        <label className="switch-control">
-          <input
-            name="evaluate"
-            type="checkbox"
-            checked={value.evaluate}
-            onChange={(event) => update("evaluate", event.target.checked)}
-          />
-          <span className="switch-control__track" aria-hidden="true">
-            <span />
-          </span>
-          <span>
-            EVALUATE
-            <small>BEHAVIOUR TEST</small>
-          </span>
-        </label>
+        {debugMode && (
+          <>
+            <label className="switch-control">
+              <input
+                name="evaluate"
+                type="checkbox"
+                checked={value.evaluate}
+                onChange={(event) => update("evaluate", event.target.checked)}
+              />
+              <span className="switch-control__track" aria-hidden="true">
+                <span />
+              </span>
+              <span>
+                EVALUATE
+                <small>BEHAVIOUR TEST</small>
+              </span>
+            </label>
 
-        <label className="switch-control">
-          <input
-            name="callNiko"
-            type="checkbox"
-            checked={value.callNiko}
-            onChange={(event) => update("callNiko", event.target.checked)}
-          />
-          <span className="switch-control__track" aria-hidden="true">
-            <span />
-          </span>
-          <span>
-            NIKO
-            <small>SIMULATE GUARD</small>
-          </span>
-        </label>
+            <label className="switch-control">
+              <input
+                name="callNiko"
+                type="checkbox"
+                checked={value.callNiko}
+                onChange={(event) => update("callNiko", event.target.checked)}
+              />
+              <span className="switch-control__track" aria-hidden="true">
+                <span />
+              </span>
+              <span>
+                NIKO
+                <small>SIMULATE GUARD</small>
+              </span>
+            </label>
 
-        <label className="switch-control">
-          <input
-            name="useCompactContext"
-            type="checkbox"
-            checked={value.useCompactContext ?? true}
-            onChange={(event) =>
-              update("useCompactContext", event.target.checked)
-            }
-          />
-          <span className="switch-control__track" aria-hidden="true">
-            <span />
-          </span>
-          <span>
-            COMPACT
-            <small>THEO / REPLAY / MAYA</small>
-          </span>
-        </label>
+            <label className="switch-control">
+              <input
+                name="useCompactContext"
+                type="checkbox"
+                checked={value.useCompactContext ?? true}
+                onChange={(event) =>
+                  update("useCompactContext", event.target.checked)
+                }
+              />
+              <span className="switch-control__track" aria-hidden="true">
+                <span />
+              </span>
+              <span>
+                COMPACT
+                <small>THEO / REPLAY / MAYA</small>
+              </span>
+            </label>
+          </>
+        )}
 
         <div className="control-actions">
           <button
@@ -230,7 +240,7 @@ export function ControlDeck({
             type="submit"
             disabled={
               busy ||
-              (value.evaluate
+              (value.evaluate || !debugMode
                 ? !value.diagnosisRunId
                 : !value.callout.trim() || !value.expectedBehavior.trim())
             }
@@ -266,7 +276,7 @@ export function ControlDeck({
           </button>
         </div>
 
-        {!value.evaluate && (
+        {debugMode && !value.evaluate && (
           <label className="field field--callout">
             <span>WHAT SHOULD MAYA JUDGE?</span>
             <textarea
@@ -279,7 +289,7 @@ export function ControlDeck({
           </label>
         )}
 
-        {!value.evaluate && (
+        {debugMode && !value.evaluate && (
           <label className="field field--callout">
             <span>EXPECTED BEHAVIOUR</span>
             <textarea
@@ -296,7 +306,7 @@ export function ControlDeck({
 
       <div className="control-deck__footer">
         <span>
-          {value.evaluate
+          {value.evaluate || !debugMode
             ? "EVALUATE BACKTESTS THE SELECTED DIAGNOSIS RUN"
             : "BASELINE LOADS RECORDED OUTPUT / NEW AGENT RUNS SELECTED MODE"}
         </span>

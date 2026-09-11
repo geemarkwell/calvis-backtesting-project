@@ -1,5 +1,6 @@
 "use client";
 
+import { useSearchParams } from "next/navigation";
 import { useEffect, useRef, useState, type UIEvent } from "react";
 import {
   getDiagnosisRun,
@@ -63,6 +64,9 @@ const INITIAL_FORM: BacktestFormState = {
 };
 
 export default function BacktestConsole() {
+  const searchParams = useSearchParams();
+  const debugMode = searchParams.get("debug") === "1";
+  const urlDiagnosisRunId = searchParams.get("diagnosisRunId") ?? searchParams.get("runId");
   const [view, setView] = useState<"backtest" | "theo" | "evaluation">(
     "backtest",
   );
@@ -112,6 +116,34 @@ export default function BacktestConsole() {
       }
     };
   }, []);
+
+  useEffect(() => {
+    setForm((current) => {
+      if (debugMode) {
+        return current.evaluate || current.callNiko || current.diagnosisRunId
+          ? { ...current, evaluate: false, callNiko: false, diagnosisRunId: "" }
+          : current;
+      }
+
+      const nextDiagnosisRunId = urlDiagnosisRunId ?? current.diagnosisRunId;
+      return current.evaluate &&
+        current.useCompactContext &&
+        !current.callNiko &&
+        current.replaySource === "production" &&
+        current.replayMode === "candidate" &&
+        current.diagnosisRunId === nextDiagnosisRunId
+        ? current
+        : {
+            ...current,
+            evaluate: true,
+            useCompactContext: true,
+            callNiko: false,
+            replaySource: "production",
+            replayMode: "candidate",
+            diagnosisRunId: nextDiagnosisRunId,
+          };
+    });
+  }, [debugMode, urlDiagnosisRunId]);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -465,6 +497,7 @@ export default function BacktestConsole() {
           onSubmit={() => void executeBacktest()}
           onTheo={() => setView("theo")}
           onEvaluation={() => setView("evaluation")}
+          debugMode={debugMode}
         />
 
         {form.evaluate && (

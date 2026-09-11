@@ -186,6 +186,15 @@ export default function DiagnosisActivityPage() {
 
           {status === "success" && items.length > 0 && (
             <div>
+              <div className="diagnosis-activity-header-row diagnosis-activity-row" aria-hidden="true">
+                <span>ID</span>
+                <span>Job</span>
+                <span>Trace window</span>
+                <span>Queued at</span>
+                <span>Completed at</span>
+                <span>Requested by</span>
+                <span>Status</span>
+              </div>
               {visibleItems.map((item) => (
                 <section className="theo-target-card diagnose-pattern-card" key={item.id}>
                   <QueueItemSummary item={item} />
@@ -226,14 +235,13 @@ export default function DiagnosisActivityPage() {
 function QueueItemSummary({ item }: { item: DiagnosisQueueItem }) {
   const content = (
     <>
-      <ActivityCell label="ID" value={item.id} />
-      <ActivityCell label="Job" value={`J_${item.jobId}`} strong />
-      <ActivityCell label="Trace window" value="FULL JOB" />
-      <ActivityCell label="Queued at" value={formatDate(item.queuedAt)} />
-      <ActivityCell label="Completed at" value={completionValue(item)} />
-      <ActivityCell label="Requested by" value={requesterLabel(item.requestedBy)} />
+      <ActivityCell value={item.id} />
+      <ActivityCell value={`J_${item.jobId}`} strong />
+      <ActivityCell value="FULL JOB" />
+      <ActivityCell value={formatDate(item.queuedAt)} />
+      <ActivityCell value={completionValue(item)} />
+      <ActivityCell value={requesterLabel(item.requestedBy)} />
       <div className="diagnosis-activity-cell diagnose-queue-status">
-        <span>Status</span>
         <em data-status={item.status}>{statusLabel(item.status)}</em>
       </div>
     </>
@@ -251,10 +259,9 @@ function QueueItemSummary({ item }: { item: DiagnosisQueueItem }) {
   return <div className="theo-target-card__summary diagnose-run-card__summary diagnosis-activity-row">{content}</div>;
 }
 
-function ActivityCell({ label, value, strong = false }: { label: string; value: string; strong?: boolean }) {
+function ActivityCell({ value, strong = false }: { value: string; strong?: boolean }) {
   return (
     <div className="diagnosis-activity-cell">
-      <span>{label}</span>
       {strong ? <strong>{value}</strong> : <p>{value}</p>}
     </div>
   );

@@ -84,6 +84,16 @@ export default function GlobalSidebar() {
           );
         })}
       </nav>
+
+      <Link
+        className="global-sidebar__debug-link"
+        href="/?debug=1"
+        title={collapsed ? "Debug" : undefined}
+      >
+        <b>DG</b>
+        <span>DEBUG</span>
+        <small>Manual controls</small>
+      </Link>
     </aside>
   );
 }
