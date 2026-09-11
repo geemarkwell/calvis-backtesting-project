@@ -431,7 +431,8 @@ summary:focus-visible,
 .control-actions {
   display: grid;
   min-height: 92px;
-  grid-template-columns: minmax(0, 1fr) auto auto;
+  grid-column: span 3;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 8px;
   padding: 10px;
   background: var(--panel);
@@ -1936,6 +1937,35 @@ pre {
   background: #191919;
 }
 
+.diagnosis-activity-toolbar {
+  align-items: stretch;
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.diagnosis-activity-toolbar .diagnose-tabs {
+  flex: none;
+}
+
+.diagnosis-activity-scan-button {
+  align-self: flex-end;
+  background: var(--ink);
+  border: 0;
+  color: #050505;
+  cursor: pointer;
+  font-size: 10px;
+  font-weight: 900;
+  letter-spacing: 0.12em;
+  min-height: 42px;
+  padding: 0 26px;
+}
+
+.diagnosis-activity-scan-button:disabled {
+  cursor: wait;
+  opacity: 0.65;
+}
+
 .diagnose-finding {
   margin-top: 18px;
   padding-top: 18px;
@@ -2892,8 +2922,6 @@ pre {
 
 .global-sidebar__link:hover,
 .global-sidebar__link.is-active {
-  border-color: var(--hazard);
-  background: rgba(255, 42, 42, 0.07);
   color: var(--hazard);
 }
 
@@ -2942,8 +2970,6 @@ pre {
 
 .global-sidebar__child-link:hover,
 .global-sidebar__child-link.is-active {
-  border-color: rgba(255, 42, 42, 0.6);
-  background: rgba(255, 42, 42, 0.05);
   color: var(--hazard);
 }
 
@@ -3073,6 +3099,7 @@ pre {
 }
 
 .theo-target-card__summary {
+  text-decoration: none;
   display: grid;
   width: 100%;
   grid-template-columns: minmax(120px, 0.24fr) minmax(0, 1fr) auto;
@@ -3726,4 +3753,165 @@ pre {
   line-height: 1;
   padding: 0;
   text-transform: uppercase;
+}
+.diagnose-queue-status {
+  align-items: center;
+  display: inline-flex;
+  gap: 8px;
+}
+
+.diagnose-queue-status em {
+  text-decoration: none !important;
+}
+
+.diagnose-queue-status em[data-status='queued'] {
+  color: #ffd84d;
+}
+
+.diagnose-queue-status em[data-status='running'] {
+  color: #58a6ff;
+}
+
+.diagnose-queue-status em[data-status='completed'] {
+  color: #5ef38c;
+}
+
+.diagnose-queue-status em[data-status='failed'] {
+  color: #ff4c42;
+}
+
+.analytics-dashboard {
+  gap: 24px;
+}
+
+.analytics-toolbar {
+  align-items: center;
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.analytics-range-toggle {
+  border: 1px solid var(--border);
+  display: inline-flex;
+  width: fit-content;
+}
+
+.analytics-range-toggle button {
+  background: transparent;
+  border: 0;
+  border-right: 1px solid var(--border);
+  color: var(--muted);
+  cursor: pointer;
+  font-family: var(--mono);
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  padding: 14px 22px;
+}
+
+.analytics-range-toggle button:last-child {
+  border-right: 0;
+}
+
+.analytics-range-toggle button[data-active='true'] {
+  background: #2a2a2a;
+  color: var(--fg);
+}
+
+.analytics-metric-card[data-selected='true'] {
+  border: 1px solid #ff4c42;
+}
+
+.analytics-metric-card.is-clickable button {
+  background: transparent;
+  border: 0;
+  color: inherit;
+  cursor: pointer;
+  display: grid;
+  gap: 10px;
+  height: 100%;
+  padding: 0;
+  text-align: left;
+  width: 100%;
+}
+
+.analytics-metric-card small {
+  color: var(--muted);
+  font-family: var(--mono);
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.analytics-panel {
+  display: grid;
+  gap: 16px;
+}
+
+.analytics-lens-columns {
+  display: grid;
+  gap: 18px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.analytics-ranking-row {
+  border: 1px solid var(--border);
+  display: grid;
+  gap: 8px;
+  grid-template-columns: minmax(0, 1fr) auto;
+  padding: 14px;
+}
+
+.analytics-ranking-row div {
+  display: grid;
+  gap: 4px;
+}
+
+.analytics-ranking-row strong {
+  color: var(--fg);
+  font-size: 15px;
+}
+
+.analytics-ranking-row span,
+.analytics-ranking-row small {
+  color: var(--muted);
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.analytics-ranking-row b {
+  color: #a6c5ff;
+  font-family: var(--mono);
+  font-size: 28px;
+}
+
+.analytics-ranking-row > b:first-child {
+  justify-self: start;
+}
+
+.analytics-ranking-row > small {
+  grid-column: 1 / -1;
+}
+
+.analytics-outcome-chart {
+  min-height: 280px;
+}
+
+.analytics-outcome-point {
+  pointer-events: none;
+}
+
+@media (max-width: 1100px) {
+  .analytics-toolbar {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .analytics-lens-columns {
+    grid-template-columns: 1fr;
+  }
 }

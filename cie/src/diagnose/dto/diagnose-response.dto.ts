@@ -29,6 +29,12 @@ export const diagnoseCandidateKindSchema = z.enum([
   'unknown',
 ]);
 
+export const diagnoseTurnWindowSchema = z.object({
+  startTurn: z.number().int().positive(),
+  endTurn: z.number().int().positive(),
+  source: z.enum(['full-job', 'evidence', 'fallback']),
+});
+
 export const diagnosePatternSchema = z.object({
   id: z.string().min(1),
   title: z.string().min(1),
@@ -43,6 +49,8 @@ export const diagnosePatternSchema = z.object({
   replayableHint: z.boolean().optional(),
   requiresManualValidationHint: z.boolean().optional(),
   expectedBehavior: z.string().min(1).optional(),
+  diagnosisWindow: diagnoseTurnWindowSchema.optional(),
+  replayWindow: diagnoseTurnWindowSchema.optional(),
   evidence: z.array(diagnoseEvidenceSchema).max(12),
   messages: z.array(diagnoseMessageEvidenceSchema).max(12).optional(),
 });
@@ -97,6 +105,7 @@ export const diagnoseToolSummarySchema = z.object({
 });
 
 export type DiagnoseCandidateKindDto = z.infer<typeof diagnoseCandidateKindSchema>;
+export type DiagnoseTurnWindowDto = z.infer<typeof diagnoseTurnWindowSchema>;
 export type DiagnoseSeverityDto = z.infer<typeof diagnosePatternSchema>['severity'];
 export type DiagnoseEvidenceDto = z.infer<typeof diagnoseEvidenceSchema>;
 export type DiagnoseMessageEvidenceDto = z.infer<typeof diagnoseMessageEvidenceSchema>;

@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { AnalyticsService } from '../analytics/analytics.service';
 import { DiagnoseArtifactsSchema } from './diagnose-artifacts.schema';
 import type { DiagnoseRequestDto } from './dto/diagnose-request.dto';
 import type { DiagnoseRunIdParamDto, DiagnoseRunsResponseDto } from './dto/diagnose-run.dto';
@@ -7,10 +8,15 @@ import { runDiagnose } from './runner';
 
 @Injectable()
 export class DiagnoseService {
-  constructor(private readonly artifacts: DiagnoseArtifactsSchema) {}
+  constructor(
+    private readonly artifacts: DiagnoseArtifactsSchema,
+    private readonly analytics: AnalyticsService,
+  ) {}
 
   async discover(dto: DiagnoseRequestDto): Promise<DiagnoseResponseDto> {
-    return runDiagnose({ request: dto });
+    const diagnosis = await runDiagnose({ request: dto });
+    await this.analytics.recordDiagnosisRun({ diagnosis });
+    return diagnosis;
   }
 
   async findAllRuns(): Promise<DiagnoseRunsResponseDto> {

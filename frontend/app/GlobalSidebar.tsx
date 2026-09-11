@@ -12,10 +12,12 @@ const routes = [
     shortLabel: "DP",
     description: "Diagnose lenses",
     children: [
-      { href: "/discover-problems/runs", label: "Runs", shortLabel: "RN", description: "History" },
+      { href: "/discover-problems/runs", label: "History", shortLabel: "HI", description: "" },
+      { href: "/discover-problems/activity", label: "Activity", shortLabel: "AC", description: "" },
     ],
   },
   { href: "/eval-suite", label: "Eval Suite", shortLabel: "EV", description: "Test criteria" },
+  { href: "/analytics", label: "Analytics", shortLabel: "AN", description: "Lens outcomes" },
 ];
 
 export default function GlobalSidebar() {
@@ -72,7 +74,7 @@ export default function GlobalSidebar() {
                       >
                         <b>{child.shortLabel}</b>
                         <span>{child.label}</span>
-                        <small>{child.description}</small>
+                        {child.description && <small>{child.description}</small>}
                       </Link>
                     );
                   })}

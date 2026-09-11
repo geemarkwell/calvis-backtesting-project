@@ -68,7 +68,7 @@ Content-Type: application/json
 }
 ```
 
-For a twice-daily sweep, webapp may not need to know exact turn ranges. Add a CIE convenience mode later:
+For a twice-daily sweep, webapp should not need to know exact turn ranges. Use CIE full-job mode:
 
 ```json
 {
@@ -79,7 +79,7 @@ For a twice-daily sweep, webapp may not need to know exact turn ranges. Add a CI
 }
 ```
 
-CIE would then derive first/last replay turn from the production bundle.
+CIE derives first/last replay turn from the production bundle. Manual `startTurn`/`endTurn` remains available for debugging by using `scope: "turn-window"` or by sending the legacy bounded request shape.
 
 ### 3. CIE runs Diagnose
 
@@ -118,10 +118,11 @@ Highest severity: high
 Latest diagnosis run: diagnose-...
 ```
 
-Then they can select an individual finding/pattern and run the existing one-target-at-a-time backtest flow:
+Then they can select an individual finding/pattern and run the existing one-target-at-a-time backtest flow. Diagnose scans the full job, but each finding carries a smaller evidence-derived `replayWindow`; backtest should default to that window instead of replaying the whole diagnosis window.
 
 ```text
 Selected issue
+  -> use finding replayWindow
   -> Theo candidate
   -> prompt replay if replayable
   -> Maya judgment
@@ -206,7 +207,6 @@ Avoid adding auto-backtest initially. Diagnosis should only discover issues; use
 
 ## Later Improvements
 
-- Add CIE `scope: "full-job"` so webapp does not need turn ranges.
 - Add diagnosis-run status endpoint for queued/running/completed/failed states.
 - Store CIE diagnosis metadata in a proper DB instead of only filesystem artifacts.
 - Add scheduled re-diagnosis when prompts or policy files change.

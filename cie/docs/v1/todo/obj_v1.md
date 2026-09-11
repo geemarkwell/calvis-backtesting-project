@@ -287,6 +287,34 @@ The UI should make rollback status obvious:
 - reason for revert
 - regression that triggered it
 
+## 8. Fix deterministic signal messages
+
+The Discover Problems messages tab should make deterministic signals as readable as specialized LLM findings.
+
+Right now, deterministic findings can appear in the messages flow without useful message-level context. That makes them harder to inspect than LLM findings, especially when the user wants to understand which guard/copilot/tool messages caused the signal.
+
+### Desired behavior
+
+For deterministic signals, the UI should show:
+
+- the specific trace messages or tool calls that triggered the signal
+- turn number and timestamp where available
+- speaker / role metadata
+- why the deterministic analyzer considered it evidence
+- a clear fallback when no direct message evidence exists
+
+### Why this matters
+
+Deterministic analyzers are useful because they catch obvious failures cheaply and consistently. But if their message tab only shows generic evidence text, users cannot quickly verify whether the signal is legitimate.
+
+The deterministic messages view should be inspectable enough that a user can answer:
+
+```text
+What exact trace moment caused this deterministic signal?
+```
+
+without opening raw artifacts by hand.
+
 ## 8. Show backtest history linked to each diagnosis
 
 Users should be able to see the history of backtests connected to a diagnosis.

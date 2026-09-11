@@ -45,10 +45,16 @@ export class DiagnoseController {
   @ApiBody({
     schema: {
       type: 'object',
-      required: ['jobId', 'startTurn', 'endTurn'],
+      required: ['jobId'],
       additionalProperties: false,
       properties: {
         jobId: { type: 'string', example: '56370' },
+        scope: {
+          type: 'string',
+          enum: ['full-job', 'turn-window'],
+          description: 'Use full-job to derive first/last replayable turns automatically. Omit scope with startTurn/endTurn for legacy manual windows.',
+          example: 'full-job',
+        },
         startTurn: { type: 'number', example: 9 },
         endTurn: { type: 'number', example: 16 },
         replaySource: {

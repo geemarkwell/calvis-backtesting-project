@@ -22,6 +22,13 @@ export type CompileTraceContextInputDto = z.infer<
 export interface CompactTraceContextDto {
   purpose: TraceContextPurposeDto;
   summary: string;
+  turnHeaders?: Array<{
+    ref: string;
+    turn?: number | null;
+    timestamp?: string;
+    trigger?: string;
+    header: unknown;
+  }>;
   messages: Array<{
     ref: string;
     timestamp?: string;
@@ -41,6 +48,12 @@ export interface CompactTraceContextDto {
   }>;
   failedTools: Array<{
     ref: string;
+    tool: string;
+    summary: string;
+  }>;
+  temporalEvidence?: Array<{
+    ref: string;
+    timestamp?: string;
     tool: string;
     summary: string;
   }>;

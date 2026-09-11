@@ -25,6 +25,8 @@ export interface BaselineEntry {
   ok?: boolean;
   error?: string | null;
   text?: string;
+  turnHeader?: Record<string, unknown>;
+  canonicalMessageId?: string;
 }
 
 export interface ShiftBundleMessageEvidence {
@@ -37,6 +39,12 @@ export interface ShiftBundleMessageEvidence {
     table?: string;
     id?: string | number;
   };
+  canonicalMessageId?: string;
+  sourceRefs?: string[];
+  representations?: Array<{
+    table?: string;
+    id?: string | number;
+  }>;
 }
 
 export interface ShiftBundleDurableAction {

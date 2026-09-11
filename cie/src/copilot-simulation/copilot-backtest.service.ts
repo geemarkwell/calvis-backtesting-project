@@ -1,4 +1,5 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
+import { AnalyticsService } from '../analytics/analytics.service';
 import type { MayaRunResult } from '../mastra/maya/runner';
 import { MayaJudgmentService } from '../mastra/maya/maya-judgment.service';
 import {
@@ -38,6 +39,7 @@ export class CopilotBacktestService {
     private readonly mayaJudgmentService: MayaJudgmentService,
     private readonly theoService: TheoService,
     private readonly candidateDecisionService: CandidateDecisionService,
+    private readonly analytics: AnalyticsService,
   ) {}
 
   async run(input: BacktestCopilotDto): Promise<CopilotBacktestResponse> {
@@ -236,6 +238,7 @@ export class CopilotBacktestService {
         maya: null,
         mayaError: error instanceof Error ? error.message : String(error),
       };
+      await this.analytics.recordBacktestRun({ input, response });
       await debugRun.writeStage('12-backtest-response.json', response);
       return response;
     }
@@ -277,6 +280,7 @@ export class CopilotBacktestService {
       },
       mayaError: null,
     };
+    await this.analytics.recordBacktestRun({ input, response });
     await debugRun.writeStage('12-backtest-response.json', response);
     return response;
   }

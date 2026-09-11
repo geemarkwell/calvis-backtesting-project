@@ -738,6 +738,11 @@ function TheoParamsPreview({
                     <LabeledText label="Hint" emphasized="pink">
                       {candidateKindLabel(finding)}
                     </LabeledText>
+                    {finding.replayWindow && (
+                      <LabeledText label="Replay window" emphasized="pink">
+                        {`Turns ${finding.replayWindow.startTurn}-${finding.replayWindow.endTurn} (${finding.replayWindow.source})`}
+                      </LabeledText>
+                    )}
                     <LabeledText label="Why" emphasized="warning">
                       {finding.candidateKindRationale ?? finding.likelyCause}
                     </LabeledText>
@@ -1069,6 +1074,7 @@ function diagnosisBacktestRequest(
   ].filter(Boolean).join("\n");
   return {
     ...simulation,
+    ...simulationWindowForFinding(simulation, finding),
     replayMode: "candidate",
     callout,
     expectedBehavior: expectedBehaviorForFinding(finding),
@@ -1083,8 +1089,21 @@ function diagnosisBacktestRequest(
       candidateKindRationale: finding.candidateKindRationale,
       replayableHint: finding.replayableHint,
       requiresManualValidationHint: finding.requiresManualValidationHint,
+      diagnosisWindow: finding.diagnosisWindow,
+      replayWindow: finding.replayWindow,
     },
   };
+}
+
+function simulationWindowForFinding(
+  simulation: SimulationRequest,
+  finding: DiagnosisFinding,
+): Pick<SimulationRequest, "startTurn" | "endTurn"> {
+  const window = finding.replayWindow;
+  if (!window) {
+    return { startTurn: simulation.startTurn, endTurn: simulation.endTurn };
+  }
+  return { startTurn: window.startTurn, endTurn: window.endTurn };
 }
 
 function backtestRequest(

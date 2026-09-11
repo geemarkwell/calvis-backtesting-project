@@ -38,6 +38,7 @@ import {
   loadMasterPolicy,
   type MasterPolicySection,
 } from './master-policy';
+import { fullJobWindow, withFindingWindows } from './replay-window';
 
 export interface RunDiagnoseInput {
   request: DiagnoseRequestDto;
@@ -52,6 +53,7 @@ export type GenerateDiagnoseFindings = (
 
 export interface DiagnoseRunnerDependencies {
   generateFindings?: GenerateDiagnoseFindings;
+  loadBundle?: (jobId: string | number, replaySource: unknown) => Promise<{ jobId: string; bundle: ShiftBundle }>;
 }
 
 
@@ -118,14 +120,18 @@ export async function runDiagnose(
     runsRoot = resolve(process.cwd(), 'runs'),
     runId = defaultRunId(),
   }: RunDiagnoseInput,
-  { generateFindings = generateWithDiagnoseAgent }: DiagnoseRunnerDependencies = {},
+  {
+    generateFindings = generateWithDiagnoseAgent,
+    loadBundle = (jobId, replaySource) => new ShiftBundleSourceResolver().load(jobId, replaySource),
+  }: DiagnoseRunnerDependencies = {},
 ): Promise<DiagnoseResponseDto> {
   validateRunId(runId);
-  const { jobId, bundle } = await new ShiftBundleSourceResolver().load(
-    request.jobId,
-    request.replaySource,
+  const { jobId, bundle } = await loadBundle(request.jobId, request.replaySource);
+  const window = selectTurnWindow(
+    bundle,
+    request.scope === 'full-job' ? undefined : request.startTurn,
+    request.scope === 'full-job' ? undefined : request.endTurn,
   );
-  const window = selectTurnWindow(bundle, request.startTurn, request.endTurn);
   const firstTurn = window.selectedTurns[0];
   const lastTurn = window.selectedTurns[window.selectedTurns.length - 1];
   const intervalEvents = eventsInInterval(
@@ -141,9 +147,14 @@ export async function runDiagnose(
   );
 
   const durableActions = productionDurableActions(bundle, fullTrace, firstTurn.turn, lastTurn.turn);
+  const diagnosisWindow = fullJobWindow(firstTurn.turn, lastTurn.turn);
   const patterns = guardPersistenceFindings(
     analyzeDiagnoseWindow({ trace, intervalEvents }).map((finding) =>
-      withMessageEvidence(enrichDiagnosisFinding(withExpectedBehavior(finding)), trace, bundle),
+      withFindingWindows(
+        withMessageEvidence(enrichDiagnosisFinding(withExpectedBehavior(finding)), trace, bundle),
+        trace,
+        diagnosisWindow,
+      ),
     ),
     durableActions,
 
@@ -204,7 +215,11 @@ export async function runDiagnose(
 
     findings: guardPersistenceFindings(
       report.findings.map((finding) =>
-        withMessageEvidence(enrichDiagnosisFinding(withExpectedBehavior(finding)), trace, bundle),
+        withFindingWindows(
+          withMessageEvidence(enrichDiagnosisFinding(withExpectedBehavior(finding)), trace, bundle),
+          trace,
+          diagnosisWindow,
+        ),
       ),
       durableActions,
 
@@ -553,7 +568,7 @@ function withProductionEvidence(
     importantActions.length;
   return {
     ...compactContext,
-    summary: `${compactContext.budget.inputItems} trace items compacted for diagnose with ${messages.length} production-backed messages, ${durableActions.length} durable production actions, ${compactContext.eventTimeline.length} events, and ${compactContext.toolCounts.reduce((total, item) => total + item.count, 0)} tool calls across ${compactContext.toolCounts.length} tools.`,
+    summary: `${compactContext.budget.inputItems} trace items compacted for diagnose with ${(compactContext.turnHeaders ?? []).length} turn headers, ${messages.length} production-backed messages, ${durableActions.length} durable production actions, ${compactContext.eventTimeline.length} events, ${compactContext.toolCounts.reduce((total, item) => total + item.count, 0)} tool calls across ${compactContext.toolCounts.length} tools, and ${(compactContext.temporalEvidence ?? []).length} temporal source observations.`,
     messages,
     importantActions,
     evidenceRefs,
@@ -565,10 +580,12 @@ function withProductionEvidence(
       ...compactContext.budget,
       outputItems,
       estimatedChars: JSON.stringify({
+        turnHeaders: compactContext.turnHeaders,
         messages,
         eventTimeline: compactContext.eventTimeline,
         toolCounts: compactContext.toolCounts,
         failedTools: compactContext.failedTools,
+        temporalEvidence: compactContext.temporalEvidence,
         importantActions,
         telemetrySummary: compactContext.telemetrySummary,
       }).length,
@@ -730,7 +747,7 @@ function collectBundleMessages(
           ? 'system'
           : 'guard';
     const ref = messageEvidenceRef(item);
-    const key = `${ref}:${role}:${item.message}`;
+    const key = `${item.canonicalMessageId ?? ref}:${role}:${item.message}`;
     if (seen.has(key)) continue;
     seen.add(key);
     const turn = typeof item.turn === 'number' ? item.turn : undefined;

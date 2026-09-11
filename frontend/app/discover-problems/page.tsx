@@ -20,6 +20,12 @@ interface DiagnoseMessageEvidence {
   reasoning: string;
 }
 
+interface DiagnoseTurnWindow {
+  startTurn: number;
+  endTurn: number;
+  source: "full-job" | "evidence" | "fallback";
+}
+
 interface DiagnosePattern {
   id: string;
   title: string;
@@ -29,6 +35,8 @@ interface DiagnosePattern {
   diagnosis: string;
   likelyCause: string;
   suggestedFix: string;
+  diagnosisWindow?: DiagnoseTurnWindow;
+  replayWindow?: DiagnoseTurnWindow;
   evidence: DiagnoseEvidence[];
   messages?: DiagnoseMessageEvidence[];
 }
@@ -88,6 +96,15 @@ const INITIAL_FORM = {
   endTurn: "",
   replaySource: "production" as const,
 };
+
+const POLICY_LENS_IDS = [
+  "policy-role-authority",
+  "policy-uniform-attire",
+  "policy-time-scheduling",
+  "policy-checkin-checkout",
+  "policy-patrol-expectations",
+  "policy-escalation-rules",
+] as const;
 
 const DIAGNOSE_PROGRESS_LENSES = [
   { id: "policy-role-authority", name: "Policy 1", description: "Role and authority" },
@@ -223,9 +240,9 @@ function DiscoverProblemsContent() {
           </h1>
         </div>
         <p>
-          Analyze a bounded production trace when you do not already know the
-          failure. CIE ranks tool, behavior, recovery, and safety patterns with
-          evidence-backed suggested fixes.
+          Analyze a production trace when you do not already know the failure.
+          Leave turns blank to scan the full job, or enter a bounded window for
+          manual debugging.
         </p>
       </section>
 
@@ -253,7 +270,7 @@ function DiscoverProblemsContent() {
             <span>START TURN</span>
             <input
               value={form.startTurn}
-              placeholder="9"
+              placeholder="blank = first"
               inputMode="numeric"
               onChange={(event) =>
                 setForm((current) => ({ ...current, startTurn: event.target.value }))
@@ -264,7 +281,7 @@ function DiscoverProblemsContent() {
             <span>END TURN</span>
             <input
               value={form.endTurn}
-              placeholder="16"
+              placeholder="blank = last"
               inputMode="numeric"
               onChange={(event) =>
                 setForm((current) => ({ ...current, endTurn: event.target.value }))
@@ -323,7 +340,7 @@ function DiagnoseResult({
 }) {
   const [activeTab, setActiveTab] = useState<"findings" | "tools" | "messages">("findings");
   if (status === "idle") {
-    return <StatusPanel title="READY" body="Enter a job and turn range to scan for unknown failure patterns." />;
+    return <StatusPanel title="READY" body="Enter a job to scan the full production replay, or add turns for a manual window." />;
   }
   if (status === "loading") {
     return <DiagnoseProgressPanel />;
@@ -582,6 +599,11 @@ function PatternCardDetails({
       <LabeledText label="Diagnosis">{pattern.diagnosis}</LabeledText>
       <LabeledText label="Why" emphasized="warning">{pattern.likelyCause}</LabeledText>
       <LabeledText label="Fix" emphasized="info">{pattern.suggestedFix}</LabeledText>
+      {pattern.replayWindow && (
+        <LabeledText label="Suggested backtest window" emphasized="pink">
+          {`Turns ${pattern.replayWindow.startTurn}-${pattern.replayWindow.endTurn} (${pattern.replayWindow.source})`}
+        </LabeledText>
+      )}
       {pattern.evidence.length > 0 && (
         <LabeledText label="Evidence" scrollable>{evidenceText}</LabeledText>
       )}
@@ -841,16 +863,23 @@ function StatusPanel({
 }
 
 function parseForm(form: typeof INITIAL_FORM):
-  | { jobId: string; startTurn: number; endTurn: number; replaySource: "production" }
+  | { jobId: string; scope: "full-job"; replaySource: "production"; lensIds: typeof POLICY_LENS_IDS[number][] }
+  | { jobId: string; scope: "turn-window"; startTurn: number; endTurn: number; replaySource: "production"; lensIds: typeof POLICY_LENS_IDS[number][] }
   | string {
   const jobId = form.jobId.trim();
+  const hasStart = form.startTurn.trim().length > 0;
+  const hasEnd = form.endTurn.trim().length > 0;
+  if (!/^\d+$/.test(jobId)) return "Enter a numeric job ID.";
+  if (!hasStart && !hasEnd) {
+    return { jobId, scope: "full-job", replaySource: form.replaySource, lensIds: [...POLICY_LENS_IDS] };
+  }
+  if (hasStart !== hasEnd) return "Enter both start and end turns, or leave both blank for full-job diagnosis.";
   const startTurn = Number(form.startTurn);
   const endTurn = Number(form.endTurn);
-  if (!/^\d+$/.test(jobId)) return "Enter a numeric job ID.";
   if (!Number.isInteger(startTurn) || startTurn < 1) return "Start turn must be a positive integer.";
   if (!Number.isInteger(endTurn) || endTurn < 1) return "End turn must be a positive integer.";
   if (startTurn > endTurn) return "Start turn cannot be greater than end turn.";
-  return { jobId, startTurn, endTurn, replaySource: form.replaySource };
+  return { jobId, scope: "turn-window", startTurn, endTurn, replaySource: form.replaySource, lensIds: [...POLICY_LENS_IDS] };
 }
 
 async function errorMessage(response: Response, fallback: string): Promise<string> {
