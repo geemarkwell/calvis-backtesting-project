@@ -27,6 +27,35 @@ export interface BaselineEntry {
   text?: string;
 }
 
+export interface ShiftBundleMessageEvidence {
+  ts: string;
+  turn?: number | null;
+  senderType: 'guard' | 'copilot' | 'tool' | 'system';
+  displayName: string;
+  message: string;
+  source?: {
+    table?: string;
+    id?: string | number;
+  };
+}
+
+export interface ShiftBundleDurableAction {
+  id: string;
+  ref?: string;
+  ts: string;
+  turn?: number | null;
+  type: string;
+  source: string;
+  toolName?: string;
+  status?: string;
+  ok?: boolean | null;
+  body?: string;
+  input?: Record<string, unknown>;
+  output?: unknown;
+  chatMessageId?: string | number | null;
+  recipientGuardId?: string | number | null;
+}
+
 export interface ShiftBundle {
   shift: CopilotShift & {
     start: string;
@@ -40,6 +69,8 @@ export interface ShiftBundle {
   };
   events: ShiftEvent[];
   baseline: BaselineEntry[];
+  messageEvidence?: ShiftBundleMessageEvidence[];
+  durableActions?: ShiftBundleDurableAction[];
 }
 
 export interface CopilotSimulationAction {

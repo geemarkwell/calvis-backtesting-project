@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useSearchParams } from "next/navigation";
+import { Suspense, useEffect, useRef, useState } from "react";
 
 interface DiagnoseEvidence {
   ref: string;
@@ -85,7 +86,7 @@ const INITIAL_FORM = {
   jobId: "",
   startTurn: "",
   endTurn: "",
-  replaySource: "file" as "file" | "production",
+  replaySource: "production" as const,
 };
 
 const DIAGNOSE_PROGRESS_LENSES = [
@@ -98,11 +99,66 @@ const DIAGNOSE_PROGRESS_LENSES = [
 ];
 
 export default function DiscoverProblemsPage() {
+  return (
+    <Suspense fallback={<StatusPageShell />}>
+      <DiscoverProblemsContent />
+    </Suspense>
+  );
+}
+
+function DiscoverProblemsContent() {
+  const searchParams = useSearchParams();
+  const selectedRunId = searchParams.get("runId");
   const [form, setForm] = useState(INITIAL_FORM);
   const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
   const [result, setResult] = useState<DiagnoseResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
   const requestRef = useRef<AbortController | null>(null);
+
+  useEffect(() => {
+    if (!selectedRunId) return;
+    const runId = selectedRunId;
+
+    requestRef.current?.abort();
+    const controller = new AbortController();
+    requestRef.current = controller;
+    setStatus("loading");
+    setError(null);
+    setResult(null);
+
+    async function loadSavedRun() {
+      try {
+        const response = await fetch(`/api/diagnose/runs/${encodeURIComponent(runId)}`, {
+          cache: "no-store",
+          signal: controller.signal,
+        });
+        if (!response.ok) {
+          throw new Error(await errorMessage(response, "Load diagnosis run failed"));
+        }
+        const payload: unknown = await response.json();
+        if (!isDiagnoseResponse(payload)) {
+          throw new Error("Diagnosis run API returned an invalid response.");
+        }
+        if (controller.signal.aborted) return;
+        setForm({
+          jobId: payload.jobId,
+          startTurn: String(payload.startTurn),
+          endTurn: String(payload.endTurn),
+          replaySource: "production",
+        });
+        setResult(payload);
+        setStatus("success");
+      } catch (caught: unknown) {
+        if (!controller.signal.aborted) {
+          setError(caught instanceof Error ? caught.message : String(caught));
+          setStatus("error");
+        }
+      }
+    }
+
+    void loadSavedRun();
+    return () => controller.abort();
+  }, [selectedRunId]);
 
   async function discover() {
     const parsed = parseForm(form);
@@ -177,9 +233,9 @@ export default function DiscoverProblemsPage() {
         <div className="control-deck__header">
           <div>
             <span className="eyebrow">DISCOVER PROBLEMS</span>
-            <h2>TRACE COORDINATES</h2>
+            <h2>{selectedRunId ? "SAVED DIAGNOSIS" : "TRACE COORDINATES"}</h2>
           </div>
-          <span className="endpoint-readout">POST /diagnose/discover</span>
+          <span className="endpoint-readout">{selectedRunId ?? "POST /diagnose/discover"}</span>
         </div>
         <div className="control-grid">
           <label className="field field--job">
@@ -217,18 +273,7 @@ export default function DiscoverProblemsPage() {
           </label>
           <label className="field">
             <span>REPLAY SOURCE</span>
-            <select
-              value={form.replaySource}
-              onChange={(event) =>
-                setForm((current) => ({
-                  ...current,
-                  replaySource: event.target.value as "file" | "production",
-                }))
-              }
-            >
-              <option value="file">FILE BUNDLE</option>
-              <option value="production">PRODUCTION DATA</option>
-            </select>
+            <input value="PRODUCTION DATA" disabled readOnly />
           </label>
           <button
             type="button"
@@ -248,6 +293,23 @@ export default function DiscoverProblemsPage() {
       <footer className="page-footer">
         <span>REV 01.0.0</span>
       </footer>
+    </main>
+  );
+}
+
+function StatusPageShell() {
+  return (
+    <main className="app-shell">
+      <header className="masthead">
+        <div className="brand-lockup">
+          <span className="brand-mark">C</span>
+          <div>
+            <strong>CALVIS</strong>
+            <small>COPILOT IMPROVEMENT ENGINE</small>
+          </div>
+        </div>
+      </header>
+      <StatusPanel title="LOADING" body="Loading diagnosis workspace." />
     </main>
   );
 }
@@ -529,14 +591,22 @@ function PatternCardDetails({
 
 function MessageEvidenceBubbles({
   pattern,
-  fallbackEvidence,
+
+
 }: {
   pattern: DiagnosePattern;
   fallbackEvidence: string;
 }) {
   const messages = pattern.messages ?? [];
   if (!messages.length) {
-    return <LabeledText label="Message evidence" scrollable>{fallbackEvidence}</LabeledText>;
+
+    return (
+      <div className="diagnose-message-disclaimer">
+        <strong>DISCLAIMER</strong>
+        <p>Couldn&apos;t load messages.</p>
+      </div>
+    );
+
   }
   return (
     <div className="diagnose-message-evidence">
@@ -551,7 +621,9 @@ function MessageEvidenceBubbles({
               <span>{message.speaker}</span>
               <small>
                 {message.turn ? `Turn ${message.turn}` : message.ref}
-                {message.timestamp ? ` · ${formatTime(message.timestamp)}` : ""}
+
+                {message.timestamp ? ` · ${formatDiagnoseTime(message.timestamp)}` : ""}
+
               </small>
             </header>
             <p>{message.message}</p>
@@ -566,10 +638,12 @@ function MessageEvidenceBubbles({
   );
 }
 
-function formatTime(value: string): string {
-  const date = new Date(value);
-  if (Number.isNaN(date.getTime())) return value;
-  return date.toLocaleTimeString([], { hour: "numeric", minute: "2-digit" });
+
+function formatDiagnoseTime(value: string): string {
+  const parsed = new Date(value);
+  if (Number.isNaN(parsed.getTime())) return value;
+  return parsed.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+
 }
 
 function LabeledText({
@@ -767,7 +841,7 @@ function StatusPanel({
 }
 
 function parseForm(form: typeof INITIAL_FORM):
-  | { jobId: string; startTurn: number; endTurn: number; replaySource: "file" | "production" }
+  | { jobId: string; startTurn: number; endTurn: number; replaySource: "production" }
   | string {
   const jobId = form.jobId.trim();
   const startTurn = Number(form.startTurn);

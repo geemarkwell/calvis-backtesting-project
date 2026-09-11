@@ -11,6 +11,9 @@ const routes = [
     label: "Discover Problems",
     shortLabel: "DP",
     description: "Diagnose lenses",
+    children: [
+      { href: "/discover-problems/runs", label: "Runs", shortLabel: "RN", description: "History" },
+    ],
   },
   { href: "/eval-suite", label: "Eval Suite", shortLabel: "EV", description: "Test criteria" },
 ];
@@ -47,16 +50,35 @@ export default function GlobalSidebar() {
               : pathname === route.href || pathname.startsWith(`${route.href}/`);
 
           return (
-            <Link
-              className={active ? "global-sidebar__link is-active" : "global-sidebar__link"}
-              href={route.href}
-              key={route.href}
-              title={collapsed ? route.label : undefined}
-            >
-              <b>{route.shortLabel}</b>
-              <span>{route.label}</span>
-              <small>{route.description}</small>
-            </Link>
+            <div className="global-sidebar__group" key={route.href}>
+              <Link
+                className={active ? "global-sidebar__link is-active" : "global-sidebar__link"}
+                href={route.href}
+                title={collapsed ? route.label : undefined}
+              >
+                <b>{route.shortLabel}</b>
+                <span>{route.label}</span>
+                <small>{route.description}</small>
+              </Link>
+              {route.children && !collapsed && active && (
+                <div className="global-sidebar__children">
+                  {route.children.map((child) => {
+                    const childActive = pathname === child.href;
+                    return (
+                      <Link
+                        className={childActive ? "global-sidebar__child-link is-active" : "global-sidebar__child-link"}
+                        href={child.href}
+                        key={child.href}
+                      >
+                        <b>{child.shortLabel}</b>
+                        <span>{child.label}</span>
+                        <small>{child.description}</small>
+                      </Link>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
           );
         })}
       </nav>

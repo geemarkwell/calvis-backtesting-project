@@ -358,3 +358,65 @@ Suggested fields:
   "mayaVerdict": "failed"
 }
 ```
+
+## 9. Send each completed shift trace to CIE for diagnosis
+
+After every job/shift ends, we should send that shift trace to CIE so CIE can start a diagnosis pass.
+
+This turns CIE into a continuous review system instead of something users only run manually after they already know there is a problem.
+
+### Goal
+
+When a shift ends:
+
+```text
+shift ends
+  → collect trace and artifacts
+  → send to CIE
+  → run diagnosis / problem discovery
+  → save findings
+  → user reviews findings later
+  → user chooses what to improve
+```
+
+### Why this matters
+
+Users should be able to open CIE and see a list of possible improvement opportunities from real completed shifts.
+
+They should not need to manually gather logs, pick a job, and write a callout from scratch every time.
+
+CIE should surface things like:
+
+- Copilot was too aggressive
+- Copilot was too quiet
+- Copilot missed a patrol/report obligation
+- Copilot escalated too early or too late
+- Copilot failed to enforce uniform/check-in/scheduling rules
+- guard conversation became confusing
+- tool/context/evidence issues affected the agent
+
+The user can then review the diagnosis list and select which issue they want to improve.
+
+### Desired user flow
+
+```text
+User opens CIE
+  → sees recent completed shifts
+  → sees diagnoses/problems found for each shift
+  → selects one diagnosis
+  → starts backtest/improvement flow
+```
+
+### Data requirement
+
+Each completed-shift diagnosis should link back to:
+
+- job/shift id
+- trace id
+- diagnosis id
+- discovered problem summary
+- relevant turns/events
+- suggested candidate kind: prompt, code, tool, context, workflow, safety, test, or unknown
+- whether the issue has already been backtested or improved
+
+This creates a clean queue of agent-improvement opportunities from production shift history.

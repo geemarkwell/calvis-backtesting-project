@@ -53,7 +53,7 @@ const INITIAL_FORM: BacktestFormState = {
   startTurn: "",
   endTurn: "",
   baselineSource: "shift",
-  replaySource: "file",
+  replaySource: "production",
   diagnosisRunId: "",
   replayMode: "candidate",
   debug: false,

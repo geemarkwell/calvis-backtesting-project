@@ -37,7 +37,7 @@ const jobResponseWindowSchema = z
     jobId: jobIdSchema,
     startTurn: turnNumberSchema,
     endTurn: turnNumberSchema,
-    replaySource: z.enum(['file', 'production']).optional(),
+    replaySource: z.literal('production').optional(),
   })
   .strict()
   .refine((window) => window.startTurn <= window.endTurn, {
@@ -177,13 +177,13 @@ export function calloutConcernsRawTelemetry(callout: string): boolean {
 export async function loadShiftBundle(
   bundleRoot: string,
   shiftId: string,
-  replaySource?: 'file' | 'production',
+  replaySource?: 'production',
 ): Promise<ShiftBundle> {
   void bundleRoot;
   const loaded = await new ShiftBundleSourceResolver().load(shiftId, replaySource);
   if (String(loaded.bundle.shift.id) !== shiftId) {
     throw new Error(
-      `Shift fixture ID ${String(loaded.bundle.shift.id)} does not match callout shift ID ${shiftId}.`,
+      `Production replay bundle shift ID ${String(loaded.bundle.shift.id)} does not match callout shift ID ${shiftId}.`,
     );
   }
   return loaded.bundle;
