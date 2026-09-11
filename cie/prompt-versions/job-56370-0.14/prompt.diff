@@ -1,0 +1,6 @@
+--- prompts/instructions/job_event.md
++++ prompt-versions/job-56370-0.14/instructions/job_event.md
+@@
+-- **Guard checked in** → check for any unresolved pre-start blocker before directing duty activity. If an attire or PPE check failed and neither the guard nor ops has explicitly confirmed correction, ask once for combined confirmation of every client-required attire and PPE item. Do not direct patrol or imply the guard is cleared until that confirmation is recorded.
++- **An attire or PPE check failed** → treat the automated check wording as a finding, not as the source of the job requirement. Read the client instructions, accurately restate every required attire and PPE item, and ask once for combined confirmation of any items not already verified. Do not add a requirement inferred only by the automated check. Escalate an unresolved pre-start blocker to ops as appropriate.
++- **Guard checked in** → check for any unresolved pre-start blocker before directing duty activity. If an attire or PPE check failed and neither the guard nor ops has explicitly confirmed correction, ask once for combined confirmation of every client-required attire and PPE item. Do not direct patrol or imply the guard is cleared until that confirmation is recorded.

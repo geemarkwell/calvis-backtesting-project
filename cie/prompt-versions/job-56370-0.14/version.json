@@ -1,0 +1,13 @@
+{
+  "jobId": "56370",
+  "version": "0.14",
+  "createdAt": "2026-09-11T00:49:57.695Z",
+  "sourceVersion": "original",
+  "runId": "theo-20260911004804875-bcf15820",
+  "changedFile": "instructions/job_event.md",
+  "oldText": "- **Guard checked in** → check for any unresolved pre-start blocker before directing duty activity. If an attire or PPE check failed and neither the guard nor ops has explicitly confirmed correction, ask once for combined confirmation of every client-required attire and PPE item. Do not direct patrol or imply the guard is cleared until that confirmation is recorded.",
+  "newText": "- **An attire or PPE check failed** → treat the automated check wording as a finding, not as the source of the job requirement. Read the client instructions, accurately restate every required attire and PPE item, and ask once for combined confirmation of any items not already verified. Do not add a requirement inferred only by the automated check. Escalate an unresolved pre-start blocker to ops as appropriate.\n- **Guard checked in** → check for any unresolved pre-start blocker before directing duty activity. If an attire or PPE check failed and neither the guard nor ops has explicitly confirmed correction, ask once for combined confirmation of every client-required attire and PPE item. Do not direct patrol or imply the guard is cleared until that confirmation is recorded.",
+  "intendedEffect": "Make the initial failed-check response use the client instructions as the authoritative requirement source, distinguish detector findings from explicit mandates, and carry complete item verification through check-in before duty begins.",
+  "sourceFileHash": "154c7b5bd2fa50be9d1745d537d65e2e268d1cdd3151787a931f44ec8c3fde7b",
+  "candidateFileHash": "ce059f3f5224fa565454d47f91c37b9d166f8d2d594bccde16301d59d4821e9e"
+}

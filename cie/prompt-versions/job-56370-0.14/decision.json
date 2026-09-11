@@ -1,0 +1,15 @@
+{
+  "jobId": "56370",
+  "version": "0.14",
+  "status": "rejected",
+  "createdAt": "2026-09-11T00:49:57.695Z",
+  "decidedAt": "2026-09-11T01:11:42.030Z",
+  "evaluation": {
+    "runId": "maya-56370-12",
+    "judgedAt": "2026-09-11T00:52:32.467Z",
+    "fixed": false,
+    "verdict": "no",
+    "confidence": 92,
+    "summary": "The historical baseline confirms the reported failure, and the candidate only partially improves it. The candidate lists the vest, boots, visible ID, and flashlight and seeks confirmation of all items, but it continues to repeatedly state that the client requires a collared shirt. Because the callout specifically requires avoiding that unsupported collar mandate, the behavior is not fixed."
+  }
+}
