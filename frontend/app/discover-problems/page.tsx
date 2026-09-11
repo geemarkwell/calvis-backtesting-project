@@ -9,6 +9,16 @@ interface DiagnoseEvidence {
   summary: string;
 }
 
+interface DiagnoseMessageEvidence {
+  ref: string;
+  turn?: number;
+  timestamp?: string;
+  role: "guard" | "copilot" | "tool" | "system";
+  speaker: string;
+  message: string;
+  reasoning: string;
+}
+
 interface DiagnosePattern {
   id: string;
   title: string;
@@ -19,6 +29,7 @@ interface DiagnosePattern {
   likelyCause: string;
   suggestedFix: string;
   evidence: DiagnoseEvidence[];
+  messages?: DiagnoseMessageEvidence[];
 }
 
 interface DiagnoseToolCall {
@@ -248,7 +259,7 @@ function DiagnoseResult({
   status: "idle" | "loading" | "success" | "error";
   result: DiagnoseResponse | null;
 }) {
-  const [activeTab, setActiveTab] = useState<"findings" | "tools">("findings");
+  const [activeTab, setActiveTab] = useState<"findings" | "tools" | "messages">("findings");
   if (status === "idle") {
     return <StatusPanel title="READY" body="Enter a job and turn range to scan for unknown failure patterns." />;
   }
@@ -258,6 +269,18 @@ function DiagnoseResult({
   if (!result) {
     return <StatusPanel title="FAILED" body="The diagnostic run did not complete." rejected />;
   }
+
+  const llmPatternItems = result.evaluatorReports.flatMap((report) =>
+    report.findings.map((finding) => ({
+      pattern: finding,
+      source: report.evaluatorName,
+      summary: report.summary,
+    })),
+  );
+  const deterministicPatternItems = result.patterns.map((pattern) => ({
+    pattern,
+    source: "Deterministic analyzer",
+  }));
 
   return (
     <section className="candidate-review" aria-label="Diagnose result">
@@ -306,6 +329,13 @@ function DiagnoseResult({
         >
           TOOLS ({result.toolCalls.length})
         </button>
+        <button
+          type="button"
+          data-active={activeTab === "messages"}
+          onClick={() => setActiveTab("messages")}
+        >
+          MESSAGES ({result.llmFindings.length + result.patterns.length})
+        </button>
       </div>
 
       {activeTab === "findings" && (
@@ -313,28 +343,38 @@ function DiagnoseResult({
           <PaginatedPatternCards
             title="SPECIALIZED LLM FINDINGS"
             emptyCopy="No specialized LLM findings were returned."
-            patterns={result.evaluatorReports.flatMap((report) =>
-              report.findings.map((finding) => ({
-                pattern: finding,
-                source: report.evaluatorName,
-                summary: report.summary,
-              })),
-            )}
+            patterns={llmPatternItems}
           />
 
           {result.patterns.length > 0 && (
             <PaginatedPatternCards
               title="DETERMINISTIC SIGNALS"
-              patterns={result.patterns.map((pattern) => ({
-                pattern,
-                source: "Deterministic analyzer",
-              }))}
+              patterns={deterministicPatternItems}
             />
           )}
         </>
       )}
 
       {activeTab === "tools" && <ToolsTab result={result} />}
+
+      {activeTab === "messages" && (
+        <>
+          <PaginatedPatternCards
+            title="SPECIALIZED LLM MESSAGES"
+            emptyCopy="No specialized LLM findings were returned."
+            patterns={llmPatternItems}
+            detailMode="messages"
+          />
+
+          {deterministicPatternItems.length > 0 && (
+            <PaginatedPatternCards
+              title="DETERMINISTIC SIGNAL MESSAGES"
+              patterns={deterministicPatternItems}
+              detailMode="messages"
+            />
+          )}
+        </>
+      )}
     </section>
   );
 }
@@ -343,6 +383,7 @@ function PaginatedPatternCards({
   title,
   patterns,
   emptyCopy = "No findings returned.",
+  detailMode = "details",
 }: {
   title: string;
   patterns: Array<{
@@ -351,6 +392,7 @@ function PaginatedPatternCards({
     summary?: string;
   }>;
   emptyCopy?: string;
+  detailMode?: "details" | "messages";
 }) {
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [page, setPage] = useState(0);
@@ -403,27 +445,16 @@ function PaginatedPatternCards({
                   <span className="diagnose-pattern-card__badges">
                     <em data-confidence="true">{Math.round(pattern.confidence * 100)}%</em>
                   </span>
-                  <small>{expanded ? "Hide details" : "View details"}</small>
+                  <small>{expanded ? (detailMode === "messages" ? "Hide message" : "Hide details") : (detailMode === "messages" ? "View message" : "View details")}</small>
                 </button>
 
                 {expanded && (
-                  <div className="theo-target-card__details">
-                    <span className="diagnose-pattern-card__urgency" data-severity={pattern.severity}>
-                      {pattern.severity.toUpperCase()}
-                    </span>
-                    <LabeledText label="Evaluator" emphasized="pink">{source}</LabeledText>
-                    {summary && <LabeledText label="Evaluator summary">{summary}</LabeledText>}
-                    <LabeledText label="Diagnosis">{pattern.diagnosis}</LabeledText>
-                    <LabeledText label="Why" emphasized="warning">{pattern.likelyCause}</LabeledText>
-                    <LabeledText label="Fix" emphasized="info">{pattern.suggestedFix}</LabeledText>
-                    {pattern.evidence.length > 0 && (
-                      <LabeledText label="Evidence" scrollable>
-                        {pattern.evidence
-                          .map((item) => `${item.ref}: ${item.summary}`)
-                          .join("\n")}
-                      </LabeledText>
-                    )}
-                  </div>
+                  <PatternCardDetails
+                    pattern={pattern}
+                    source={source}
+                    summary={summary}
+                    mode={detailMode}
+                  />
                 )}
               </section>
             );
@@ -447,6 +478,98 @@ function PaginatedPatternCards({
       )}
     </div>
   );
+}
+
+function PatternCardDetails({
+  pattern,
+  source,
+  summary,
+  mode,
+}: {
+  pattern: DiagnosePattern;
+  source: string;
+  summary?: string;
+  mode: "details" | "messages";
+}) {
+  const evidenceText = pattern.evidence.length > 0
+    ? pattern.evidence.map((item) => `${item.ref}: ${item.summary}`).join("\n")
+    : "No direct message evidence was attached to this finding.";
+
+  if (mode === "messages") {
+    return (
+      <div className="theo-target-card__details">
+        <div className="diagnose-message-meta-row">
+          <span className="diagnose-pattern-card__urgency" data-severity={pattern.severity}>
+            {pattern.severity.toUpperCase()}
+          </span>
+          <span className="diagnose-message-meta-row__lens">{source}</span>
+        </div>
+        <MessageEvidenceBubbles pattern={pattern} fallbackEvidence={evidenceText} />
+        <LabeledText label="Expected correction" emphasized="info">{pattern.suggestedFix}</LabeledText>
+      </div>
+    );
+  }
+
+  return (
+    <div className="theo-target-card__details">
+      <span className="diagnose-pattern-card__urgency" data-severity={pattern.severity}>
+        {pattern.severity.toUpperCase()}
+      </span>
+      <LabeledText label="Evaluator" emphasized="pink">{source}</LabeledText>
+      {summary && <LabeledText label="Evaluator summary">{summary}</LabeledText>}
+      <LabeledText label="Diagnosis">{pattern.diagnosis}</LabeledText>
+      <LabeledText label="Why" emphasized="warning">{pattern.likelyCause}</LabeledText>
+      <LabeledText label="Fix" emphasized="info">{pattern.suggestedFix}</LabeledText>
+      {pattern.evidence.length > 0 && (
+        <LabeledText label="Evidence" scrollable>{evidenceText}</LabeledText>
+      )}
+    </div>
+  );
+}
+
+function MessageEvidenceBubbles({
+  pattern,
+  fallbackEvidence,
+}: {
+  pattern: DiagnosePattern;
+  fallbackEvidence: string;
+}) {
+  const messages = pattern.messages ?? [];
+  if (!messages.length) {
+    return <LabeledText label="Message evidence" scrollable>{fallbackEvidence}</LabeledText>;
+  }
+  return (
+    <div className="diagnose-message-evidence">
+      <strong>Message evidence</strong>
+      <div className="diagnose-message-evidence__stack">
+        {messages.map((message, index) => (
+          <article
+            className={`diagnose-message-bubble diagnose-message-bubble--${message.role}`}
+            key={`${message.ref}-${index}`}
+          >
+            <header>
+              <span>{message.speaker}</span>
+              <small>
+                {message.turn ? `Turn ${message.turn}` : message.ref}
+                {message.timestamp ? ` · ${formatDiagnoseTime(message.timestamp)}` : ""}
+              </small>
+            </header>
+            <p>{message.message}</p>
+            <details className="diagnose-message-reasoning">
+              <summary>REASONING</summary>
+              <p>{message.reasoning}</p>
+            </details>
+          </article>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function formatDiagnoseTime(value: string): string {
+  const parsed = new Date(value);
+  if (Number.isNaN(parsed.getTime())) return value;
+  return parsed.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
 }
 
 function LabeledText({

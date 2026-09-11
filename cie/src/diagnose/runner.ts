@@ -5,7 +5,7 @@ import { eventsInInterval } from '../copilot-simulation/historical-turn-data';
 import { baseToolName } from '../copilot-simulation/output-comparison';
 import { selectTurnWindow } from '../copilot-simulation/episode-builder';
 import { ShiftBundleSourceResolver } from '../copilot-simulation/shift-bundle-source';
-import { normalizeTrace } from '../mastra/theo/trace-normalizer';
+import { normalizeTrace, type NormalizedTraceEntry } from '../mastra/theo/trace-normalizer';
 import { compileTraceContext } from '../trace-context/trace-context.compiler';
 import type { CompactTraceContextDto } from '../trace-context/dto/compile-trace-context.dto';
 import { analyzeDiagnoseWindow } from './analyzers';
@@ -16,6 +16,7 @@ import {
   type DiagnoseCandidateKindDto,
   type DiagnoseEvaluatorReportDto,
   type DiagnoseLensDto,
+  type DiagnoseMessageEvidenceDto,
   type DiagnosePatternDto,
   type DiagnoseResponseDto,
   type DiagnoseToolCallDto,
@@ -121,7 +122,7 @@ export async function runDiagnose(
       entry.timestamp <= lastTurn.ts,
   );
   const patterns = analyzeDiagnoseWindow({ trace, intervalEvents }).map((finding) =>
-    enrichDiagnosisFinding(withExpectedBehavior(finding)),
+    withMessageEvidence(enrichDiagnosisFinding(withExpectedBehavior(finding)), trace),
   );
   const toolCalls = buildToolCalls(trace);
   const toolSummary = buildToolSummary(toolCalls);
@@ -160,7 +161,7 @@ export async function runDiagnose(
   const enrichedReports = evaluatorReports.map((report) => ({
     ...report,
     findings: report.findings.map((finding) =>
-      enrichDiagnosisFinding(withExpectedBehavior(finding)),
+      withMessageEvidence(enrichDiagnosisFinding(withExpectedBehavior(finding)), trace),
     ),
   }));
   const llmFindings = enrichedReports.flatMap((report) => report.findings);
@@ -337,6 +338,134 @@ function compact(value: unknown, maxChars: number): unknown {
   const text = JSON.stringify(value);
   if (!text || text.length <= maxChars) return value;
   return { omitted: 'large evidence payload', preview: truncate(text, maxChars) };
+}
+
+function withMessageEvidence<T extends {
+  evidence?: Array<{ ref: string; summary: string }>;
+  diagnosis: string;
+  likelyCause: string;
+  suggestedFix: string;
+}>(finding: T, trace: NormalizedTraceEntry[]): T & { messages: DiagnoseMessageEvidenceDto[] } {
+  return {
+    ...finding,
+    messages: buildMessageEvidence(finding, trace),
+  };
+}
+
+function buildMessageEvidence(
+  finding: {
+    evidence?: Array<{ ref: string; summary: string }>;
+    diagnosis: string;
+    likelyCause: string;
+    suggestedFix: string;
+  },
+  trace: NormalizedTraceEntry[],
+): DiagnoseMessageEvidenceDto[] {
+  const byRef = new Map(trace.map((entry) => [entry.ref, entry]));
+  const turnByRef = new Map<string, number>();
+  for (const entry of trace) {
+    if (entry.type === 'turn_start' && isRecord(entry.content) && typeof entry.content.turn === 'number') {
+      turnByRef.set(entry.ref, entry.content.turn);
+    }
+  }
+
+  const evidenceRefs = new Set(finding.evidence?.map((item) => item.ref) ?? []);
+  const candidates = trace.filter((entry) => {
+    if (evidenceRefs.has(entry.ref)) return true;
+    if (entry.turnRef && evidenceRefs.has(entry.turnRef)) return true;
+    return false;
+  });
+
+  const messages: DiagnoseMessageEvidenceDto[] = [];
+  const seen = new Set<string>();
+  for (const entry of candidates) {
+    const converted = traceEntryToMessage(entry, turnByRef, finding);
+    if (!converted) continue;
+    const key = `${converted.ref}:${converted.role}:${converted.message}`;
+    if (seen.has(key)) continue;
+    seen.add(key);
+    messages.push(converted);
+    if (messages.length >= 12) break;
+  }
+  return messages;
+}
+
+function traceEntryToMessage(
+  entry: NormalizedTraceEntry,
+  turnByRef: Map<string, number>,
+  finding: { diagnosis: string; likelyCause: string; suggestedFix: string },
+): DiagnoseMessageEvidenceDto | null {
+  const turn = entry.turnRef ? turnByRef.get(entry.turnRef) : undefined;
+  if (entry.type === 'guard_message') {
+    const { text, speaker } = textAndSpeaker(entry.content, 'Guard');
+    if (!text) return null;
+    return {
+      ref: entry.ref,
+      turn,
+      timestamp: entry.timestamp,
+      role: 'guard',
+      speaker,
+      message: text,
+      reasoning: `This guard message is part of the turn evidence for the finding: ${finding.diagnosis}`,
+    };
+  }
+  if (entry.type === 'copilot_message') {
+    const text = typeof entry.content === 'string' ? entry.content : JSON.stringify(entry.content);
+    if (!text.trim()) return null;
+    return {
+      ref: entry.ref,
+      turn,
+      timestamp: entry.timestamp,
+      role: 'copilot',
+      speaker: 'Copilot',
+      message: text,
+      reasoning: `This copilot message is the response being evaluated. ${finding.likelyCause}`,
+    };
+  }
+  if (entry.type === 'tool_call') {
+    const content = isRecord(entry.content) ? entry.content : {};
+    const tool = typeof content.tool === 'string' ? content.tool : 'tool';
+    const text = toolCallSummary(content);
+    if (!text) return null;
+    return {
+      ref: entry.ref,
+      turn,
+      timestamp: entry.timestamp,
+      role: 'tool',
+      speaker: tool.replace(/^mcp__calvis__/, ''),
+      message: text,
+      reasoning: `This retrieved context is evidence for the finding. Expected correction: ${finding.suggestedFix}`,
+    };
+  }
+  return null;
+}
+
+function textAndSpeaker(content: unknown, fallbackSpeaker: string): { text: string; speaker: string } {
+  if (typeof content === 'string') {
+    return { text: content, speaker: fallbackSpeaker };
+  }
+  if (isRecord(content)) {
+    return {
+      text: typeof content.text === 'string' ? content.text : JSON.stringify(content),
+      speaker: typeof content.senderName === 'string' && content.senderName.trim()
+        ? content.senderName
+        : fallbackSpeaker,
+    };
+  }
+  return { text: '', speaker: fallbackSpeaker };
+}
+
+function toolCallSummary(content: Record<string, unknown>): string {
+  const input = isRecord(content.input) ? content.input : {};
+  const body = typeof input.body === 'string' ? input.body : undefined;
+  const details = typeof input.details === 'string' ? input.details : undefined;
+  const summary = typeof input.summary === 'string' ? input.summary : undefined;
+  const error = typeof content.error === 'string' ? content.error : undefined;
+  return truncate(body ?? details ?? summary ?? error ?? JSON.stringify(compact(content, 500)), 800);
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return Boolean(value) && typeof value === 'object' && !Array.isArray(value);
 }
 
 function withExpectedBehavior<T extends { diagnosis: string; suggestedFix: string; expectedBehavior?: string }>(
