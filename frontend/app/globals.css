@@ -2871,6 +2871,11 @@ pre {
   gap: 8px;
 }
 
+.global-sidebar__group {
+  display: grid;
+  gap: 6px;
+}
+
 .global-sidebar__link {
   display: grid;
   gap: 4px;
@@ -2913,6 +2918,49 @@ pre {
 .global-sidebar__link small {
   color: inherit;
   font-size: 9px;
+  letter-spacing: 0.06em;
+  opacity: 0.72;
+  text-transform: uppercase;
+}
+
+.global-sidebar__children {
+  display: grid;
+  gap: 5px;
+  margin-left: 12px;
+  padding-left: 10px;
+  border-left: 1px solid rgba(255, 42, 42, 0.25);
+}
+
+.global-sidebar__child-link {
+  display: grid;
+  gap: 3px;
+  padding: 8px 10px;
+  border: 1px solid transparent;
+  color: var(--dim);
+  text-decoration: none;
+}
+
+.global-sidebar__child-link:hover,
+.global-sidebar__child-link.is-active {
+  border-color: rgba(255, 42, 42, 0.6);
+  background: rgba(255, 42, 42, 0.05);
+  color: var(--hazard);
+}
+
+.global-sidebar__child-link b {
+  display: none;
+}
+
+.global-sidebar__child-link span {
+  font-size: 10px;
+  font-weight: 900;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.global-sidebar__child-link small {
+  color: inherit;
+  font-size: 8px;
   letter-spacing: 0.06em;
   opacity: 0.72;
   text-transform: uppercase;
@@ -2963,14 +3011,36 @@ pre {
     overflow-x: auto;
   }
 
+  .global-sidebar__group {
+    display: flex;
+    gap: 8px;
+  }
+
+  .global-sidebar__children {
+    display: flex;
+    gap: 8px;
+    margin-left: 0;
+    padding-left: 0;
+    border-left: 0;
+  }
+
   .global-sidebar__link,
-  .global-sidebar.is-collapsed .global-sidebar__link {
+  .global-sidebar.is-collapsed .global-sidebar__link,
+  .global-sidebar__child-link {
     min-width: 132px;
     place-items: stretch;
     padding: 10px;
   }
 
   .global-sidebar.is-collapsed .global-sidebar__link b {
+    display: none;
+  }
+
+  .global-sidebar__child-link span {
+    font-size: 9px;
+  }
+
+  .global-sidebar__child-link small {
     display: none;
   }
 
@@ -3302,6 +3372,14 @@ pre {
 
 .diagnose-pattern-card .theo-target-card__summary {
   grid-template-columns: minmax(140px, 0.24fr) minmax(0, 1fr) minmax(120px, auto) auto;
+}
+
+.diagnose-run-card__summary {
+  grid-template-columns: minmax(180px, 0.24fr) minmax(0, 1fr) auto !important;
+}
+
+.diagnose-run-card__id {
+  color: rgba(231, 231, 218, 0.44) !important;
 }
 
 .diagnose-pattern-card .theo-target-card__details {

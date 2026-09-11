@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useSearchParams } from "next/navigation";
+import { Suspense, useEffect, useRef, useState } from "react";
 
 interface DiagnoseEvidence {
   ref: string;
@@ -98,11 +99,66 @@ const DIAGNOSE_PROGRESS_LENSES = [
 ];
 
 export default function DiscoverProblemsPage() {
+  return (
+    <Suspense fallback={<StatusPageShell />}>
+      <DiscoverProblemsContent />
+    </Suspense>
+  );
+}
+
+function DiscoverProblemsContent() {
+  const searchParams = useSearchParams();
+  const selectedRunId = searchParams.get("runId");
   const [form, setForm] = useState(INITIAL_FORM);
   const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
   const [result, setResult] = useState<DiagnoseResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
   const requestRef = useRef<AbortController | null>(null);
+
+  useEffect(() => {
+    if (!selectedRunId) return;
+    const runId = selectedRunId;
+
+    requestRef.current?.abort();
+    const controller = new AbortController();
+    requestRef.current = controller;
+    setStatus("loading");
+    setError(null);
+    setResult(null);
+
+    async function loadSavedRun() {
+      try {
+        const response = await fetch(`/api/diagnose/runs/${encodeURIComponent(runId)}`, {
+          cache: "no-store",
+          signal: controller.signal,
+        });
+        if (!response.ok) {
+          throw new Error(await errorMessage(response, "Load diagnosis run failed"));
+        }
+        const payload: unknown = await response.json();
+        if (!isDiagnoseResponse(payload)) {
+          throw new Error("Diagnosis run API returned an invalid response.");
+        }
+        if (controller.signal.aborted) return;
+        setForm({
+          jobId: payload.jobId,
+          startTurn: String(payload.startTurn),
+          endTurn: String(payload.endTurn),
+          replaySource: "production",
+        });
+        setResult(payload);
+        setStatus("success");
+      } catch (caught: unknown) {
+        if (!controller.signal.aborted) {
+          setError(caught instanceof Error ? caught.message : String(caught));
+          setStatus("error");
+        }
+      }
+    }
+
+    void loadSavedRun();
+    return () => controller.abort();
+  }, [selectedRunId]);
 
   async function discover() {
     const parsed = parseForm(form);
@@ -177,9 +233,9 @@ export default function DiscoverProblemsPage() {
         <div className="control-deck__header">
           <div>
             <span className="eyebrow">DISCOVER PROBLEMS</span>
-            <h2>TRACE COORDINATES</h2>
+            <h2>{selectedRunId ? "SAVED DIAGNOSIS" : "TRACE COORDINATES"}</h2>
           </div>
-          <span className="endpoint-readout">POST /diagnose/discover</span>
+          <span className="endpoint-readout">{selectedRunId ?? "POST /diagnose/discover"}</span>
         </div>
         <div className="control-grid">
           <label className="field field--job">
@@ -237,6 +293,23 @@ export default function DiscoverProblemsPage() {
       <footer className="page-footer">
         <span>REV 01.0.0</span>
       </footer>
+    </main>
+  );
+}
+
+function StatusPageShell() {
+  return (
+    <main className="app-shell">
+      <header className="masthead">
+        <div className="brand-lockup">
+          <span className="brand-mark">C</span>
+          <div>
+            <strong>CALVIS</strong>
+            <small>COPILOT IMPROVEMENT ENGINE</small>
+          </div>
+        </div>
+      </header>
+      <StatusPanel title="LOADING" body="Loading diagnosis workspace." />
     </main>
   );
 }

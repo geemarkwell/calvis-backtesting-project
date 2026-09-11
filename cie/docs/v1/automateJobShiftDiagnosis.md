@@ -2,18 +2,19 @@
 
 ## Goal
 
-Automatically run CIE Diagnose when a production job/shift ends, so users do not need to manually trigger discovery before viewing issues/backtest targets.
+Automatically run CIE Diagnose on recently completed production jobs/shifts on a twice-daily schedule, so users do not need to manually trigger discovery before viewing issues/backtest targets.
 
 ## Desired Flow
 
 ```text
-Job/shift ends in webapp/webapp2
-  -> webapp enqueues diagnosis task
-  -> task calls CIE Diagnose using replaySource=production
+Twice-daily scheduled diagnosis job starts
+  -> webapp finds recently completed jobs/shifts without a completed diagnosis
+  -> task calls CIE Diagnose using replaySource=production for each eligible job
   -> CIE loads the production replay bundle
   -> CIE runs Diagnose
   -> CIE saves diagnosis artifacts/run
-  -> product UI lists diagnosis issues for the completed job
+  -> webapp stores diagnosis metadata/findings
+  -> product UI lists diagnosis issues for completed jobs
   -> user selects one issue and backtests it
 ```
 
@@ -21,28 +22,36 @@ Job/shift ends in webapp/webapp2
 
 Do **not** run Diagnose inline inside the job-completion request path.
 
-Diagnosis can be slow and model-dependent, so job completion should enqueue background work instead of blocking the user or operational workflow.
+Diagnosis can be slow and model-dependent, so job completion should never block the user or operational workflow. A twice-daily scheduled job is sufficient for the first production version and avoids the complexity of per-shift wakeups or frequent polling.
 
 ## Proposed Integration
 
-### 1. Webapp detects job completion
+### 1. Twice-daily scheduled diagnosis sweep
 
-When a job transitions into a completed/ended state, emit or enqueue a background task.
+Run a scheduled webapp task twice per day, for example once in the morning and once in the evening. The task should find completed/ended jobs that are eligible for diagnosis and do not already have a completed or active diagnosis run.
 
-Example background payload:
+Example sweep parameters:
 
 ```json
 {
-  "jobId": "12345",
-  "reason": "job_completed",
+  "reason": "scheduled_twice_daily_sweep",
   "requestedBy": "system",
-  "diagnosisMode": "post_shift"
+  "diagnosisMode": "post_shift",
+  "lookbackHours": 24,
+  "maxJobsPerRun": 25
 }
 ```
 
-### 2. Webapp worker calls CIE
+Eligibility rules should include:
 
-Initial API shape can call the existing Diagnose endpoint:
+- job/shift has ended
+- job has real copilot activity or a production replay bundle
+- no active diagnosis run already exists for the same job/scope
+- no completed diagnosis run already exists for the same job/scope/version
+
+### 2. Scheduled worker calls CIE
+
+For each eligible job in the bounded batch, the scheduled worker can call the existing Diagnose endpoint:
 
 ```http
 POST /diagnose/discover
@@ -59,7 +68,7 @@ Content-Type: application/json
 }
 ```
 
-If webapp does not know the turn range, add a CIE convenience mode later:
+For a twice-daily sweep, webapp may not need to know exact turn ranges. Add a CIE convenience mode later:
 
 ```json
 {
@@ -149,12 +158,14 @@ This avoids scanning artifact files every time the UI loads.
 
 ## Failure Handling
 
-The automation task should be idempotent and retry-safe.
+The twice-daily sweep should be idempotent and retry-safe.
 
 Recommended rules:
 
 - one active diagnosis run per job/scope at a time
+- bounded batch size per sweep so a large shift volume cannot overload CIE/model providers
 - safe retry on transient CIE/model/provider failures
+- failed jobs can be retried by the next scheduled sweep after a cooldown
 - store failed status if Diagnose fails after retries
 - expose failure message in internal/admin UI
 - do not block job completion if diagnosis fails
@@ -184,11 +195,12 @@ CIE production replay access already depends on production API credentials. For 
 
 Start with the smallest reliable implementation:
 
-1. Add a webapp background task triggered by job completion.
-2. Have the task compute or fetch first/last turn.
-3. Call CIE `POST /diagnose/discover` with `replaySource: "production"`.
-4. Store returned run metadata in webapp DB.
-5. Show completed diagnosis runs/issues in the UI.
+1. Add a webapp scheduled task that runs twice per day.
+2. Have the task find recently completed jobs without an active/completed diagnosis run.
+3. Have the task compute/fetch first/last turn, or call CIE with `scope: "full-job"` once available.
+4. Call CIE `POST /diagnose/discover` with `replaySource: "production"`.
+5. Store returned run metadata in webapp DB.
+6. Show completed diagnosis runs/issues in the UI.
 
 Avoid adding auto-backtest initially. Diagnosis should only discover issues; users still choose which issue to backtest.
 
@@ -199,4 +211,5 @@ Avoid adding auto-backtest initially. Diagnosis should only discover issues; use
 - Store CIE diagnosis metadata in a proper DB instead of only filesystem artifacts.
 - Add scheduled re-diagnosis when prompts or policy files change.
 - Add sampling controls for high-volume jobs.
+- Add optional event-based enqueueing later if faster-than-twice-daily diagnosis becomes necessary.
 - Add notifications for high-severity findings.
