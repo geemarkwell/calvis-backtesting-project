@@ -152,7 +152,7 @@ export async function runDiagnose(
     lenses,
     compactContext: useCompactContext
       ? withProductionEvidence(
-          compileTraceContext({ trace, purpose: 'diagnose' }),
+          compileTraceContext({ trace: fullTrace, purpose: 'diagnose' }),
           bundle.messageEvidence,
           durableActions,
           firstTurn.turn,
