@@ -710,7 +710,9 @@ function TheoParamsPreview({
                     }
                     aria-expanded={expanded}
                   >
-                    <span>{selectedFindingId === finding.id ? "SELECTED" : finding.id}</span>
+                    <span data-selected={selectedFindingId === finding.id}>
+                      {selectedFindingId === finding.id ? "SELECTED" : finding.id}
+                    </span>
                     <strong>{finding.title}</strong>
                     <em>{candidateKindLabel(finding)}</em>
                     <small>{expanded ? "Hide details" : "View details"}</small>
@@ -719,6 +721,7 @@ function TheoParamsPreview({
                   <button
                     type="button"
                     className="candidate-review__accept theo-target-card__select"
+                    data-selected={selectedFindingId === finding.id}
                     disabled={selectedFindingId === finding.id}
                     onClick={() => onSelectFinding(finding.id)}
                   >

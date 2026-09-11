@@ -3261,3 +3261,41 @@ pre {
   flex-wrap: nowrap;
   align-items: center;
 }
+
+.candidate-review__change > .theo-target-pagination {
+  display: flex;
+  grid-template-columns: none;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 6px;
+  width: fit-content;
+  background: transparent;
+}
+
+.candidate-review__change > .theo-target-pagination button {
+  flex: 0 0 30px;
+  width: 30px;
+  min-width: 30px;
+  height: 30px;
+  min-height: 30px;
+  padding: 0;
+}
+
+.theo-target-card__top .theo-target-card__select {
+  border-color: var(--ink) !important;
+  color: var(--ink) !important;
+}
+
+.theo-target-card__top .theo-target-card__select[data-selected='true'] {
+  cursor: default;
+  border-color: var(--ink) !important;
+  background: var(--ink);
+  color: #050505 !important;
+  opacity: 1;
+}
+
+.theo-target-card__summary span[data-selected='true'] {
+  color: var(--signal);
+}
