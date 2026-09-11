@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 interface DiagnoseEvidence {
   ref: string;
@@ -76,6 +76,15 @@ const INITIAL_FORM = {
   endTurn: "",
   replaySource: "file" as "file" | "production",
 };
+
+const DIAGNOSE_PROGRESS_LENSES = [
+  { id: "task-success", name: "Task Success", description: "Outcome and false-success claims" },
+  { id: "tool-use", name: "Tool Use", description: "Selection, arguments, errors, recovery" },
+  { id: "context", name: "Context", description: "Missing, stale, or overloaded evidence" },
+  { id: "safety-recovery", name: "Safety + Recovery", description: "Boundaries, ambiguity, escalation" },
+  { id: "prompt-issue", name: "Prompt Issue", description: "Prompt-rooted causes and exact edits" },
+  { id: "free-agent", name: "Free Agent", description: "Other loopholes and cross-lens risks" },
+];
 
 export default function DiscoverProblemsPage() {
   const [form, setForm] = useState(INITIAL_FORM);
@@ -244,7 +253,7 @@ function DiagnoseResult({
     return <StatusPanel title="READY" body="Enter a job and turn range to scan for unknown failure patterns." />;
   }
   if (status === "loading") {
-    return <StatusPanel title="RUNNING" body="Normalizing the trace window and ranking diagnostic signals." />;
+    return <DiagnoseProgressPanel />;
   }
   if (!result) {
     return <StatusPanel title="FAILED" body="The diagnostic run did not complete." rejected />;
@@ -301,74 +310,165 @@ function DiagnoseResult({
 
       {activeTab === "findings" && (
         <>
-          <div className="candidate-review__change">
-            <small>SPECIALIZED LLM FINDINGS</small>
-            <div>
-              {result.evaluatorReports.map((report) => (
-            <section key={report.evaluatorId}>
-              <span>{report.evaluatorName}</span>
-              <p>
-                <strong>{report.findings.length} FINDING{report.findings.length === 1 ? "" : "S"}</strong>
-                <br />
-                {report.summary}
-              </p>
-              {report.findings.map((pattern) => (
-                <div key={pattern.id} className="diagnose-finding">
-                  <span>
-                    {pattern.severity} / {Math.round(pattern.confidence * 100)}%
-                  </span>
-                  <p>
-                    <strong>{pattern.title}</strong>
-                    <br />
-                    {pattern.diagnosis}
-                  </p>
-                  <p>{pattern.likelyCause}</p>
-                  <p>{pattern.suggestedFix}</p>
-                  {pattern.evidence.length > 0 && (
-                    <small>
-                      {pattern.evidence
-                        .map((item) => `${item.ref}: ${item.summary}`)
-                        .join(" | ")}
-                    </small>
-                  )}
-                </div>
-              ))}
-            </section>
-              ))}
-            </div>
-          </div>
+          <PaginatedPatternCards
+            title="SPECIALIZED LLM FINDINGS"
+            emptyCopy="No specialized LLM findings were returned."
+            patterns={result.evaluatorReports.flatMap((report) =>
+              report.findings.map((finding) => ({
+                pattern: finding,
+                source: report.evaluatorName,
+                summary: report.summary,
+              })),
+            )}
+          />
 
           {result.patterns.length > 0 && (
-            <div className="candidate-review__change">
-          <small>DETERMINISTIC SIGNALS</small>
-          <div>
-            {result.patterns.map((pattern) => (
-              <section key={pattern.id}>
-                <span>
-                  {pattern.severity} / {Math.round(pattern.confidence * 100)}%
-                </span>
-                <p>
-                  <strong>{pattern.title}</strong>
-                  <br />
-                  {pattern.diagnosis}
-                </p>
-                {pattern.evidence.length > 0 && (
-                  <small>
-                    {pattern.evidence
-                      .map((item) => `${item.ref}: ${item.summary}`)
-                      .join(" | ")}
-                  </small>
-                )}
-              </section>
-            ))}
-          </div>
-            </div>
+            <PaginatedPatternCards
+              title="DETERMINISTIC SIGNALS"
+              patterns={result.patterns.map((pattern) => ({
+                pattern,
+                source: "Deterministic analyzer",
+              }))}
+            />
           )}
         </>
       )}
 
       {activeTab === "tools" && <ToolsTab result={result} />}
     </section>
+  );
+}
+
+function PaginatedPatternCards({
+  title,
+  patterns,
+  emptyCopy = "No findings returned.",
+}: {
+  title: string;
+  patterns: Array<{
+    pattern: DiagnosePattern;
+    source: string;
+    summary?: string;
+  }>;
+  emptyCopy?: string;
+}) {
+  const [expandedId, setExpandedId] = useState<string | null>(null);
+  const [page, setPage] = useState(0);
+  const pageSize = 4;
+  const totalPages = Math.max(1, Math.ceil(patterns.length / pageSize));
+  const visiblePatterns = patterns.slice(page * pageSize, page * pageSize + pageSize);
+
+  useEffect(() => {
+    setPage((current) => Math.min(current, totalPages - 1));
+  }, [totalPages]);
+
+  return (
+    <div className="candidate-review__change theo-receive-panel">
+      <div className="theo-receive-panel__header">
+        <small>{title}</small>
+        <span>
+          {patterns.length === 0
+            ? "0 of 0"
+            : `${page * pageSize + 1}-${Math.min((page + 1) * pageSize, patterns.length)} of ${patterns.length}`}
+        </span>
+      </div>
+
+      {patterns.length === 0 ? (
+        <div>
+          <section className="theo-target-card diagnose-pattern-card">
+            <div className="theo-target-card__details">
+              <LabeledText label="Status">{emptyCopy}</LabeledText>
+            </div>
+          </section>
+        </div>
+      ) : (
+        <div>
+          {visiblePatterns.map(({ pattern, source, summary }) => {
+            const expanded = expandedId === pattern.id;
+            return (
+              <section
+                className={expanded ? "theo-target-card diagnose-pattern-card is-expanded" : "theo-target-card diagnose-pattern-card"}
+                key={`${source}-${pattern.id}`}
+              >
+                <button
+                  type="button"
+                  className="theo-target-card__summary diagnose-pattern-card__summary"
+                  onClick={() =>
+                    setExpandedId((current) => current === pattern.id ? null : pattern.id)
+                  }
+                  aria-expanded={expanded}
+                >
+                  <span>{pattern.id}</span>
+                  <strong>{pattern.title}</strong>
+                  <span className="diagnose-pattern-card__badges">
+                    <em data-confidence="true">{Math.round(pattern.confidence * 100)}%</em>
+                  </span>
+                  <small>{expanded ? "Hide details" : "View details"}</small>
+                </button>
+
+                {expanded && (
+                  <div className="theo-target-card__details">
+                    <span className="diagnose-pattern-card__urgency" data-severity={pattern.severity}>
+                      {pattern.severity.toUpperCase()}
+                    </span>
+                    <LabeledText label="Evaluator" emphasized="pink">{source}</LabeledText>
+                    {summary && <LabeledText label="Evaluator summary">{summary}</LabeledText>}
+                    <LabeledText label="Diagnosis">{pattern.diagnosis}</LabeledText>
+                    <LabeledText label="Why" emphasized="warning">{pattern.likelyCause}</LabeledText>
+                    <LabeledText label="Fix" emphasized="info">{pattern.suggestedFix}</LabeledText>
+                    {pattern.evidence.length > 0 && (
+                      <LabeledText label="Evidence" scrollable>
+                        {pattern.evidence
+                          .map((item) => `${item.ref}: ${item.summary}`)
+                          .join("\n")}
+                      </LabeledText>
+                    )}
+                  </div>
+                )}
+              </section>
+            );
+          })}
+        </div>
+      )}
+
+      {patterns.length > pageSize && (
+        <div className="theo-target-pagination" aria-label={`${title} pagination`}>
+          {Array.from({ length: totalPages }, (_, index) => (
+            <button
+              type="button"
+              data-active={page === index}
+              onClick={() => setPage(index)}
+              key={index}
+            >
+              {index + 1}
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function LabeledText({
+  label,
+  children,
+  emphasized,
+  scrollable = false,
+}: {
+  label: string;
+  children: string;
+  emphasized?: "warning" | "info" | "pink";
+  scrollable?: boolean;
+}) {
+  return (
+    <div
+      className={`theo-labeled-text${
+        emphasized ? ` theo-labeled-text--${emphasized}` : ""
+      }${scrollable ? " theo-labeled-text--scrollable" : ""}`}
+    >
+      <strong>{label}</strong>
+      <p>{children}</p>
+    </div>
   );
 }
 
@@ -460,6 +560,57 @@ function ToolsTab({ result }: { result: DiagnoseResponse }) {
         </section>
       </div>
     </div>
+  );
+}
+
+function DiagnoseProgressPanel() {
+  const [activeIndex, setActiveIndex] = useState(0);
+
+  useEffect(() => {
+    const timer = window.setInterval(() => {
+      setActiveIndex((current) =>
+        Math.min(current + 1, DIAGNOSE_PROGRESS_LENSES.length - 1),
+      );
+    }, 1800);
+    return () => window.clearInterval(timer);
+  }, []);
+
+  return (
+    <section className="candidate-review" aria-label="Diagnose progress">
+      <header>
+        <div>
+          <span className="candidate-review__kicker">DISCOVER PROBLEMS</span>
+          <h2>RUNNING</h2>
+        </div>
+        <strong data-status="rejected">ANALYZING</strong>
+      </header>
+
+      <div className="candidate-review__grid">
+        <section>
+          <span>STATUS</span>
+          <h3>SCANNING TRACE</h3>
+          <p>Normalizing the trace window, extracting deterministic signals, then running each diagnostic lens.</p>
+        </section>
+        <section>
+          <span>AGENTS</span>
+          <h3>{activeIndex + 1} / {DIAGNOSE_PROGRESS_LENSES.length}</h3>
+          <p>Lens progress is shown while the request is pending. Final findings appear when all evaluators return.</p>
+        </section>
+      </div>
+
+      <div className="diagnose-progress-list">
+        {DIAGNOSE_PROGRESS_LENSES.map((lens, index) => {
+          const state = index < activeIndex ? "complete" : index === activeIndex ? "active" : "queued";
+          return (
+            <article className="diagnose-progress-card" data-state={state} key={lens.id}>
+              <span>{state}</span>
+              <h3>{lens.name}</h3>
+              <p>{lens.description}</p>
+            </article>
+          );
+        })}
+      </div>
+    </section>
   );
 }
 

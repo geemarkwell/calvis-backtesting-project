@@ -3299,3 +3299,202 @@ pre {
 .theo-target-card__summary span[data-selected='true'] {
   color: var(--signal);
 }
+
+.diagnose-pattern-card .theo-target-card__summary {
+  grid-template-columns: minmax(140px, 0.24fr) minmax(0, 1fr) minmax(120px, auto) auto;
+}
+
+.diagnose-pattern-card .theo-target-card__details {
+  padding-top: 22px;
+}
+
+@media (max-width: 900px) {
+  .diagnose-pattern-card .theo-target-card__summary {
+    grid-template-columns: 1fr;
+  }
+}
+
+.diagnose-progress-list {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 30px;
+}
+
+.diagnose-progress-card {
+  border: 1px solid var(--line);
+  background: var(--panel);
+  padding: 18px;
+}
+
+.diagnose-progress-card[data-state='active'] {
+  border-color: var(--hazard);
+  background: rgba(255, 42, 42, 0.06);
+}
+
+.diagnose-progress-card[data-state='complete'] {
+  border-color: rgba(74, 246, 38, 0.4);
+}
+
+.diagnose-progress-card span {
+  display: block;
+  color: var(--dim);
+  font-size: 9px;
+  font-weight: 900;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.diagnose-progress-card[data-state='active'] span {
+  color: var(--hazard);
+}
+
+.diagnose-progress-card[data-state='complete'] span {
+  color: var(--signal);
+}
+
+.diagnose-progress-card h3 {
+  margin: 10px 0 0;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 18px;
+}
+
+.diagnose-progress-card p {
+  margin: 8px 0 0;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.55;
+}
+
+@media (max-width: 900px) {
+  .diagnose-progress-list {
+    grid-template-columns: 1fr;
+  }
+}
+
+.diagnose-pattern-card__badges {
+  display: flex !important;
+  align-items: center;
+  gap: 6px;
+}
+
+.diagnose-pattern-card__badges em {
+  border: 1px solid currentColor;
+  padding: 5px 7px;
+  font-size: 9px;
+  font-style: normal;
+  font-weight: 900;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.diagnose-pattern-card__badges em[data-severity='critical'],
+.diagnose-pattern-card__badges em[data-severity='high'] {
+  color: var(--hazard);
+}
+
+.diagnose-pattern-card__badges em[data-severity='medium'] {
+  color: #f6c453;
+}
+
+.diagnose-pattern-card__badges em[data-severity='low'] {
+  color: #58a6ff;
+}
+
+.diagnose-pattern-card__badges em[data-confidence='true'] {
+  color: #ff4fd8;
+}
+
+.diagnose-pattern-card__badges em[data-confidence='true'] {
+  border-color: transparent;
+  color: #58a6ff;
+  padding-inline: 0;
+}
+
+.diagnose-pattern-card__badges em[data-confidence='true'] {
+  font-size: 12px;
+  letter-spacing: 0.04em;
+}
+
+.diagnose-pattern-card__badges em[data-severity] {
+  border-color: transparent;
+  padding-inline: 0;
+}
+
+.diagnose-pattern-card__badges em[data-severity='critical'],
+.diagnose-pattern-card__badges em[data-severity='high'] {
+  color: #d9827f;
+}
+
+.diagnose-pattern-card__badges em[data-severity='medium'] {
+  color: #d6b86f;
+}
+
+.diagnose-pattern-card__badges em[data-severity='low'] {
+  color: #7fa6d9;
+}
+
+.diagnose-pattern-card__badges em[data-confidence='true'] {
+  color: #8fb7e8;
+}
+
+.diagnose-pattern-card__badges em[data-confidence='true'] {
+  font-size: 9px;
+  letter-spacing: 0.1em;
+}
+
+.diagnose-pattern-card__badges em[data-confidence='true'] b {
+  color: var(--dim);
+  font-weight: 900;
+}
+
+.diagnose-pattern-card__badges em[data-confidence='true'] {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  line-height: 1;
+}
+
+.diagnose-pattern-card__badges em[data-confidence='true'] span {
+  color: #8fb7e8;
+}
+
+.diagnose-pattern-card__badges em[data-confidence='true'] {
+  display: inline;
+  flex-direction: initial;
+  align-items: initial;
+  gap: 0;
+  line-height: inherit;
+}
+
+.diagnose-pattern-card__urgency {
+  display: block;
+  width: fit-content;
+  margin-bottom: 12px;
+  font-size: 9px;
+  font-weight: 900;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.diagnose-pattern-card__urgency[data-severity='critical'],
+.diagnose-pattern-card__urgency[data-severity='high'] {
+  color: #d9827f;
+}
+
+.diagnose-pattern-card__urgency[data-severity='medium'] {
+  color: #d6b86f;
+}
+
+.diagnose-pattern-card__urgency[data-severity='low'] {
+  color: #7fa6d9;
+}
+
+.diagnose-pattern-card__badges em[data-confidence='true'] {
+  font-size: 11px;
+}
+
+.diagnose-pattern-card__urgency {
+  font-size: 11px;
+}
