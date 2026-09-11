@@ -123,12 +123,13 @@ export async function runDiagnose(
     window.historyBoundary,
     lastTurn.ts,
   );
-  const trace = normalizeTrace(bundle, { includeRawTelemetry: false }).filter(
+  const fullTrace = normalizeTrace(bundle, { includeRawTelemetry: false });
+  const trace = fullTrace.filter(
     (entry) =>
       (!window.historyBoundary || entry.timestamp > window.historyBoundary) &&
       entry.timestamp <= lastTurn.ts,
   );
-  const durableActions = productionDurableActions(bundle, trace, firstTurn.turn, lastTurn.turn);
+  const durableActions = productionDurableActions(bundle, fullTrace, firstTurn.turn, lastTurn.turn);
   const patterns = guardPersistenceFindings(
     analyzeDiagnoseWindow({ trace, intervalEvents }).map((finding) =>
       withMessageEvidence(enrichDiagnosisFinding(withExpectedBehavior(finding)), trace, bundle),
@@ -374,10 +375,9 @@ function productionDurableActions(
   startTurn: number,
   endTurn: number,
 ): ShiftBundleDurableAction[] {
-  const supplied = (bundle.durableActions ?? []).filter((action) => {
-    const turn = typeof action.turn === 'number' ? action.turn : undefined;
-    return turn === undefined || (turn >= startTurn && turn <= endTurn);
-  });
+  void startTurn;
+  void endTurn;
+  const supplied = bundle.durableActions ?? [];
   if (supplied.length > 0) {
     return supplied;
   }
