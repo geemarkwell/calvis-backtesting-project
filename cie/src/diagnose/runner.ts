@@ -140,7 +140,12 @@ export async function runDiagnose(
     deterministicPatterns: patterns,
     lenses,
     compactContext: useCompactContext
-      ? compileTraceContext({ trace, purpose: 'diagnose' })
+      ? withProductionMessageEvidence(
+          compileTraceContext({ trace, purpose: 'diagnose' }),
+          bundle.messageEvidence,
+          firstTurn.turn,
+          lastTurn.turn,
+        )
       : undefined,
   });
   const evaluatorReports = await Promise.all(
@@ -341,6 +346,77 @@ function compact(value: unknown, maxChars: number): unknown {
   return { omitted: 'large evidence payload', preview: truncate(text, maxChars) };
 }
 
+function withProductionMessageEvidence(
+  compactContext: CompactTraceContextDto,
+  messageEvidence: ShiftBundleMessageEvidence[] | undefined,
+  startTurn: number,
+  endTurn: number,
+): CompactTraceContextDto {
+  if (!messageEvidence?.length) {
+    return compactContext;
+  }
+  const messages = messageEvidence
+    .filter((item) => {
+      const turn = typeof item.turn === 'number' ? item.turn : undefined;
+      return turn !== undefined && turn >= startTurn && turn <= endTurn;
+    })
+    .slice(-compactContext.budget.maxMessages)
+    .map((item) => ({
+      ref: `${item.source?.table ?? 'message'}:${item.source?.id ?? `${item.ts}:${item.displayName}`}`,
+      timestamp: item.ts,
+      role: compactRoleForMessageEvidence(item.senderType),
+      text: truncate(item.message, compactContext.budget.maxTextChars),
+    }));
+
+  if (!messages.length) {
+    return compactContext;
+  }
+
+  const eventRefs = new Set([
+    ...compactContext.eventTimeline,
+    ...compactContext.failedTools,
+    ...compactContext.importantActions,
+  ].map((item) => item.ref));
+  const evidenceRefs = [...new Set([...messages.map((item) => item.ref), ...eventRefs])];
+  const outputItems =
+    messages.length +
+    compactContext.eventTimeline.length +
+    compactContext.toolCounts.length +
+    compactContext.failedTools.length +
+    compactContext.importantActions.length;
+  return {
+    ...compactContext,
+    summary: `${compactContext.budget.inputItems} trace items compacted for diagnose with ${messages.length} production-backed messages, ${compactContext.eventTimeline.length} events, and ${compactContext.toolCounts.reduce((total, item) => total + item.count, 0)} tool calls across ${compactContext.toolCounts.length} tools.`,
+    messages,
+    evidenceRefs,
+    omissions: [
+      ...compactContext.omissions.filter((item) => !/older messages omitted/i.test(item)),
+      ...(messageEvidence.length > messages.length ? [`${messageEvidence.length - messages.length} older production-backed messages omitted.`] : []),
+    ],
+    budget: {
+      ...compactContext.budget,
+      outputItems,
+      estimatedChars: JSON.stringify({
+        messages,
+        eventTimeline: compactContext.eventTimeline,
+        toolCounts: compactContext.toolCounts,
+        failedTools: compactContext.failedTools,
+        importantActions: compactContext.importantActions,
+        telemetrySummary: compactContext.telemetrySummary,
+      }).length,
+    },
+  };
+}
+
+function compactRoleForMessageEvidence(
+  senderType: ShiftBundleMessageEvidence['senderType'],
+): CompactTraceContextDto['messages'][number]['role'] {
+  if (senderType === 'guard') return 'guard';
+  if (senderType === 'copilot') return 'copilot';
+  if (senderType === 'tool' || senderType === 'system') return 'agent';
+  return 'unknown';
+}
+
 function withMessageEvidence<T extends {
   evidence?: Array<{ ref: string; summary: string }>;
   diagnosis: string;
@@ -384,6 +460,7 @@ function buildMessageEvidence(
 
   const directMessages = messagesFromBundleEvidence(
     bundle?.messageEvidence,
+    evidenceRefs,
     relevantTurns,
     finding,
   );
@@ -413,17 +490,61 @@ function buildMessageEvidence(
 
 function messagesFromBundleEvidence(
   evidence: ShiftBundleMessageEvidence[] | undefined,
+  evidenceRefs: Set<string>,
   relevantTurns: Set<number>,
   finding: { diagnosis: string; likelyCause: string; suggestedFix: string },
 ): DiagnoseMessageEvidenceDto[] {
-  if (!evidence?.length || !relevantTurns.size) {
+  if (!evidence?.length) {
     return [];
   }
+  const exactRefItems = evidence.filter((item) => evidenceRefs.has(messageEvidenceRef(item)));
+  const exactRefMessages = collectBundleMessages(
+    expandMessageThread(evidence, exactRefItems),
+    finding,
+  );
+  if (exactRefMessages.length) {
+    return exactRefMessages;
+  }
+  if (!relevantTurns.size) {
+    return [];
+  }
+  return collectBundleMessages(
+    evidence.filter((item) => {
+      const turn = typeof item.turn === 'number' ? item.turn : undefined;
+      return turn !== undefined && relevantTurns.has(turn);
+    }),
+    finding,
+  );
+}
+
+function expandMessageThread(
+  allMessages: ShiftBundleMessageEvidence[],
+  anchors: ShiftBundleMessageEvidence[],
+): ShiftBundleMessageEvidence[] {
+  if (!anchors.length) {
+    return [];
+  }
+  const anchorTimes = anchors
+    .map((item) => Date.parse(item.ts))
+    .filter((value) => Number.isFinite(value));
+  if (!anchorTimes.length) {
+    return anchors;
+  }
+  const windowMs = 120_000;
+  const expanded = allMessages.filter((item) => {
+    const ts = Date.parse(item.ts);
+    return Number.isFinite(ts) && anchorTimes.some((anchor) => Math.abs(ts - anchor) <= windowMs);
+  });
+  return expanded.sort((left, right) => Date.parse(left.ts) - Date.parse(right.ts));
+}
+
+function collectBundleMessages(
+  evidence: ShiftBundleMessageEvidence[],
+  finding: { diagnosis: string; likelyCause: string; suggestedFix: string },
+): DiagnoseMessageEvidenceDto[] {
   const messages: DiagnoseMessageEvidenceDto[] = [];
   const seen = new Set<string>();
   for (const item of evidence) {
-    const turn = typeof item.turn === 'number' ? item.turn : undefined;
-    if (!turn || !relevantTurns.has(turn)) continue;
     if (!item.message?.trim()) continue;
     const role = item.senderType === 'copilot'
       ? 'copilot'
@@ -432,25 +553,29 @@ function messagesFromBundleEvidence(
         : item.senderType === 'system'
           ? 'system'
           : 'guard';
-    const sourceTable = item.source?.table ?? 'message';
-    const sourceId = item.source?.id ?? `${item.ts}:${item.displayName}`;
-    const key = `${sourceTable}:${sourceId}:${role}:${item.message}`;
+    const ref = messageEvidenceRef(item);
+    const key = `${ref}:${role}:${item.message}`;
     if (seen.has(key)) continue;
     seen.add(key);
+    const turn = typeof item.turn === 'number' ? item.turn : undefined;
     messages.push({
-      ref: `${sourceTable}:${sourceId}`,
+      ref,
       turn,
       timestamp: item.ts,
       role,
       speaker: item.displayName || (role === 'copilot' ? 'Copilot' : 'Guard'),
       message: item.message,
       reasoning: role === 'copilot'
-        ? `This actual copilot message is tied to turn ${turn} for this finding. ${finding.likelyCause}`
-        : `This actual job message is tied to turn ${turn} for this finding: ${finding.diagnosis}`,
+        ? `This actual copilot message is tied to turn ${turn ?? 'unknown'} for this finding. ${finding.likelyCause}`
+        : `This actual job message is tied to turn ${turn ?? 'unknown'} for this finding: ${finding.diagnosis}`,
     });
     if (messages.length >= 12) break;
   }
   return messages;
+}
+
+function messageEvidenceRef(item: ShiftBundleMessageEvidence): string {
+  return `${item.source?.table ?? 'message'}:${item.source?.id ?? `${item.ts}:${item.displayName}`}`;
 }
 
 function traceEntryToMessage(

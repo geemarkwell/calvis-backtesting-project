@@ -3499,6 +3499,29 @@ pre {
   font-size: 11px;
 }
 
+.diagnose-message-disclaimer {
+  border: 1px solid rgba(255, 76, 66, 0.7);
+  background: rgba(255, 76, 66, 0.08);
+  display: grid;
+  gap: 10px;
+  padding: 18px 20px;
+}
+
+.diagnose-message-disclaimer strong {
+  color: #ff4c42;
+  font-family: var(--mono);
+  font-size: 12px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.diagnose-message-disclaimer p {
+  color: var(--fg);
+  font-size: 16px;
+  line-height: 1.45;
+  margin: 0;
+}
+
 .diagnose-message-evidence {
   display: grid;
   gap: 14px;

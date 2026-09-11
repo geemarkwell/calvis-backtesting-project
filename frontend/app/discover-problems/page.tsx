@@ -529,14 +529,18 @@ function PatternCardDetails({
 
 function MessageEvidenceBubbles({
   pattern,
-  fallbackEvidence,
 }: {
   pattern: DiagnosePattern;
   fallbackEvidence: string;
 }) {
   const messages = pattern.messages ?? [];
   if (!messages.length) {
-    return <LabeledText label="Message evidence" scrollable>{fallbackEvidence}</LabeledText>;
+    return (
+      <div className="diagnose-message-disclaimer">
+        <strong>DISCLAIMER</strong>
+        <p>Couldn&apos;t load messages.</p>
+      </div>
+    );
   }
   return (
     <div className="diagnose-message-evidence">
