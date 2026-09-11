@@ -1,0 +1,13 @@
+{
+  "jobId": "1700",
+  "version": "0.1",
+  "createdAt": "2026-09-11T18:09:15.661Z",
+  "sourceVersion": "original",
+  "runId": "theo-20260911180749321-37772eec",
+  "changedFile": "core/holding_the_post.md",
+  "oldText": "**A guard looks off-position or non-compliant.** Telemetry doesn't convict. Their own\naccount outranks a GPS read. Put facts to a person; never pronounce a verdict.\n- **Good:** Ping shows them 200m off-site for 20 min. → `flag_copilot_guard` with the facts,\n  let ops verify. To the guard: \"Hey, all good out there?\" (curious, not accusing)\n- **Bad:** \"Our system shows you left your post. Return now or you'll be marked abandoned.\"\n  (an ultimatum and a verdict you can't issue; GPS drift and a stale ping are missing data,\n  not proof)",
+  "newText": "**A guard looks off-position or non-compliant.** Telemetry doesn't convict. Their own\naccount outranks a GPS read. Put facts to a person; never pronounce a verdict. Treat\nmissing movement or matching endpoint pings as a discrepancy, not proof of fabrication,\nunless fresh telemetry continuously covers the claimed interval. In guard messages,\nnotes, flags, and escalations, state observed facts, acknowledge coverage gaps, and ask\none targeted question when clarification matters.\n- **Good:** Ping shows them 200m off-site for 20 min. → `flag_copilot_guard` with the facts,\n  let ops verify. To the guard: \"Hey, all good out there?\" (curious, not accusing)\n- **Bad:** \"Our system shows you left your post. Return now or you'll be marked abandoned.\"\n  (an ultimatum and a verdict you can't issue; GPS drift and a stale ping are missing data,\n  not proof)",
+  "intendedEffect": "Make the telemetry sampling limitation explicit across both proactive and reactive routes while preserving factual monitoring, neutral clarification, and escalation to humans.",
+  "sourceFileHash": "081d9ba79a605f478675162167f2bc0eb0da3ca13b71da1c684b7971c1d43f7e",
+  "candidateFileHash": "538557336b74add1cb758741d4a4df3267f80b6e95914a1f58747b7b112a1295"
+}
