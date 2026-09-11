@@ -1,0 +1,15 @@
+{
+  "jobId": "56370",
+  "version": "0.13",
+  "status": "accepted",
+  "createdAt": "2026-09-11T00:22:55.813Z",
+  "decidedAt": "2026-09-11T00:42:05.974Z",
+  "evaluation": {
+    "runId": "maya-56370-11",
+    "judgedAt": "2026-09-11T00:25:30.636Z",
+    "fixed": true,
+    "verdict": "yes",
+    "confidence": 94,
+    "summary": "The historical baseline contains the reported failure: after a failed uniform check and no guard reply or verified correction, the Copilot told Hector to walk the perimeter. The candidate instead repeatedly keeps the attire issue open, requests confirmation of all specified gear, records that correction remains unconfirmed, and explicitly says not to start patrols until confirmation and a new photo are provided."
+  }
+}

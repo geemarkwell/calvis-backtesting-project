@@ -9,9 +9,16 @@ import {
   TheoDiagnosisValidationError,
   validateTheoDiagnosis,
 } from './diagnosis-validator';
+import { buildTheoCaseProfile, renderTheoCaseBrief } from './case-profile';
 import { loadDiagnosticInput, type TheoRequest } from './diagnostic-input';
 import { createCandidatePromptVersion } from './prompt-versioner';
 import { theoDiagnosisSchema, type CandidateProposal, type TheoDiagnosis } from './schemas';
+import {
+  buildTheoTriageMessage,
+  fallbackTheoTriage,
+  theoTriageSchema,
+  type TheoTriage,
+} from './triage';
 
 export interface RunTheoInput {
   request: TheoRequest;
@@ -49,9 +56,11 @@ export interface TheoBacktestRecord {
 export type GenerateTheoDiagnosis = (
   diagnosticMessage: string,
 ) => Promise<unknown>;
+export type GenerateTheoTriage = (triageMessage: string) => Promise<unknown>;
 
 export interface TheoRunnerDependencies {
   generateDiagnosis?: GenerateTheoDiagnosis;
+  generateTriage?: GenerateTheoTriage;
 }
 
 function defaultBundleRoot(): string {
@@ -73,6 +82,43 @@ function validateRunId(runId: string): void {
 
 function stringifyArtifact(value: unknown): string {
   return `${JSON.stringify(value, null, 2)}\n`;
+}
+
+function validateTheoTriage(output: unknown): TheoTriage {
+  const parsed = theoTriageSchema.safeParse(output);
+  if (!parsed.success) {
+    return fallbackTheoTriage();
+  }
+  return parsed.data;
+}
+
+export function buildTheoCandidateMessage({
+  diagnosticInput,
+  caseBrief,
+  triage,
+}: {
+  diagnosticInput: unknown;
+  caseBrief: string;
+  triage: TheoTriage;
+}): string {
+  const compactInput = compactTheoMessageInput(diagnosticInput);
+  return `Produce the final candidate intervention from this staged Theo case.
+
+Use the CASE BRIEF as the primary evidence. Use SELECTED ARTIFACTS only when needed for the candidate kind.
+For non-prompt candidates, do not invent prompt edits. For prompt candidates, copy exact old_text from supplied prompt files.
+
+TRIAGE
+- candidate kind: ${triage.candidateKind}
+- confidence: ${triage.confidence}
+- rationale: ${triage.rationale}
+- requested artifacts: ${triage.requestedArtifacts.map((artifact) => `${artifact.kind}:${artifact.id}`).join(', ') || 'none'}
+
+${caseBrief}
+
+SELECTED ARTIFACTS
+${renderSelectedArtifacts(compactInput, triage)}
+
+Return only the structured object required by the supplied schema.`;
 }
 
 export function buildTheoDiagnosticMessage(input: unknown): string {
@@ -249,6 +295,74 @@ function outputStatus(value: unknown): string | undefined {
   return status ?? taskType;
 }
 
+function renderSelectedArtifacts(input: unknown, triage: TheoTriage): string {
+  if (!isRecord(input)) {
+    return 'None.';
+  }
+  const sections: string[] = [];
+  sections.push(renderWindowMetadata(input));
+  sections.push(renderShiftSummaries(input));
+  if (triage.candidateKind === 'prompt') {
+    sections.push(renderPromptFiles(input));
+  } else if (triage.requestedArtifacts.some((artifact) => artifact.kind === 'prompt_file')) {
+    sections.push(renderPromptFiles(input, new Set(
+      triage.requestedArtifacts
+        .filter((artifact) => artifact.kind === 'prompt_file')
+        .map((artifact) => artifact.id),
+    )));
+  }
+  return sections.filter((section) => section.trim()).join('\n\n') || 'None.';
+}
+
+function renderWindowMetadata(input: Record<string, unknown>): string {
+  const windows = Array.isArray(input.badResponses) ? input.badResponses : [];
+  return [
+    'WINDOW METADATA',
+    ...windows.map((window) => {
+      if (!isRecord(window)) return '- Unknown window.';
+      return `- Job ${String(window.jobId ?? 'unknown')}, turns ${String(window.startTurn ?? 'unknown')}-${String(window.endTurn ?? 'unknown')}.`;
+    }),
+  ].join('\n');
+}
+
+function renderShiftSummaries(input: Record<string, unknown>): string {
+  const shifts = Array.isArray(input.shifts) ? input.shifts : [];
+  return [
+    'SHIFT SUMMARIES',
+    ...shifts.map((shift) => renderShiftSummary(shift)),
+  ].join('\n');
+}
+
+function renderShiftSummary(value: unknown): string {
+  if (!isRecord(value) || !isRecord(value.shift)) {
+    return '- Unknown shift.';
+  }
+  const shift = value.shift;
+  const site = isRecord(shift.site) ? shift.site : {};
+  const guard = isRecord(shift.guard) ? shift.guard : {};
+  const instructions = isRecord(shift.instructions) ? shift.instructions : {};
+  return [
+    `- Job ${String(value.jobId ?? shift.id ?? 'unknown')}:`,
+    `  Site: ${String(site.account ?? 'unknown')} at ${String(site.address ?? 'unknown')}.`,
+    `  Shift: ${String(shift.start ?? 'unknown')} to ${String(shift.end ?? 'unknown')} (${String(shift.timezone ?? 'unknown')}).`,
+    `  Guard: ${String(guard.name ?? 'unknown')}.`,
+    `  Client instructions: ${textFromContent(instructions.content).slice(0, 1_200)}`,
+  ].join('\n');
+}
+
+function renderPromptFiles(input: Record<string, unknown>, onlyFiles?: Set<string>): string {
+  if (!isRecord(input.promptFiles)) {
+    return 'PROMPT FILES\n- None supplied.';
+  }
+  const files = Object.entries(input.promptFiles)
+    .filter(([file]) => !onlyFiles || onlyFiles.has(file) || file.startsWith('core/'))
+    .sort(([left], [right]) => left.localeCompare(right));
+  return [
+    'PROMPT FILES',
+    ...files.map(([file, contents]) => `\n--- ${file} ---\n${String(contents).trim()}`),
+  ].join('\n');
+}
+
 function compactTheoMessageInput(input: unknown): unknown {
   if (!isRecord(input) || !Array.isArray(input.badResponses)) {
     return input;
@@ -333,6 +447,19 @@ ${JSON.stringify(invalidDiagnosis, null, 2)}
 </invalid_diagnosis>`;
 }
 
+async function generateTriageWithTheo(message: string): Promise<unknown> {
+  const response = await theoAgent.generate(message, {
+    maxSteps: 1,
+    structuredOutput: {
+      schema: theoTriageSchema,
+      errorStrategy: 'strict',
+      jsonPromptInjection: 'auto',
+    },
+  });
+
+  return response.object;
+}
+
 async function generateWithTheo(message: string): Promise<unknown> {
   const response = await theoAgent.generate(message, {
     maxSteps: 1,
@@ -355,8 +482,11 @@ export async function runTheo(
     runId = defaultRunId(),
     backtestDebugging,
   }: RunTheoInput,
-  { generateDiagnosis = generateWithTheo }: TheoRunnerDependencies = {},
+  dependencies: TheoRunnerDependencies = {},
 ): Promise<TheoRunResult> {
+  const generateDiagnosis = dependencies.generateDiagnosis ?? generateWithTheo;
+  const generateTriage = dependencies.generateTriage ??
+    (dependencies.generateDiagnosis ? async () => fallbackTheoTriage() : generateTriageWithTheo);
   validateRunId(runId);
 
   const diagnosticInput = await loadDiagnosticInput({ request, bundleRoot });
@@ -383,12 +513,46 @@ export async function runTheo(
     ),
   ]);
 
+  const caseProfile = buildTheoCaseProfile(diagnosticInput);
+  const caseBrief = renderTheoCaseBrief(caseProfile);
+  await Promise.all([
+    writeFile(
+      resolve(artifactDirectory, 'case-profile.json'),
+      stringifyArtifact(caseProfile),
+      'utf8',
+    ),
+    writeFile(resolve(artifactDirectory, 'case-brief.txt'), `${caseBrief}\n`, 'utf8'),
+  ]);
   await backtestDebugging?.writeStage(
     '03b-theo-expanded-diagnostic-input.json',
     compactTheoDiagnosticInputForDebug(diagnosticInput),
   );
-  const diagnosticMessage = buildTheoDiagnosticMessage(diagnosticInput);
-  await backtestDebugging?.writeStage('03c-theo-agent-request-payload.json', {
+  await backtestDebugging?.writeStage('03c-theo-case-profile.json', caseProfile);
+  await backtestDebugging?.writeStage('03d-theo-case-brief.txt', caseBrief);
+
+  const triageMessage = buildTheoTriageMessage(caseBrief);
+  await backtestDebugging?.writeStage('03e-theo-triage-request-payload.json', {
+    model: 'openai/gpt-5.6-sol',
+    input: [
+      { role: 'developer', content: THEO_INSTRUCTIONS },
+      { role: 'user', content: [{ type: 'input_text', text: triageMessage }] },
+    ],
+    structuredOutputSchema: 'theoTriageSchema',
+    maxSteps: 1,
+    toolChoice: 'none',
+  });
+  const triage = validateTheoTriage(await generateTriage(triageMessage));
+  await Promise.all([
+    writeFile(resolve(artifactDirectory, 'triage.json'), stringifyArtifact(triage), 'utf8'),
+    backtestDebugging?.writeStage('03f-theo-triage-output.json', triage) ?? Promise.resolve(),
+  ]);
+
+  const diagnosticMessage = buildTheoCandidateMessage({
+    diagnosticInput,
+    caseBrief,
+    triage,
+  });
+  await backtestDebugging?.writeStage('03g-theo-candidate-request-payload.json', {
     model: 'openai/gpt-5.6-sol',
     input: [
       { role: 'developer', content: THEO_INSTRUCTIONS },

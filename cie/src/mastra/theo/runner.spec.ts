@@ -221,12 +221,15 @@ describe('Theo runner', () => {
       'backtest-record.json',
       'candidate-version.json',
       'candidate.json',
+      'case-brief.txt',
+      'case-profile.json',
       'diagnosis.json',
       'diagnostic-input.json',
       'episode.json',
       'normalized-trace.json',
       'prompt.diff',
       'proposed-edit.json',
+      'triage.json',
     ]);
     expect(result.canReplay).toBe(true);
     expect(result.candidate.kind).toBe('prompt');
@@ -305,10 +308,13 @@ describe('Theo runner', () => {
     expect(await readdir(result.artifactDirectory)).toEqual([
       'backtest-record.json',
       'candidate.json',
+      'case-brief.txt',
+      'case-profile.json',
       'diagnosis.json',
       'diagnostic-input.json',
       'episode.json',
       'normalized-trace.json',
+      'triage.json',
     ]);
   });
 
@@ -333,8 +339,11 @@ describe('Theo runner', () => {
     ).rejects.toThrow('Invalid Theo diagnosis');
 
     expect(await readdir(resolve(runsRoot, 'invalid-output'))).toEqual([
+      'case-brief.txt',
+      'case-profile.json',
       'diagnostic-input.json',
       'normalized-trace.json',
+      'triage.json',
     ]);
   });
 

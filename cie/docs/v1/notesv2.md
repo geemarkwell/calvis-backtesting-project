@@ -238,3 +238,22 @@ In the UI, master-policy results should be shown separately from user-selected t
 
 - “Did this fix the thing I asked about?”
 - “Did this preserve the Copilot's default required behavior?”
+
+## Preserve original event order
+
+Trace replay must preserve the original sequence of events.
+
+The Copilot trace, guard messages, job events, location pings, telemetry rows, tool calls, and simulated guard replies should always remain in chronological order relative to the historical shift. The evaluator should not reorder events to make a narrative cleaner or easier to judge.
+
+Required behavior:
+
+- historical events keep their original timestamps and order
+- Copilot turns are evaluated in the order they happened or would have happened during replay
+- guard messages remain in their original position in the event stream
+- if Niko simulates a replacement guard reply, it occupies the same conversational slot as the historical reply it replaces
+- non-chat events such as location, telemetry, geofence events, check-in, and check-out are never moved
+- evidence packets shown to Maya preserve this order
+
+This matters because many Copilot judgments depend on sequence: what the Copilot knew at the time, whether the guard had already replied, whether location went stale before or after a message, and whether an escalation happened before enough evidence existed.
+
+If an evaluation needs a filtered or summarized view, that view can be derived from the ordered trace, but it must retain references back to the original ordered events.
