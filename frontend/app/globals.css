@@ -3754,9 +3754,28 @@ pre {
   padding: 0;
   text-transform: uppercase;
 }
+.diagnosis-activity-row {
+  grid-template-columns: minmax(150px, 1.15fr) minmax(100px, 0.7fr) minmax(100px, 0.7fr) minmax(150px, 1fr) minmax(150px, 1fr) minmax(110px, 0.8fr) minmax(90px, auto) !important;
+  align-items: start;
+}
+
+.diagnosis-activity-cell {
+  display: grid;
+  gap: 8px;
+  min-width: 0;
+}
+
+.diagnosis-activity-cell p {
+  color: var(--ink);
+  font-size: 14px;
+  line-height: 1.25;
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
 .diagnose-queue-status {
-  align-items: center;
-  display: inline-flex;
+  align-items: start;
+  display: grid;
   gap: 8px;
 }
 

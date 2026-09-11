@@ -189,13 +189,11 @@ export default function DiagnosisActivityPage() {
               {visibleItems.map((item) => (
                 <section className="theo-target-card diagnose-pattern-card" key={item.id}>
                   <QueueItemSummary item={item} />
-                  <div className="theo-target-card__details">
-                    <LabeledText label="Trace window">FULL JOB</LabeledText>
-                    <LabeledText label="Queued at">{formatDate(item.queuedAt)}</LabeledText>
-                    <LabeledText label="Completed at">{completionValue(item)}</LabeledText>
-                    <LabeledText label="Requested by">{requesterLabel(item.requestedBy)}</LabeledText>
-                    {item.errorMessage && <LabeledText label="Error">{item.errorMessage}</LabeledText>}
-                  </div>
+                  {item.errorMessage && (
+                    <div className="theo-target-card__details">
+                      <LabeledText label="Error">{item.errorMessage}</LabeledText>
+                    </div>
+                  )}
                 </section>
               ))}
             </div>
@@ -228,24 +226,38 @@ export default function DiagnosisActivityPage() {
 function QueueItemSummary({ item }: { item: DiagnosisQueueItem }) {
   const content = (
     <>
-      <span className="diagnose-run-card__id">{item.id}</span>
-      <strong>J_{item.jobId}</strong>
-      <span className="diagnose-pattern-card__badges diagnose-queue-status">
+      <ActivityCell label="ID" value={item.id} />
+      <ActivityCell label="Job" value={`J_${item.jobId}`} strong />
+      <ActivityCell label="Trace window" value="FULL JOB" />
+      <ActivityCell label="Queued at" value={formatDate(item.queuedAt)} />
+      <ActivityCell label="Completed at" value={completionValue(item)} />
+      <ActivityCell label="Requested by" value={requesterLabel(item.requestedBy)} />
+      <div className="diagnosis-activity-cell diagnose-queue-status">
+        <span>Status</span>
         <em data-status={item.status}>{statusLabel(item.status)}</em>
-      </span>
+      </div>
     </>
   );
   if (item.status === "completed" && item.diagnosisRunId) {
     return (
       <Link
-        className="theo-target-card__summary diagnose-run-card__summary"
+        className="theo-target-card__summary diagnose-run-card__summary diagnosis-activity-row"
         href={`/discover-problems?runId=${encodeURIComponent(item.diagnosisRunId)}`}
       >
         {content}
       </Link>
     );
   }
-  return <div className="theo-target-card__summary diagnose-run-card__summary">{content}</div>;
+  return <div className="theo-target-card__summary diagnose-run-card__summary diagnosis-activity-row">{content}</div>;
+}
+
+function ActivityCell({ label, value, strong = false }: { label: string; value: string; strong?: boolean }) {
+  return (
+    <div className="diagnosis-activity-cell">
+      <span>{label}</span>
+      {strong ? <strong>{value}</strong> : <p>{value}</p>}
+    </div>
+  );
 }
 
 function completionValue(item: DiagnosisQueueItem): string {
