@@ -8,6 +8,17 @@ export const diagnoseEvidenceSchema = z.object({
   summary: z.string().min(1),
 });
 
+export const diagnoseCandidateKindSchema = z.enum([
+  'prompt',
+  'tool',
+  'context',
+  'workflow',
+  'safety',
+  'code',
+  'test',
+  'unknown',
+]);
+
 export const diagnosePatternSchema = z.object({
   id: z.string().min(1),
   title: z.string().min(1),
@@ -17,6 +28,10 @@ export const diagnosePatternSchema = z.object({
   diagnosis: z.string().min(1),
   likelyCause: z.string().min(1),
   suggestedFix: z.string().min(1),
+  suggestedCandidateKind: diagnoseCandidateKindSchema.optional(),
+  candidateKindRationale: z.string().min(1).optional(),
+  replayableHint: z.boolean().optional(),
+  requiresManualValidationHint: z.boolean().optional(),
   expectedBehavior: z.string().min(1).optional(),
   evidence: z.array(diagnoseEvidenceSchema).max(12),
 });
@@ -64,6 +79,7 @@ export const diagnoseToolSummarySchema = z.object({
   failures: z.number().int().nonnegative(),
 });
 
+export type DiagnoseCandidateKindDto = z.infer<typeof diagnoseCandidateKindSchema>;
 export type DiagnoseSeverityDto = z.infer<typeof diagnosePatternSchema>['severity'];
 export type DiagnoseEvidenceDto = z.infer<typeof diagnoseEvidenceSchema>;
 export type DiagnosePatternDto = z.infer<typeof diagnosePatternSchema>;

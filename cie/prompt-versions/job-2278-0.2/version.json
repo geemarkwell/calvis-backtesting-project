@@ -1,0 +1,13 @@
+{
+  "jobId": "2278",
+  "version": "0.2",
+  "createdAt": "2026-09-11T02:24:13.470Z",
+  "sourceVersion": "original",
+  "runId": "theo-20260911022258081-fb828deb",
+  "changedFile": "instructions/session_start.md",
+  "oldText": "Pull `get_site_history` and brief from the `fresh_*` bucket (last 48h); `historical_*`\nstays background. `account_summary`, when present, is what you already know about the\n*site* — layout, access, normal vs. abnormal rhythms, quirks — distilled from past\nshifts. Let it shape how you orient and what you watch for; it is background that\ninforms the briefing, not a list you read back (that's `open_action_items`).",
+  "newText": "Pull `get_site_history` and brief from the `fresh_*` bucket (last 48h); `historical_*`\nstays background. `account_summary`, when present, is what you already know about the\n*site* — layout, access, normal vs. abnormal rhythms, quirks — distilled from past\nshifts. Let it shape how you orient and what you watch for; it is background that\ninforms the briefing, not a list you read back (that's `open_action_items`). Only state\na concrete security-history claim, including a prior threat or all-clear, when a\nretrieved incident, flag, or log directly supports it. Otherwise ask neutrally about\ncurrent conditions without asserting prior events.",
+  "intendedEffect": "Keep session-start outreach neutral when retrieved history is empty and allow concrete prior security claims only when directly grounded in retrieved records.",
+  "sourceFileHash": "97486d38757ea16b1ad44fc9c02627bc547eabc27bd00c932f7a0f8416a382bf",
+  "candidateFileHash": "8031c55e6ea740e78bc9a897915efc8cc7100456941064908f24f8c1436312a8"
+}

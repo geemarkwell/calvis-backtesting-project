@@ -1565,6 +1565,10 @@ pre {
   vector-effect: non-scaling-stroke;
 }
 
+.confidence-chart__line--failed {
+  stroke: #ef4444;
+}
+
 .confidence-chart__point {
   position: absolute;
   width: 13px;
@@ -2080,6 +2084,33 @@ pre {
 
 .candidate-review__error {
   color: var(--hazard) !important;
+}
+
+.manual-validation-toast {
+  position: fixed;
+  right: 28px;
+  bottom: 28px;
+  z-index: 40;
+  max-width: 360px;
+  padding: 14px 16px;
+  border: 1px solid #f6c453;
+  background: #141006;
+  color: #f6c453;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+.manual-validation-target__why p,
+.manual-validation-target__why h3 {
+  color: #f6c453;
+}
+
+.manual-validation-target__fix p,
+.manual-validation-target__fix h3 {
+  color: #58a6ff;
 }
 
 @media (max-width: 900px) {
@@ -2947,4 +2978,286 @@ pre {
   .global-sidebar.is-collapsed .global-sidebar__link small {
     display: block;
   }
+}
+
+.theo-scroll-copy {
+  max-height: 116px;
+  overflow: auto;
+  padding-right: 8px;
+}
+
+.theo-receive-panel > div {
+  grid-template-columns: 1fr;
+  gap: 12px;
+  background: transparent;
+}
+
+.candidate-review__change .theo-target-card {
+  border: 1px solid var(--line);
+  background: var(--panel);
+  padding: 0;
+}
+
+.theo-target-card.is-expanded {
+  border-color: rgba(255, 42, 42, 0.45);
+}
+
+.theo-target-card__summary {
+  display: grid;
+  width: 100%;
+  grid-template-columns: minmax(120px, 0.24fr) minmax(0, 1fr) auto;
+  gap: 18px;
+  align-items: center;
+  border: 0;
+  background: transparent;
+  color: var(--ink);
+  padding: 18px 20px;
+  text-align: left;
+}
+
+.theo-target-card__summary:hover {
+  background: rgba(255, 255, 255, 0.025);
+}
+
+.theo-target-card__summary span,
+.theo-target-card__summary small,
+.theo-labeled-text > strong {
+  display: block;
+  color: var(--dim);
+  font-family: inherit;
+  font-size: 9px;
+  font-weight: 900;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.theo-target-card__summary strong {
+  min-width: 0;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 17px;
+  font-weight: 900;
+  letter-spacing: -0.025em;
+  overflow-wrap: anywhere;
+}
+
+.theo-target-card__select {
+  margin: 0 20px 18px;
+  min-height: 38px;
+  padding: 0 13px;
+  border: 1px solid var(--signal);
+  background: transparent;
+  font-size: 9px;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+}
+
+.theo-target-card__details {
+  display: grid;
+  gap: 14px;
+  border-top: 1px solid var(--line);
+  padding: 20px;
+}
+
+.theo-labeled-text {
+  display: grid;
+  gap: 8px;
+}
+
+.theo-labeled-text p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.65;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.theo-labeled-text--scrollable p {
+  max-height: 128px;
+  overflow: auto;
+  padding: 12px;
+  border: 1px solid var(--line);
+  background: #090909;
+}
+
+.theo-labeled-text--warning,
+.theo-labeled-text--info {
+  border: 1px solid var(--line);
+  padding: 14px;
+  background: #0b0b0b;
+}
+
+.theo-labeled-text--warning {
+  border-color: rgba(246, 196, 83, 0.35);
+}
+
+.theo-labeled-text--warning > strong,
+.theo-labeled-text--warning p {
+  color: #f6c453;
+}
+
+.theo-labeled-text--info {
+  border-color: rgba(88, 166, 255, 0.35);
+}
+
+.theo-labeled-text--info > strong,
+.theo-labeled-text--info p {
+  color: #58a6ff;
+}
+
+@media (max-width: 900px) {
+  .theo-target-card__summary {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+}
+
+.theo-receive-panel__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.theo-receive-panel__header > span {
+  color: var(--dim);
+  font-size: 9px;
+  font-weight: 900;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.theo-target-card__summary {
+  grid-template-columns: minmax(120px, 0.22fr) minmax(0, 1fr) minmax(110px, auto) auto;
+}
+
+.theo-target-card__summary em {
+  color: #ff4fd8;
+  font-size: 9px;
+  font-style: normal;
+  font-weight: 900;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.theo-labeled-text--pink {
+  border: 1px solid rgba(255, 79, 216, 0.4);
+  padding: 14px;
+  background: rgba(255, 79, 216, 0.055);
+}
+
+.theo-labeled-text--pink > strong,
+.theo-labeled-text--pink p {
+  color: #ff4fd8;
+}
+
+.theo-target-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.theo-target-pagination button {
+  min-height: 36px;
+  border: 1px solid var(--line-strong);
+  background: transparent;
+  color: var(--ink);
+  padding: 0 12px;
+  font-size: 9px;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.theo-target-pagination button:disabled {
+  cursor: not-allowed;
+  color: var(--dim);
+  opacity: 0.45;
+}
+
+.theo-target-pagination span {
+  color: var(--muted);
+  font-size: 9px;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+@media (max-width: 900px) {
+  .theo-target-card__summary {
+    grid-template-columns: 1fr;
+  }
+
+  .theo-target-pagination {
+    justify-content: stretch;
+  }
+
+  .theo-target-pagination button {
+    flex: 1;
+  }
+}
+
+.theo-target-pagination button[data-active='true'] {
+  border-color: var(--hazard);
+  background: rgba(255, 42, 42, 0.08);
+  color: var(--hazard);
+}
+
+.theo-target-card__top {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: stretch;
+}
+
+.theo-target-card__top .theo-target-card__summary {
+  grid-template-columns: minmax(120px, 0.22fr) minmax(0, 1fr) minmax(110px, auto) auto;
+}
+
+.theo-target-card__top .theo-target-card__select {
+  align-self: center;
+  margin: 0 16px 0 10px;
+  min-height: 30px;
+  padding: 0 10px;
+  font-size: 8px;
+}
+
+.theo-target-pagination {
+  justify-content: flex-start;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.theo-target-pagination button {
+  width: 30px;
+  min-width: 30px;
+  min-height: 30px;
+  padding: 0;
+}
+
+@media (max-width: 900px) {
+  .theo-target-card__top {
+    grid-template-columns: 1fr;
+  }
+
+  .theo-target-card__top .theo-target-card__select {
+    justify-self: start;
+    margin: 0 20px 16px;
+  }
+
+  .theo-target-pagination {
+    justify-content: flex-start;
+  }
+
+  .theo-target-pagination button {
+    flex: 0 0 30px;
+  }
+}
+
+.theo-target-pagination {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  align-items: center;
 }

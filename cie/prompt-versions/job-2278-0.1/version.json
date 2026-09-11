@@ -1,0 +1,13 @@
+{
+  "jobId": "2278",
+  "version": "0.1",
+  "createdAt": "2026-09-11T02:20:25.705Z",
+  "sourceVersion": "original",
+  "runId": "theo-20260911021903818-8f424957",
+  "changedFile": "core/tools.md",
+  "oldText": "All `get_*` tools: locations, incidents, job logs, chat, site history,\ncommunications, entity recall. Reach for one the moment a fact would change\nyour reply. Your ground truth is in the data, so look before you answer instead of \nguessing or bouncing the question back.",
+  "newText": "All `get_*` tools: locations, incidents, job logs, chat, site history,\ncommunications, entity recall. Reach for one the moment a fact would change\nyour reply. Your ground truth is in the data, so look before you answer instead of \nguessing or bouncing the question back. State a prior security concern or earlier-shift clearance only when a retrieved record directly supports it; otherwise ask neutrally about current conditions without implying prior events or an all-clear.",
+  "intendedEffect": "Require direct retrieved-record support for operationally sensitive historical claims across trigger routes while preserving neutral outreach when no history supports them.",
+  "sourceFileHash": "bdeb46648c17b77212c961662f3c96eb39f5672ffd531b07741d69c7d209f0f6",
+  "candidateFileHash": "10790d9c5a6ad6a270745f3d629739c49101d2f5be3149d6481c3a7dc6b8ab4a"
+}

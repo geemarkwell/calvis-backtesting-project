@@ -3,6 +3,7 @@ import type {
   DiagnoseRunSummary,
   OriginalSourceOption,
   ReplayMode,
+  ReplaySource,
 } from "../types";
 
 export interface BacktestFormState {
@@ -12,6 +13,7 @@ export interface BacktestFormState {
   startTurn: string;
   endTurn: string;
   baselineSource: BaselineSource;
+  replaySource: ReplaySource;
   diagnosisRunId: string;
   replayMode: ReplayMode;
   debug: boolean;
@@ -149,6 +151,20 @@ export function ControlDeck({
               ))}
             </select>
           )}
+        </label>
+
+        <label className="field field--mode">
+          <span>REPLAY SOURCE</span>
+          <select
+            name="replaySource"
+            value={value.replaySource}
+            onChange={(event) =>
+              update("replaySource", event.target.value as ReplaySource)
+            }
+          >
+            <option value="file">FILE BUNDLE</option>
+            <option value="production">PRODUCTION DATA</option>
+          </select>
         </label>
 
         {!value.evaluate && (

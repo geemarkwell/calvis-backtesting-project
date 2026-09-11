@@ -1,0 +1,15 @@
+{
+  "jobId": "2278",
+  "version": "0.2",
+  "status": "pending",
+  "createdAt": "2026-09-11T02:24:13.470Z",
+  "decidedAt": null,
+  "evaluation": {
+    "runId": "maya-2278-1",
+    "judgedAt": "2026-09-11T02:25:52.771Z",
+    "fixed": false,
+    "verdict": "no",
+    "confidence": 96,
+    "summary": "The candidate did not fix the callout. Although several candidate messages use neutral requests for current perimeter status, candidate turn 2 still asserts both that armed individuals were a recent concern and that the prior shift found the perimeter clear. These are the same unsupported security-history claims present in the historical baseline and old replay."
+  }
+}

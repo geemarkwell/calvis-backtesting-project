@@ -93,6 +93,35 @@ describe('diagnose runner', () => {
     ).resolves.toContain('llm-tool-loop');
   });
 
+  it('normalizes non-prompt candidate hints to manual validation', async () => {
+    const workflowFinding = {
+      ...finding,
+      suggestedCandidateKind: 'workflow' as const,
+      candidateKindRationale: 'State should carry unresolved compliance forward.',
+      replayableHint: true,
+      requiresManualValidationHint: false,
+    };
+    const result = await runDiagnose(
+      {
+        request: { jobId: '56370', startTurn: 9, endTurn: 9, lensIds: ['task-success'] },
+        runsRoot,
+        runId: 'diagnose-candidate-kind-test',
+      },
+      {
+        generateFindings: jest.fn().mockResolvedValue({
+          summary: 'Workflow issue found.',
+          findings: [workflowFinding],
+        }),
+      },
+    );
+
+    expect(result.llmFindings[0]).toMatchObject({
+      suggestedCandidateKind: 'workflow',
+      replayableHint: false,
+      requiresManualValidationHint: true,
+    });
+  });
+
   it('runs only explicitly selected lenses', async () => {
     const generateFindings = jest
       .fn()

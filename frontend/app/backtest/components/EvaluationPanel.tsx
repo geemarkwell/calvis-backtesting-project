@@ -205,13 +205,19 @@ function ConfidenceChart({
             );
           })}
 
-          {segments.map((segment, index) => (
-            <path
-              className="confidence-chart__line"
-              d={segmentPath(segment)}
-              key={index}
-            />
-          ))}
+          {segments.flatMap((segment, segmentIndex) =>
+            segmentLinePaths(segment).map(({ d, fixed }, lineIndex) => (
+              <path
+                className={
+                  fixed
+                    ? 'confidence-chart__line'
+                    : 'confidence-chart__line confidence-chart__line--failed'
+                }
+                d={d}
+                key={`${segmentIndex}-${lineIndex}`}
+              />
+            )),
+          )}
 
           <text
             className="confidence-chart__axis-label"
@@ -450,10 +456,16 @@ function confidenceY(confidence: number): number {
   return CHART_TOP + ((100 - confidence) / 100) * plotHeight;
 }
 
-function segmentPath(points: ConfidencePoint[]): string {
-  return points
-    .map((point, index) => `${index === 0 ? 'M' : 'L'} ${point.x} ${point.y}`)
-    .join(' ');
+function segmentLinePaths(
+  points: ConfidencePoint[],
+): Array<{ d: string; fixed: boolean }> {
+  return points.slice(1).map((point, index) => {
+    const previous = points[index];
+    return {
+      d: `M ${previous.x} ${previous.y} L ${point.x} ${point.y}`,
+      fixed: point.judgment.verdict.fixed,
+    };
+  });
 }
 
 function formatDate(value: string): string {

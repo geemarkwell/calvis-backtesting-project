@@ -118,24 +118,25 @@ This matters for reading backtest progress over time. A user should be able to g
 
 The color should reflect the actual Maya verdict, not just whether the run completed successfully.
 
-## 5. Tag diagnosis fixes as `Code` or `Prompt`
+## 5. Tag diagnosis fixes by candidate intervention kind
 
-During diagnosis, the system should identify whether the suggested fix is likely a code change or a prompt change.
+During diagnosis, the system should identify what kind of candidate intervention the suggested fix most likely requires.
 
-Right now, CIE mostly assumes the fix belongs in the prompt system. That is useful for prompt backtesting, but some failures may clearly point to product/backend/frontend code instead.
+Right now, CIE can drift toward treating failures as prompt problems. That is useful for prompt backtesting, but some findings clearly point to tool behavior, context/data handling, workflow/state carry-forward, safety controls, product/backend/frontend code, or even test/evaluator quality instead.
 
 ### Desired behavior
 
-Every diagnosis should include a fix type tag:
+Every diagnosis should include a candidate kind tag:
 
 ```text
-Code
-```
-
-or
-
-```text
-Prompt
+prompt
+code
+tool
+context
+workflow
+safety
+test
+unknown
 ```
 
 Example:
@@ -143,7 +144,7 @@ Example:
 ```json
 {
   "diagnosis": "Copilot stayed silent because the prompt does not clearly require scheduled check-ins after long quiet periods.",
-  "suggestedFixType": "Prompt",
+  "suggestedCandidateKind": "prompt",
   "suggestedFix": "Update the scheduled-check-in instruction to require a guard check when no report has been received for more than one wake interval."
 }
 ```
@@ -151,16 +152,137 @@ Example:
 ```json
 {
   "diagnosis": "The replay did not include the guard's latest message before Maya evaluated the turn.",
-  "suggestedFixType": "Code",
+  "suggestedCandidateKind": "code",
   "suggestedFix": "Fix the turn-window builder so guard messages immediately before the selected Copilot turn are included in the evidence packet."
+}
+```
+
+```json
+{
+  "diagnosis": "Live camera credentials are embedded in model-visible job instructions and diagnosis artifacts.",
+  "suggestedCandidateKind": "safety",
+  "suggestedFix": "Move camera credentials behind a secret broker or authenticated deep link, redact secrets from model context and artifacts, and rotate the exposed credential."
 }
 ```
 
 ### Why this matters
 
-- Prompt fixes can go through Theo → candidate prompt → replay → Maya.
-- Code fixes should not be forced into a prompt-edit flow.
-- The UI can route the user correctly: “start prompt improvement” vs “create engineering task.”
-- It makes diagnosis output clearer and less misleading.
+- Prompt candidates can go through Theo → candidate prompt → replay → Maya.
+- Tool, context, workflow, safety, code, and test candidates should not be forced into a prompt-edit flow.
+- Non-prompt candidates should create manual-validation records with a concrete validation plan.
+- The UI can route the user correctly: “run prompt backtest” vs “create implementation task” vs “manual safety/workflow validation.”
+- It makes diagnosis output clearer and less misleading before Theo begins staged candidate planning.
 
-For now, this can be a simple required field on saved diagnosis results. Later, we can add confidence and allow mixed cases like `Prompt + Code` if needed.
+For now, this can be a required field on saved diagnosis results. Later, we can add confidence, replayability, and mixed cases like `prompt + workflow` if needed.
+
+## 6. Build a master policy from `calvis-ai` prompts
+
+We need a master policy document for backtesting.
+
+This should be built from the prompts in the `calvis-ai/` codebase. The goal is to capture the default rules the model should always follow, especially compliance and operational behavior.
+
+The master policy should cover things like:
+
+- attire / uniform expectations
+- time and scheduling expectations
+- check-in and check-out behavior
+- how guards are meant to patrol
+- report cadence and required updates
+- escalation rules
+- when the agent should message vs stay silent
+- how the agent should talk to guards
+- what evidence the agent needs before pushing back or flagging something
+
+This should become its own `.md` file, separate from individual diagnosis notes or one-off test targets.
+
+Suggested file:
+
+```text
+cie/docs/v1/master_policy.md
+```
+
+### Why this matters
+
+Different diagnosis runs should be tested against the same baseline expectations. A prompt change might fix one specific issue, but it should not break core Copilot behavior.
+
+Example:
+
+```text
+Diagnosis target: Copilot was too aggressive about patrol confirmation.
+Master policy check: Copilot still needs to enforce patrol obligations, uniform rules, scheduling, and escalation rules.
+```
+
+So every backtest should answer both:
+
+1. Did we fix the specific diagnosis?
+2. Did we still follow the master policy?
+
+### Desired flow
+
+```text
+read calvis-ai prompts
+  → extract durable compliance and agent-behavior rules
+  → write master_policy.md
+  → use master_policy.md as a backtesting reference
+  → run relevant policy checks for each diagnosis/candidate
+```
+
+The policy should be readable by humans. It should not be a giant raw prompt dump. It should be a clean summary of the rules the Copilot is expected to follow.
+
+## 7. Regression handling and rollback
+
+We need a clear way to handle regressions.
+
+If a candidate change makes the agent worse, or breaks the master policy, we should be able to revert the agent back to its previous known-good state.
+
+### Goal
+
+Every accepted agent/prompt change should be reversible.
+
+The system should track:
+
+- the previous prompt/instruction version
+- the new candidate version
+- what changed
+- which backtests passed before acceptance
+- which later test or diagnosis found a regression
+- who accepted or reverted the change
+
+### Desired behavior
+
+If a regression is found, the user should be able to choose:
+
+```text
+Revert to previous version
+```
+
+That should restore the last known-good prompt/instruction state and save a rollback record.
+
+### Why this matters
+
+Prompt changes can fix one issue while breaking another. We need a safe escape hatch so CIE is not only good at making changes, but also good at undoing bad ones.
+
+Example:
+
+```text
+Candidate fixes: Copilot is less aggressive when questioning patrol reports.
+Regression: Copilot now fails to enforce required patrol cadence.
+Action: Revert to previous prompt version and mark the candidate as regressed.
+```
+
+### Suggested artifacts
+
+```text
+cie/runs/<run-id>/
+  accepted-candidate.json
+  regression-report.json
+  rollback-record.json
+```
+
+The UI should make rollback status obvious:
+
+- active version
+- previous version
+- reverted version
+- reason for revert
+- regression that triggered it

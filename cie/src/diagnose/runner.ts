@@ -4,7 +4,7 @@ import { resolve } from 'node:path';
 import { eventsInInterval } from '../copilot-simulation/historical-turn-data';
 import { baseToolName } from '../copilot-simulation/output-comparison';
 import { selectTurnWindow } from '../copilot-simulation/episode-builder';
-import { findBundleRoot, loadShiftBundle } from '../copilot-simulation/shift-loader';
+import { ShiftBundleSourceResolver } from '../copilot-simulation/shift-bundle-source';
 import { normalizeTrace } from '../mastra/theo/trace-normalizer';
 import { compileTraceContext } from '../trace-context/trace-context.compiler';
 import type { CompactTraceContextDto } from '../trace-context/dto/compile-trace-context.dto';
@@ -13,6 +13,7 @@ import type { DiagnoseRequestDto } from './dto/diagnose-request.dto';
 import {
   diagnoseEvaluatorReportSchema,
   diagnoseLlmResultSchema,
+  type DiagnoseCandidateKindDto,
   type DiagnoseEvaluatorReportDto,
   type DiagnoseLensDto,
   type DiagnosePatternDto,
@@ -102,8 +103,10 @@ export async function runDiagnose(
   { generateFindings = generateWithDiagnoseAgent }: DiagnoseRunnerDependencies = {},
 ): Promise<DiagnoseResponseDto> {
   validateRunId(runId);
-  const bundleRoot = await findBundleRoot();
-  const { jobId, bundle } = await loadShiftBundle(bundleRoot, request.jobId);
+  const { jobId, bundle } = await new ShiftBundleSourceResolver().load(
+    request.jobId,
+    request.replaySource,
+  );
   const window = selectTurnWindow(bundle, request.startTurn, request.endTurn);
   const firstTurn = window.selectedTurns[0];
   const lastTurn = window.selectedTurns[window.selectedTurns.length - 1];
@@ -117,8 +120,8 @@ export async function runDiagnose(
       (!window.historyBoundary || entry.timestamp > window.historyBoundary) &&
       entry.timestamp <= lastTurn.ts,
   );
-  const patterns = analyzeDiagnoseWindow({ trace, intervalEvents }).map(
-    withExpectedBehavior,
+  const patterns = analyzeDiagnoseWindow({ trace, intervalEvents }).map((finding) =>
+    enrichDiagnosisFinding(withExpectedBehavior(finding)),
   );
   const toolCalls = buildToolCalls(trace);
   const toolSummary = buildToolSummary(toolCalls);
@@ -156,7 +159,9 @@ export async function runDiagnose(
   );
   const enrichedReports = evaluatorReports.map((report) => ({
     ...report,
-    findings: report.findings.map(withExpectedBehavior),
+    findings: report.findings.map((finding) =>
+      enrichDiagnosisFinding(withExpectedBehavior(finding)),
+    ),
   }));
   const llmFindings = enrichedReports.flatMap((report) => report.findings);
   const response: DiagnoseResponseDto = {
@@ -345,6 +350,103 @@ function withExpectedBehavior<T extends { diagnosis: string; suggestedFix: strin
   };
 }
 
+function enrichDiagnosisFinding<T extends {
+  title?: string;
+  category?: string;
+  diagnosis: string;
+  likelyCause: string;
+  suggestedFix: string;
+  suggestedCandidateKind?: DiagnoseCandidateKindDto;
+  candidateKindRationale?: string;
+  replayableHint?: boolean;
+  requiresManualValidationHint?: boolean;
+}>(finding: T): T & {
+  suggestedCandidateKind: DiagnoseCandidateKindDto;
+  candidateKindRationale: string;
+  replayableHint: boolean;
+  requiresManualValidationHint: boolean;
+} {
+  const existing = finding.suggestedCandidateKind;
+  const classification = existing
+    ? {
+        kind: existing,
+        rationale: finding.candidateKindRationale?.trim() ||
+          `Evaluator classified this as ${existing}.`,
+      }
+    : classifyCandidateKind(finding);
+  const replayable = classification.kind === 'prompt';
+  return {
+    ...finding,
+    suggestedCandidateKind: classification.kind,
+    candidateKindRationale: classification.rationale,
+    replayableHint: replayable,
+    requiresManualValidationHint: !replayable,
+  };
+}
+
+function classifyCandidateKind(finding: {
+  title?: string;
+  category?: string;
+  diagnosis: string;
+  likelyCause: string;
+  suggestedFix: string;
+}): { kind: DiagnoseCandidateKindDto; rationale: string } {
+  const text = [
+    finding.title,
+    finding.category,
+    finding.diagnosis,
+    finding.likelyCause,
+    finding.suggestedFix,
+  ].join('\n').toLowerCase();
+
+  if (/credential|password|secret|token|api key|plaintext|redact|exposure|leak|vault|broker/.test(text)) {
+    return {
+      kind: 'safety',
+      rationale: 'Finding involves secret exposure or safety-sensitive data handling, so prompt replay alone is insufficient.',
+    };
+  }
+  if (/tool|schema|argument|parameter|function|mcp|api|contract/.test(text)) {
+    return {
+      kind: 'tool',
+      rationale: 'Finding points to tool behavior, tool contract, or tool-call interpretation.',
+    };
+  }
+  if (/context|retrieval|missing data|model-visible|evidence packet|compaction|artifact|trace/.test(text)) {
+    return {
+      kind: 'context',
+      rationale: 'Finding points to model-visible context, retrieval, trace, or evidence construction.',
+    };
+  }
+  if (/workflow|state|carry|handoff|approval|manual|lifecycle|queue|pipeline/.test(text)) {
+    return {
+      kind: 'workflow',
+      rationale: 'Finding points to workflow/state behavior rather than a prompt-only edit.',
+    };
+  }
+  if (/code|backend|frontend|bug|builder|service|controller|database|persist|serialization/.test(text)) {
+    return {
+      kind: 'code',
+      rationale: 'Finding points to an application implementation defect.',
+    };
+  }
+  if (/test|evaluator|maya|assertion|criteria|spec/.test(text)) {
+    return {
+      kind: 'test',
+      rationale: 'Finding points to evaluation/test criteria rather than runtime Copilot behavior.',
+    };
+  }
+  if (/prompt|instruction|wording|ambiguous|conflicting|overly|rule|guidance/.test(text)) {
+    return {
+      kind: 'prompt',
+      rationale: 'Finding appears addressable by changing prompt instructions or priorities.',
+    };
+  }
+  return {
+    kind: 'unknown',
+    rationale: 'Diagnosis does not clearly identify an intervention type yet.',
+  };
+}
+
 function buildEvaluatorSummary(
   reports: DiagnoseEvaluatorReportDto[],
   deterministicCount: number,
@@ -384,6 +486,10 @@ function renderMarkdown(response: DiagnoseResponseDto): string {
       lines.push(`- Diagnosis: ${pattern.diagnosis}`);
       lines.push(`- Likely cause: ${pattern.likelyCause}`);
       lines.push(`- Suggested fix: ${pattern.suggestedFix}`);
+      lines.push(`- Candidate kind: ${pattern.suggestedCandidateKind ?? 'unknown'}`);
+      if (pattern.candidateKindRationale) {
+        lines.push(`- Candidate kind rationale: ${pattern.candidateKindRationale}`);
+      }
       if (pattern.expectedBehavior) {
         lines.push(`- Expected behavior: ${pattern.expectedBehavior}`);
       }
@@ -405,6 +511,10 @@ function renderMarkdown(response: DiagnoseResponseDto): string {
     lines.push(`- Diagnosis: ${pattern.diagnosis}`);
     lines.push(`- Likely cause: ${pattern.likelyCause}`);
     lines.push(`- Suggested fix: ${pattern.suggestedFix}`);
+    lines.push(`- Candidate kind: ${pattern.suggestedCandidateKind ?? 'unknown'}`);
+    if (pattern.candidateKindRationale) {
+      lines.push(`- Candidate kind rationale: ${pattern.candidateKindRationale}`);
+    }
     lines.push('- Evidence:');
     for (const evidence of pattern.evidence) {
       lines.push(`  - ${evidence.ref}: ${evidence.summary}`);

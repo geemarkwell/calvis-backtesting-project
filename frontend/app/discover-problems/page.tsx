@@ -74,6 +74,7 @@ const INITIAL_FORM = {
   jobId: "",
   startTurn: "",
   endTurn: "",
+  replaySource: "file" as "file" | "production",
 };
 
 export default function DiscoverProblemsPage() {
@@ -193,6 +194,21 @@ export default function DiscoverProblemsPage() {
                 setForm((current) => ({ ...current, endTurn: event.target.value }))
               }
             />
+          </label>
+          <label className="field">
+            <span>REPLAY SOURCE</span>
+            <select
+              value={form.replaySource}
+              onChange={(event) =>
+                setForm((current) => ({
+                  ...current,
+                  replaySource: event.target.value as "file" | "production",
+                }))
+              }
+            >
+              <option value="file">FILE BUNDLE</option>
+              <option value="production">PRODUCTION DATA</option>
+            </select>
           </label>
           <button
             type="button"
@@ -477,7 +493,7 @@ function StatusPanel({
 }
 
 function parseForm(form: typeof INITIAL_FORM):
-  | { jobId: string; startTurn: number; endTurn: number }
+  | { jobId: string; startTurn: number; endTurn: number; replaySource: "file" | "production" }
   | string {
   const jobId = form.jobId.trim();
   const startTurn = Number(form.startTurn);
@@ -486,7 +502,7 @@ function parseForm(form: typeof INITIAL_FORM):
   if (!Number.isInteger(startTurn) || startTurn < 1) return "Start turn must be a positive integer.";
   if (!Number.isInteger(endTurn) || endTurn < 1) return "End turn must be a positive integer.";
   if (startTurn > endTurn) return "Start turn cannot be greater than end turn.";
-  return { jobId, startTurn, endTurn };
+  return { jobId, startTurn, endTurn, replaySource: form.replaySource };
 }
 
 async function errorMessage(response: Response, fallback: string): Promise<string> {

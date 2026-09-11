@@ -4,4 +4,5 @@ export class GetOriginalCopilotDto {
   endTurn?: string | number;
   source?: 'shift' | 'simulation';
   simulationNumber?: string | number;
+  replaySource?: 'file' | 'production';
 }

@@ -12,6 +12,7 @@ export async function GET(request: Request): Promise<Response> {
     'endTurn',
     'source',
     'simulationNumber',
+    'replaySource',
   ]) {
     const value = incomingUrl.searchParams.get(field);
     if (value !== null) {

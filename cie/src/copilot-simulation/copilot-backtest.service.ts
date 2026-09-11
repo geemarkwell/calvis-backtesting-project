@@ -75,13 +75,41 @@ export class CopilotBacktestService {
       responseWindow,
       useCompactContext,
     });
+    const diagnosisContext = normalizeDiagnosisContext(input.diagnosisContext);
+    const manualHint = manualValidationHint(diagnosisContext);
     const theoInput = {
       whatWentWrong: callout,
       expectedBehavior,
       badResponses: [responseWindow],
       useCompactContext,
+      ...(diagnosisContext ? { diagnosisContext } : {}),
     };
     await debugRun.writeStage('03-theo-diagnose-input.json', theoInput);
+
+    if (manualHint) {
+      await debugRun.writeStage('04-manual-validation-required.json', {
+        candidateKind: manualHint.candidateKind,
+        reason: manualHint.reason,
+        diagnosisContext,
+      });
+      pipeline.stage('THEO').skip({
+        reason: 'diagnosis_candidate_kind_requires_manual_validation',
+        candidateKind: manualHint.candidateKind,
+      });
+      pipeline.stage('BACKTEST').error('Manual validation required.', {
+        failedPhase: 'DIAGNOSIS_HINT',
+      });
+      throw new BadRequestException({
+        message: `Diagnosis target is ${manualHint.candidateKind}, so it requires manual validation instead of Theo prompt replay.`,
+        code: 'MANUAL_VALIDATION_REQUIRED',
+        phase: 'diagnosis_hint',
+        retryable: false,
+        candidateKind: manualHint.candidateKind,
+        reason: manualHint.reason,
+        diagnosisContext,
+        artifactDirectory: debugRun.artifactDirectory,
+      });
+    }
 
     let theo: Awaited<ReturnType<TheoService['diagnose']>>;
     try {
@@ -131,6 +159,7 @@ export class CopilotBacktestService {
       endTurn: input.endTurn,
       source: input.baselineSource ?? 'shift',
       simulationNumber: input.baselineSimulationNumber,
+      replaySource: input.replaySource,
     };
     const candidateReplayInput = {
       jobId: input.jobId,
@@ -142,6 +171,7 @@ export class CopilotBacktestService {
       debug: input.debug,
       useCompactContext,
       pipelineLogger: pipeline,
+      replaySource: input.replaySource,
     };
     await Promise.all([
       debugRun.writeStage('05-original-replay-input.json', originalReplayInput),
@@ -299,6 +329,34 @@ function summarizePhaseResult(result: unknown): Record<string, unknown> {
   };
 }
 
+function normalizeDiagnosisContext(value: unknown): BacktestCopilotDto['diagnosisContext'] | undefined {
+  if (value === undefined) {
+    return undefined;
+  }
+  if (!value || typeof value !== 'object' || Array.isArray(value)) {
+    throw new BadRequestException('diagnosisContext must be an object.');
+  }
+  const context = value as BacktestCopilotDto['diagnosisContext'];
+  if (!context?.patternId || !context.diagnosis || !context.likelyCause || !context.suggestedFix) {
+    throw new BadRequestException('diagnosisContext is missing required fields.');
+  }
+  return context;
+}
+
+function manualValidationHint(
+  context: BacktestCopilotDto['diagnosisContext'] | undefined,
+): { candidateKind: string; reason: string } | null {
+  const kind = context?.suggestedCandidateKind;
+  if (!kind || kind === 'prompt') {
+    return null;
+  }
+  return {
+    candidateKind: kind,
+    reason: context.candidateKindRationale ??
+      `Only prompt candidates are executable in replay; ${kind} requires manual validation.`,
+  };
+}
+
 function normalizeCompactContext(value: unknown): boolean {
   if (value === undefined) {
     return true;
@@ -343,7 +401,12 @@ function buildTheoResponseWindow(input: BacktestCopilotDto) {
       'baselineSource must be either shift or simulation.',
     );
   }
-  return { jobId: input.jobId, startTurn, endTurn };
+  return {
+    jobId: input.jobId,
+    startTurn,
+    endTurn,
+    replaySource: input.replaySource,
+  };
 }
 
 function requiredTurn(value: unknown, field: string): number {

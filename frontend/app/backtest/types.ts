@@ -1,4 +1,5 @@
 export type ReplayMode = "original" | "candidate";
+export type ReplaySource = "file" | "production";
 export type BaselineSource = "shift" | `simulation:${number}`;
 
 export interface SimulationRequest {
@@ -10,6 +11,7 @@ export interface SimulationRequest {
   debug: boolean;
   callNiko: boolean;
   useCompactContext: boolean;
+  replaySource?: ReplaySource;
 }
 
 export interface BacktestRequest extends SimulationRequest {
@@ -17,6 +19,17 @@ export interface BacktestRequest extends SimulationRequest {
   expectedBehavior: string;
   baselineSource: "shift" | "simulation";
   baselineSimulationNumber?: number;
+  diagnosisContext?: {
+    diagnosisRunId?: string;
+    patternId: string;
+    diagnosis: string;
+    likelyCause: string;
+    suggestedFix: string;
+    suggestedCandidateKind?: CandidateKind;
+    candidateKindRationale?: string;
+    replayableHint?: boolean;
+    requiresManualValidationHint?: boolean;
+  };
 }
 
 export type Importance = "critical" | "major" | "minor";
@@ -140,6 +153,10 @@ export interface DiagnosePattern {
   diagnosis: string;
   likelyCause: string;
   suggestedFix: string;
+  suggestedCandidateKind?: CandidateKind;
+  candidateKindRationale?: string;
+  replayableHint?: boolean;
+  requiresManualValidationHint?: boolean;
   expectedBehavior?: string;
   evidence: DiagnoseEvidence[];
 }
@@ -206,6 +223,7 @@ export interface OriginalRequest {
   endTurn: number;
   source: "shift" | "simulation";
   simulationNumber?: number;
+  replaySource?: ReplaySource;
 }
 
 export interface OriginalSourceOption {
@@ -329,6 +347,10 @@ export interface TheoRequest {
     diagnosis: string;
     likelyCause: string;
     suggestedFix: string;
+    suggestedCandidateKind?: CandidateKind;
+    candidateKindRationale?: string;
+    replayableHint?: boolean;
+    requiresManualValidationHint?: boolean;
   };
 }
 

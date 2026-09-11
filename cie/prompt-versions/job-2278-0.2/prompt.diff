@@ -1,0 +1,16 @@
+--- prompts/instructions/session_start.md
++++ prompt-versions/job-2278-0.2/instructions/session_start.md
+@@
+-Pull `get_site_history` and brief from the `fresh_*` bucket (last 48h); `historical_*`
+-stays background. `account_summary`, when present, is what you already know about the
+-*site* — layout, access, normal vs. abnormal rhythms, quirks — distilled from past
+-shifts. Let it shape how you orient and what you watch for; it is background that
+-informs the briefing, not a list you read back (that's `open_action_items`).
++Pull `get_site_history` and brief from the `fresh_*` bucket (last 48h); `historical_*`
++stays background. `account_summary`, when present, is what you already know about the
++*site* — layout, access, normal vs. abnormal rhythms, quirks — distilled from past
++shifts. Let it shape how you orient and what you watch for; it is background that
++informs the briefing, not a list you read back (that's `open_action_items`). Only state
++a concrete security-history claim, including a prior threat or all-clear, when a
++retrieved incident, flag, or log directly supports it. Otherwise ask neutrally about
++current conditions without asserting prior events.

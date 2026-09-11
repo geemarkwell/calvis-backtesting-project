@@ -119,6 +119,7 @@ export async function runDiagnoseLens(
     startTurn: number;
     endTurn: number;
     lensId: DiagnoseLensId;
+    replaySource?: "file" | "production";
   },
   signal?: AbortSignal,
 ): Promise<DiagnoseResponse> {
@@ -130,6 +131,7 @@ export async function runDiagnoseLens(
       startTurn: request.startTurn,
       endTurn: request.endTurn,
       lensIds: [request.lensId],
+      replaySource: request.replaySource,
     }),
     signal,
   });
@@ -275,13 +277,16 @@ export async function getOriginalCopilot(
   if (request.simulationNumber !== undefined) {
     search.set("simulationNumber", String(request.simulationNumber));
   }
+  if (request.replaySource) {
+    search.set("replaySource", request.replaySource);
+  }
   const response = await fetch(`/api/original?${search}`, { signal });
 
   return parseResponse(response);
 }
 
 export async function listOriginalSources(
-  request: Pick<OriginalRequest, "jobId" | "startTurn" | "endTurn">,
+  request: Pick<OriginalRequest, "jobId" | "startTurn" | "endTurn" | "replaySource">,
   signal?: AbortSignal,
 ): Promise<OriginalSourcesResponse> {
   const search = new URLSearchParams({
@@ -289,6 +294,9 @@ export async function listOriginalSources(
     startTurn: String(request.startTurn),
     endTurn: String(request.endTurn),
   });
+  if (request.replaySource) {
+    search.set("replaySource", request.replaySource);
+  }
   const response = await fetch(`/api/original-sources?${search}`, { signal });
   if (!response.ok) {
     throw new Error(await errorMessage(response));

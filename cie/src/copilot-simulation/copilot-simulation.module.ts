@@ -5,6 +5,7 @@ import { CopilotSimulationService } from './copilot-simulation.service';
 import { CopilotBacktestService } from './copilot-backtest.service';
 import { MayaModule } from '../mastra/maya/maya.module';
 import { TheoModule } from '../mastra/theo/theo.module';
+import { ShiftBundleSourceResolver } from './shift-bundle-source';
 
 @Module({
   imports: [MayaModule, TheoModule],
@@ -13,6 +14,7 @@ import { TheoModule } from '../mastra/theo/theo.module';
     CopilotOriginalService,
     CopilotSimulationService,
     CopilotBacktestService,
+    ShiftBundleSourceResolver,
   ],
   exports: [CopilotOriginalService],
 })

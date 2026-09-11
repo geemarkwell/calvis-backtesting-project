@@ -6,7 +6,7 @@ export async function GET(request: Request): Promise<Response> {
   const incomingUrl = new URL(request.url);
   const backendUrl = new URL(`${backendRoot}/copilot/original-sources`);
 
-  for (const field of ['jobId', 'startTurn', 'endTurn']) {
+  for (const field of ['jobId', 'startTurn', 'endTurn', 'replaySource']) {
     const value = incomingUrl.searchParams.get(field);
     if (value !== null) {
       backendUrl.searchParams.set(field, value);

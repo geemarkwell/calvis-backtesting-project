@@ -64,7 +64,7 @@ describe('CopilotBacktestService', () => {
     get: jest.fn(),
   };
   const service = new CopilotBacktestService(
-    simulationService,
+    simulationService as never,
     originalService as never,
     mayaJudgmentService as never,
     theoService,
@@ -230,6 +230,34 @@ describe('CopilotBacktestService', () => {
       }),
       expect.objectContaining({ writeStage: expect.any(Function) }),
     );
+  });
+
+  it('flags non-prompt diagnosis targets for manual validation without calling Theo', async () => {
+    await expect(
+      service.run({
+        ...input,
+        diagnosisContext: {
+          patternId: 'credential-exposure',
+          diagnosis: 'Camera credentials are exposed.',
+          likelyCause: 'Secrets are stored in model-visible job instructions.',
+          suggestedFix: 'Move credentials behind a broker.',
+          suggestedCandidateKind: 'safety',
+          candidateKindRationale: 'Secret exposure needs workflow/code mitigation.',
+          replayableHint: false,
+          requiresManualValidationHint: true,
+        },
+      }),
+    ).rejects.toMatchObject({
+      response: expect.objectContaining({
+        code: 'MANUAL_VALIDATION_REQUIRED',
+        phase: 'diagnosis_hint',
+        candidateKind: 'safety',
+      }),
+    });
+
+    expect(theoService.diagnose).not.toHaveBeenCalled();
+    expect(simulationService.simulate).not.toHaveBeenCalled();
+    expect(mayaJudgmentService.judge).not.toHaveBeenCalled();
   });
 
   it('rejects missing inputs, manual versions, or original replay mode', async () => {

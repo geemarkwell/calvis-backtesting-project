@@ -1,10 +1,8 @@
 import { access, readdir, readFile } from 'node:fs/promises';
 import { join, resolve } from 'node:path';
 import { z } from 'zod';
-import {
-  findBundleRoot,
-  loadShiftBundle as loadSimulationShiftBundle,
-} from '../../copilot-simulation/shift-loader';
+import { findBundleRoot } from '../../copilot-simulation/shift-loader';
+import { ShiftBundleSourceResolver } from '../../copilot-simulation/shift-bundle-source';
 import type { ShiftBundle } from '../../copilot-simulation/copilot-simulation.types';
 import { loadSimulationLog } from '../../copilot-simulation/copilot-original.service';
 import { instructionFileForTrigger } from '../copilot/turn-builder';
@@ -39,6 +37,7 @@ const jobResponseWindowSchema = z
     jobId: jobIdSchema,
     startTurn: turnNumberSchema,
     endTurn: turnNumberSchema,
+    replaySource: z.enum(['file', 'production']).optional(),
   })
   .strict()
   .refine((window) => window.startTurn <= window.endTurn, {
@@ -63,6 +62,17 @@ const simulationResponseWindowSchema = z
     },
   );
 
+const candidateKindSchema = z.enum([
+  'prompt',
+  'tool',
+  'context',
+  'workflow',
+  'safety',
+  'code',
+  'test',
+  'unknown',
+]);
+
 const diagnosisContextSchema = z
   .object({
     diagnosisRunId: nonEmptyTextSchema.optional(),
@@ -70,6 +80,10 @@ const diagnosisContextSchema = z
     diagnosis: nonEmptyTextSchema,
     likelyCause: nonEmptyTextSchema,
     suggestedFix: nonEmptyTextSchema,
+    suggestedCandidateKind: candidateKindSchema.optional(),
+    candidateKindRationale: nonEmptyTextSchema.optional(),
+    replayableHint: z.boolean().optional(),
+    requiresManualValidationHint: z.boolean().optional(),
   })
   .strict();
 
@@ -163,8 +177,10 @@ export function calloutConcernsRawTelemetry(callout: string): boolean {
 export async function loadShiftBundle(
   bundleRoot: string,
   shiftId: string,
+  replaySource?: 'file' | 'production',
 ): Promise<ShiftBundle> {
-  const loaded = await loadSimulationShiftBundle(bundleRoot, shiftId);
+  void bundleRoot;
+  const loaded = await new ShiftBundleSourceResolver().load(shiftId, replaySource);
   if (String(loaded.bundle.shift.id) !== shiftId) {
     throw new Error(
       `Shift fixture ID ${String(loaded.bundle.shift.id)} does not match callout shift ID ${shiftId}.`,
@@ -199,7 +215,11 @@ export async function loadDiagnosticInput({
     if ('jobId' in window) {
       const traceKey = `job:${window.jobId}`;
       if (!bundles.has(window.jobId)) {
-        const bundle = await loadShiftBundle(resolvedBundleRoot, window.jobId);
+        const bundle = await loadShiftBundle(
+          resolvedBundleRoot,
+          window.jobId,
+          window.replaySource,
+        );
         bundles.set(window.jobId, bundle);
         shifts.set(window.jobId, bundle.shift);
         traces.set(

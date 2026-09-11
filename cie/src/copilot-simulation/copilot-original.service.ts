@@ -9,7 +9,8 @@ import type { GetOriginalCopilotDto } from './dto/get-original-copilot.dto';
 import { selectTurnWindow } from './episode-builder';
 import { eventsInInterval, extractGuardMessage } from './historical-turn-data';
 import { buildHistoricalCopilotOutputs } from './output-comparison';
-import { findBundleRoot, loadShiftBundle } from './shift-loader';
+import { findBundleRoot } from './shift-loader';
+import { ShiftBundleSourceResolver } from './shift-bundle-source';
 import type {
   CopilotOriginalResponse,
   CopilotOriginalSourcesResponse,
@@ -31,6 +32,12 @@ const RECORDED_MODEL_CONFIGURATION = {
 
 @Injectable()
 export class CopilotOriginalService {
+  private readonly shiftBundleSource: ShiftBundleSourceResolver;
+
+  constructor(shiftBundleSource?: ShiftBundleSourceResolver) {
+    this.shiftBundleSource = shiftBundleSource ?? new ShiftBundleSourceResolver();
+  }
+
   async getOriginal(
     input: GetOriginalCopilotDto,
   ): Promise<CopilotOriginalResponse> {
@@ -39,7 +46,10 @@ export class CopilotOriginalService {
       return this.getSimulationOriginal(bundleRoot, input);
     }
 
-    const { jobId, bundle } = await loadShiftBundle(bundleRoot, input.jobId);
+    const { jobId, bundle } = await this.shiftBundleSource.load(
+      input.jobId,
+      input.replaySource,
+    );
     const episode = selectTurnWindow(
       bundle,
       optionalTurn(input.startTurn, 'startTurn'),
@@ -101,7 +111,10 @@ export class CopilotOriginalService {
     input: GetOriginalCopilotDto,
   ): Promise<CopilotOriginalSourcesResponse> {
     const bundleRoot = await findBundleRoot();
-    const { jobId, bundle } = await loadShiftBundle(bundleRoot, input.jobId);
+    const { jobId, bundle } = await this.shiftBundleSource.load(
+      input.jobId,
+      input.replaySource,
+    );
     const window = selectTurnWindow(
       bundle,
       optionalTurn(input.startTurn, 'startTurn'),
@@ -147,7 +160,10 @@ export class CopilotOriginalService {
     bundleRoot: string,
     input: GetOriginalCopilotDto,
   ): Promise<CopilotOriginalResponse> {
-    const { jobId, bundle } = await loadShiftBundle(bundleRoot, input.jobId);
+    const { jobId, bundle } = await this.shiftBundleSource.load(
+      input.jobId,
+      input.replaySource,
+    );
     const simulationNumber = normalizeSimulationNumber(input.simulationNumber);
     const log = await loadSimulationLog(bundleRoot, simulationNumber);
     if (log.jobId !== jobId) {

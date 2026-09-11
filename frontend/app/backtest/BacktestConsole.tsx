@@ -53,6 +53,7 @@ const INITIAL_FORM: BacktestFormState = {
   startTurn: "",
   endTurn: "",
   baselineSource: "shift",
+  replaySource: "file",
   diagnosisRunId: "",
   replayMode: "candidate",
   debug: false,
@@ -91,7 +92,10 @@ export default function BacktestConsole() {
     null,
   );
   const [selectedDiagnosisFindingId, setSelectedDiagnosisFindingId] = useState<string>("");
+  const [manualValidationTarget, setManualValidationTarget] = useState<DiagnosisFinding | null>(null);
+  const [manualWarningVisible, setManualWarningVisible] = useState(false);
   const requestRef = useRef<AbortController | null>(null);
+  const manualWarningTimerRef = useRef<number | null>(null);
   const originalScrollRef = useRef<HTMLDivElement>(null);
   const comparisonScrollRef = useRef<HTMLDivElement>(null);
   const syncingScrollRef = useRef(false);
@@ -100,6 +104,14 @@ export default function BacktestConsole() {
   const theoContext = contextFromSimulation(comparison.data);
   const theoCallout = form.callout.trim() || null;
   const evaluationJobId = /^\d+$/.test(jobId.trim()) ? jobId.trim() : null;
+
+  useEffect(() => {
+    return () => {
+      if (manualWarningTimerRef.current !== null) {
+        window.clearTimeout(manualWarningTimerRef.current);
+      }
+    };
+  }, []);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -172,7 +184,10 @@ export default function BacktestConsole() {
 
     const controller = new AbortController();
     const timer = window.setTimeout(() => {
-      void listOriginalSources(coordinates, controller.signal)
+      void listOriginalSources(
+        { ...coordinates, replaySource: form.replaySource },
+        controller.signal,
+      )
         .then((result) => {
           setBaselineOptions(result.sources);
           setForm((current) =>
@@ -203,7 +218,7 @@ export default function BacktestConsole() {
       window.clearTimeout(timer);
       controller.abort();
     };
-  }, [jobId, startTurn, endTurn]);
+  }, [jobId, startTurn, endTurn, form.replaySource]);
 
   function updateForm(next: BacktestFormState) {
     const jobChanged = next.jobId !== form.jobId;
@@ -252,6 +267,7 @@ export default function BacktestConsole() {
     setBacktestResult(null);
     setDiagnosisBacktestResults([]);
     setDiagnosisResult(null);
+    setManualValidationTarget(null);
 
     if (form.evaluate) {
       setOriginal({ status: "loading", data: null, error: null });
@@ -268,8 +284,12 @@ export default function BacktestConsole() {
         if (!finding) {
           throw new Error("SELECT ONE DIAGNOSIS TARGET TO BACKTEST.");
         }
+        if (requiresManualValidation(finding)) {
+          setManualValidationTarget(finding);
+          showManualWarning();
+        }
         const result = await runCopilotBacktest(
-          diagnosisBacktestRequest(parsed.simulation, finding),
+          diagnosisBacktestRequest(parsed.simulation, finding, diagnosis),
           controller.signal,
         );
         if (controller.signal.aborted) {
@@ -298,6 +318,14 @@ export default function BacktestConsole() {
           const message = error instanceof Error ? error.message : String(error);
           setComparison({ status: "error", data: null, error: message });
           setOriginal(IDLE_PANEL);
+          const diagnosis = selectedDiagnosisPreview;
+          const finding = diagnosis
+            ? allDiagnosisFindings(diagnosis).find((item) => item.id === selectedDiagnosisFindingId)
+            : null;
+          if (finding && requiresManualValidation(finding)) {
+            setManualValidationTarget(finding);
+            showManualWarning();
+          }
         }
       }
       return;
@@ -344,6 +372,17 @@ export default function BacktestConsole() {
         setComparison({ status: "error", data: null, error: message });
       }
     }
+  }
+
+  function showManualWarning() {
+    setManualWarningVisible(true);
+    if (manualWarningTimerRef.current !== null) {
+      window.clearTimeout(manualWarningTimerRef.current);
+    }
+    manualWarningTimerRef.current = window.setTimeout(() => {
+      setManualWarningVisible(false);
+      manualWarningTimerRef.current = null;
+    }, 4_000);
   }
 
   function synchronizeScroll(
@@ -441,6 +480,7 @@ export default function BacktestConsole() {
               setDiagnosisBacktestResults([]);
               setBacktestResult(null);
               setDiagnosisResult(null);
+              setManualValidationTarget(null);
               setOriginal(IDLE_PANEL);
               setComparison(IDLE_PANEL);
             }}
@@ -449,6 +489,12 @@ export default function BacktestConsole() {
 
         {form.evaluate && (
           <DiagnosisBacktestResult state={comparison} result={diagnosisResult} />
+        )}
+
+        {manualWarningVisible && (
+          <div className="manual-validation-toast" role="status">
+            This requires a manual change, please scroll down
+          </div>
         )}
 
         <section className="comparison-grid">
@@ -469,6 +515,10 @@ export default function BacktestConsole() {
             }
           />
         </section>
+
+        {manualValidationTarget && (
+          <ManualValidationTarget finding={manualValidationTarget} />
+        )}
 
         {form.evaluate
           ? diagnosisBacktestResults.map((target) => (
@@ -564,6 +614,18 @@ function TheoParamsPreview({
   onSelectFinding: (findingId: string) => void;
 }) {
   const findings = diagnosis ? allDiagnosisFindings(diagnosis) : [];
+  const [expandedFindingId, setExpandedFindingId] = useState<string | null>(null);
+  const [targetPage, setTargetPage] = useState(0);
+  const pageSize = 4;
+  const totalPages = Math.max(1, Math.ceil(findings.length / pageSize));
+  const visibleFindings = findings.slice(
+    targetPage * pageSize,
+    targetPage * pageSize + pageSize,
+  );
+
+  useEffect(() => {
+    setTargetPage((current) => Math.min(current, totalPages - 1));
+  }, [totalPages]);
 
   if (loading) {
     return (
@@ -619,40 +681,154 @@ function TheoParamsPreview({
         <section>
           <span>EXPECTED BEHAVIOUR</span>
           <h3>MAYA TARGET</h3>
-          <p>{expectedBehavior}</p>
+          <p className="theo-scroll-copy">{expectedBehavior}</p>
+        </section>
+      </div>
+      <div className="candidate-review__change theo-receive-panel">
+        <div className="theo-receive-panel__header">
+          <small>THEO WILL RECEIVE</small>
+          <span>
+            {targetPage * pageSize + 1}-{Math.min((targetPage + 1) * pageSize, findings.length)} of {findings.length}
+          </span>
+        </div>
+        <div>
+          {visibleFindings.map((finding) => {
+            const expanded = expandedFindingId === finding.id;
+            return (
+              <section
+                className={expanded ? "theo-target-card is-expanded" : "theo-target-card"}
+                key={finding.id}
+              >
+                <div className="theo-target-card__top">
+                  <button
+                    type="button"
+                    className="theo-target-card__summary"
+                    onClick={() =>
+                      setExpandedFindingId((current) =>
+                        current === finding.id ? null : finding.id,
+                      )
+                    }
+                    aria-expanded={expanded}
+                  >
+                    <span>{selectedFindingId === finding.id ? "SELECTED" : finding.id}</span>
+                    <strong>{finding.title}</strong>
+                    <em>{candidateKindLabel(finding)}</em>
+                    <small>{expanded ? "Hide details" : "View details"}</small>
+                  </button>
+
+                  <button
+                    type="button"
+                    className="candidate-review__accept theo-target-card__select"
+                    disabled={selectedFindingId === finding.id}
+                    onClick={() => onSelectFinding(finding.id)}
+                  >
+                    {selectedFindingId === finding.id ? "SELECTED" : "SELECT"}
+                  </button>
+                </div>
+
+                {expanded && (
+                  <div className="theo-target-card__details">
+                    <LabeledText label="Diagnosis">{finding.diagnosis}</LabeledText>
+                    <LabeledText label="Maya target" scrollable>
+                      {expectedBehaviorForFinding(finding)}
+                    </LabeledText>
+                    <LabeledText label="Hint" emphasized="pink">
+                      {candidateKindLabel(finding)}
+                    </LabeledText>
+                    <LabeledText label="Why" emphasized="warning">
+                      {finding.candidateKindRationale ?? finding.likelyCause}
+                    </LabeledText>
+                    <LabeledText label="Fix" emphasized="info">
+                      {finding.suggestedFix}
+                    </LabeledText>
+                    {finding.evidence.length > 0 && (
+                      <LabeledText label="Evidence">
+                        {finding.evidence.map((item) => item.ref).join(" · ")}
+                      </LabeledText>
+                    )}
+                  </div>
+                )}
+              </section>
+            );
+          })}
+        </div>
+        {findings.length > pageSize && (
+          <div className="theo-target-pagination" aria-label="Target pagination">
+            {Array.from({ length: totalPages }, (_, index) => (
+              <button
+                type="button"
+                data-active={targetPage === index}
+                onClick={() => setTargetPage(index)}
+                key={index}
+              >
+                {index + 1}
+              </button>
+            ))}
+          </div>
+        )}
+      </div>
+    </section>
+  );
+}
+
+function LabeledText({
+  label,
+  children,
+  emphasized,
+  scrollable = false,
+}: {
+  label: string;
+  children: string;
+  emphasized?: "warning" | "info" | "pink";
+  scrollable?: boolean;
+}) {
+  return (
+    <div
+      className={`theo-labeled-text${
+        emphasized ? ` theo-labeled-text--${emphasized}` : ""
+      }${scrollable ? " theo-labeled-text--scrollable" : ""}`}
+    >
+      <strong>{label}</strong>
+      <p>{children}</p>
+    </div>
+  );
+}
+
+function ManualValidationTarget({ finding }: { finding: DiagnosisFinding }) {
+  return (
+    <section className="candidate-review manual-validation-target" aria-label="Manual validation target">
+      <header>
+        <div>
+          <span className="candidate-review__kicker">MANUAL VALIDATION</span>
+          <h2>{finding.title}</h2>
+        </div>
+        <strong data-status="rejected">
+          {(finding.suggestedCandidateKind ?? "unknown").toUpperCase()}
+        </strong>
+      </header>
+      <div className="candidate-review__grid">
+        <section className="manual-validation-target__why">
+          <span>WHY</span>
+          <h3>{candidateKindLabel(finding)}</h3>
+          <p>{finding.candidateKindRationale ?? finding.likelyCause}</p>
+        </section>
+        <section className="manual-validation-target__fix">
+          <span>FIX</span>
+          <h3>MANUAL CHANGE REQUIRED</h3>
+          <p>{finding.suggestedFix}</p>
         </section>
       </div>
       <div className="candidate-review__change">
-        <small>THEO WILL RECEIVE</small>
+        <small>TARGET DETAILS</small>
         <div>
-          {findings.map((finding) => (
-            <section key={finding.id}>
-              <span>{selectedFindingId === finding.id ? "SELECTED" : finding.id}</span>
-              <p>
-                <strong>{finding.title}</strong>
-                <br />
-                Diagnosis: {finding.diagnosis}
-                <br />
-                Maya target: {expectedBehaviorForFinding(finding)}
-              </p>
-              <small>
-                Fix: {finding.suggestedFix}
-                {finding.evidence.length > 0
-                  ? ` / Evidence: ${finding.evidence.map((item) => item.ref).join(" · ")}`
-                  : ""}
-              </small>
-              <div>
-                <button
-                  type="button"
-                  className="candidate-review__accept"
-                  disabled={selectedFindingId === finding.id}
-                  onClick={() => onSelectFinding(finding.id)}
-                >
-                  {selectedFindingId === finding.id ? "TARGET SELECTED" : "SELECT TARGET"}
-                </button>
-              </div>
-            </section>
-          ))}
+          <section>
+            <span>DIAGNOSIS</span>
+            <p>{finding.diagnosis}</p>
+          </section>
+          <section>
+            <span>EVIDENCE</span>
+            <p>{finding.evidence.map((item) => item.ref).join(" · ") || "No evidence refs."}</p>
+          </section>
         </div>
       </div>
     </section>
@@ -846,6 +1022,19 @@ function allDiagnosisFindings(diagnosis: DiagnoseResponse): DiagnosisFinding[] {
   return [...diagnosis.llmFindings, ...diagnosis.patterns];
 }
 
+function requiresManualValidation(finding: DiagnosisFinding): boolean {
+  const kind = finding.suggestedCandidateKind ?? "unknown";
+  return kind !== "prompt" || finding.requiresManualValidationHint === true;
+}
+
+function candidateKindLabel(finding: DiagnosisFinding): string {
+  const kind = finding.suggestedCandidateKind ?? "unknown";
+  const validation = kind === "prompt" && finding.replayableHint !== false
+    ? "REPLAYABLE LIKELY"
+    : "MANUAL VALIDATION LIKELY";
+  return `${kind.toUpperCase()} / ${validation}`;
+}
+
 function expectedBehaviorForFinding(finding: DiagnosisFinding): string {
   return (
     finding.expectedBehavior?.trim() ||
@@ -862,18 +1051,36 @@ function expectedBehaviorForDiagnosis(diagnosis: DiagnoseResponse): string {
 function diagnosisBacktestRequest(
   simulation: SimulationRequest,
   finding: DiagnosisFinding,
+  diagnosis: DiagnoseResponse,
 ): BacktestRequest {
   const callout = [
     `Diagnosis ${finding.id}: ${finding.diagnosis}`,
     `Likely cause: ${finding.likelyCause}`,
+    `Candidate kind hint: ${finding.suggestedCandidateKind ?? "unknown"}`,
+    finding.candidateKindRationale
+      ? `Candidate kind rationale: ${finding.candidateKindRationale}`
+      : null,
+    `Replayable hint: ${finding.replayableHint ? "yes" : "no or unknown"}`,
+    `Manual validation hint: ${finding.requiresManualValidationHint ? "yes" : "no or unknown"}`,
     `Suggested fix: ${finding.suggestedFix}`,
-  ].join("\n");
+  ].filter(Boolean).join("\n");
   return {
     ...simulation,
     replayMode: "candidate",
     callout,
     expectedBehavior: expectedBehaviorForFinding(finding),
     baselineSource: "shift",
+    diagnosisContext: {
+      diagnosisRunId: diagnosis.runId,
+      patternId: finding.id,
+      diagnosis: finding.diagnosis,
+      likelyCause: finding.likelyCause,
+      suggestedFix: finding.suggestedFix,
+      suggestedCandidateKind: finding.suggestedCandidateKind,
+      candidateKindRationale: finding.candidateKindRationale,
+      replayableHint: finding.replayableHint,
+      requiresManualValidationHint: finding.requiresManualValidationHint,
+    },
   };
 }
 
@@ -966,6 +1173,7 @@ function parseForm(
       debug: form.debug,
       callNiko: form.callNiko,
       useCompactContext: form.useCompactContext,
+      replaySource: form.replaySource,
     },
   };
 }

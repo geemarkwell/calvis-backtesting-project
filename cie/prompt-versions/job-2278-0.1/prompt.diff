@@ -1,0 +1,11 @@
+--- prompts/core/tools.md
++++ prompt-versions/job-2278-0.1/core/tools.md
+@@
+-All `get_*` tools: locations, incidents, job logs, chat, site history,
+-communications, entity recall. Reach for one the moment a fact would change
+-your reply. Your ground truth is in the data, so look before you answer instead of 
+-guessing or bouncing the question back.
++All `get_*` tools: locations, incidents, job logs, chat, site history,
++communications, entity recall. Reach for one the moment a fact would change
++your reply. Your ground truth is in the data, so look before you answer instead of 
++guessing or bouncing the question back. State a prior security concern or earlier-shift clearance only when a retrieved record directly supports it; otherwise ask neutrally about current conditions without implying prior events or an all-clear.

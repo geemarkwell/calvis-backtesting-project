@@ -33,7 +33,8 @@ import {
   copilotOutputsEqual,
   normalizeCopilotOutput,
 } from './output-comparison';
-import { findBundleRoot, loadShiftBundle } from './shift-loader';
+import { findBundleRoot } from './shift-loader';
+import { ShiftBundleSourceResolver } from './shift-bundle-source';
 import type {
   CopilotSimulationAction,
   CopilotSimulationGuardReply,
@@ -58,11 +59,20 @@ const EMPTY_COPILOT_OUTPUT: CopilotOutputSnapshot = {
 
 @Injectable()
 export class CopilotSimulationService {
+  private readonly shiftBundleSource: ShiftBundleSourceResolver;
+
+  constructor(shiftBundleSource?: ShiftBundleSourceResolver) {
+    this.shiftBundleSource = shiftBundleSource ?? new ShiftBundleSourceResolver();
+  }
+
   async simulate(
     input: SimulateCopilotDto & { pipelineLogger?: PipelineLogger },
   ): Promise<CopilotSimulationResponse> {
     const bundleRoot = await findBundleRoot();
-    const { jobId, bundle } = await loadShiftBundle(bundleRoot, input.jobId);
+    const { jobId, bundle } = await this.shiftBundleSource.load(
+      input.jobId,
+      input.replaySource,
+    );
     const episode = buildSimulationEpisode(
       bundle,
       input.startTurn,

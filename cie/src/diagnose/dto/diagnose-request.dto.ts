@@ -14,6 +14,7 @@ export const diagnoseRequestSchema = z
     endTurn: positiveTurn,
     lensIds: z.array(diagnoseLensIdSchema).min(1).max(6).optional(),
     useCompactContext: z.boolean().optional(),
+    replaySource: z.enum(['file', 'production']).optional(),
   })
   .refine((request) => /^\d+$/.test(request.jobId), {
     path: ['jobId'],
