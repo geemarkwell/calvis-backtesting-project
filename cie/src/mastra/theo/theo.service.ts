@@ -5,6 +5,7 @@ import {
 } from '@nestjs/common';
 import type { BacktestDebuggingSink } from '../../backtestDebugging/logger';
 import { redactModelProviderError } from '../../common/errors/model-provider-error';
+import { TheoDiagnosisValidationError } from './diagnosis-validator';
 import { theoRequestSchema } from './diagnostic-input';
 import { runTheo } from './runner';
 
@@ -48,6 +49,19 @@ export class TheoService {
           requestId: redacted.requestId,
           detail: redacted.detail ?? redacted.message,
           causeCode: redacted.causeCode,
+        });
+      }
+      if (error instanceof TheoDiagnosisValidationError) {
+        await backtestDebugging?.writeStage('03g-theo-validation-failed.json', {
+          phase: 'theo',
+          issues: error.issues,
+        });
+        throw new BadRequestException({
+          message: 'Theo returned an invalid diagnosis after repair.',
+          code: 'THEO_DIAGNOSIS_VALIDATION_FAILED',
+          phase: 'theo',
+          retryable: true,
+          issues: error.issues,
         });
       }
       throw error;

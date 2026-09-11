@@ -2,9 +2,13 @@ import { randomUUID } from 'node:crypto';
 import { mkdir, writeFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
 import type { BacktestDebuggingSink } from '../../backtestDebugging/logger';
+import { baseToolName } from '../../copilot-simulation/output-comparison';
 import { theoAgent } from '../agents/theo-agent';
 import { THEO_INSTRUCTIONS } from './instructions';
-import { validateTheoDiagnosis } from './diagnosis-validator';
+import {
+  TheoDiagnosisValidationError,
+  validateTheoDiagnosis,
+} from './diagnosis-validator';
 import { loadDiagnosticInput, type TheoRequest } from './diagnostic-input';
 import { createCandidatePromptVersion } from './prompt-versioner';
 import { theoDiagnosisSchema, type CandidateProposal, type TheoDiagnosis } from './schemas';
@@ -79,6 +83,172 @@ ${JSON.stringify(compactTheoMessageInput(input), null, 2)}
 </diagnostic_input>`;
 }
 
+export function compactTheoDiagnosticInputForDebug(input: unknown): unknown {
+  if (!isRecord(input) || !Array.isArray(input.badResponses)) {
+    return input;
+  }
+  return {
+    ...input,
+    badResponses: input.badResponses.map((window) => {
+      if (!isRecord(window) || !Array.isArray(window.trace)) {
+        return window;
+      }
+      return {
+        ...window,
+        trace: window.trace.map(compactDebugTraceEntry),
+      };
+    }),
+  };
+}
+
+function compactDebugTraceEntry(entry: unknown): unknown {
+  if (!isRecord(entry)) {
+    return entry;
+  }
+
+  const base = compactTraceBase(entry);
+  if (entry.type === 'turn_start') {
+    return {
+      ...base,
+      turn: turnNumberFromContent(entry.content),
+    };
+  }
+  if (entry.type === 'copilot_message' || entry.type === 'guard_message') {
+    return {
+      ...base,
+      text: summarizeDebugString(textFromContent(entry.content)),
+    };
+  }
+  if (entry.type !== 'tool_call' || !isRecord(entry.content)) {
+    return base;
+  }
+
+  const tool = baseToolName(String(entry.content.tool ?? 'unknown'));
+  const ok = typeof entry.content.ok === 'boolean' ? entry.content.ok : null;
+  const error = typeof entry.content.error === 'string'
+    ? entry.content.error
+    : null;
+  return {
+    ...base,
+    tool,
+    ok,
+    ...(error ? { error } : {}),
+    ...(isImportantTheoAction(tool) || ok === false || error
+      ? { summary: summarizeActionForDebug(entry.content) }
+      : {}),
+  };
+}
+
+function compactTraceBase(entry: Record<string, unknown>): Record<string, unknown> {
+  return {
+    ref: entry.ref,
+    ts: entry.timestamp,
+    type: entry.type,
+    ...(entry.turnRef ? { turnRef: entry.turnRef } : {}),
+    ...(entry.trigger ? { trigger: entry.trigger } : {}),
+    ...(entry.instructionFile ? { instruction: entry.instructionFile } : {}),
+  };
+}
+
+function summarizeActionForDebug(content: Record<string, unknown>): string {
+  const input = isRecord(content.input) ? content.input : {};
+  const output = content.output;
+  const fields = [
+    stringField(input, 'body'),
+    stringField(input, 'details'),
+    stringField(input, 'blocker_summary'),
+    stringField(input, 'summary'),
+    stringField(input, 'content'),
+    outputStatus(output),
+  ].filter((item): item is string => Boolean(item));
+  return summarizeDebugString(fields.join(' / ') || JSON.stringify(summarizeDebugValue(content)));
+}
+
+function isImportantTheoAction(tool: string): boolean {
+  return new Set([
+    'add_copilot_note',
+    'create_copilot_alert',
+    'create_copilot_task',
+    'create_feature_request',
+    'escalate_to_human',
+    'escalate_to_ops',
+    'flag_copilot_guard',
+    'request_copilot_dm',
+  ]).has(tool);
+}
+
+function summarizeDebugValue(value: unknown): unknown {
+  if (value === undefined || value === null) {
+    return null;
+  }
+  if (typeof value === 'string') {
+    return summarizeDebugString(value);
+  }
+  if (Array.isArray(value)) {
+    return { itemCount: value.length };
+  }
+  if (!isRecord(value)) {
+    return value;
+  }
+  const summary: Record<string, unknown> = {};
+  for (const [key, item] of Object.entries(value)) {
+    if (typeof item === 'string') {
+      summary[key] = summarizeDebugString(item);
+    } else if (Array.isArray(item)) {
+      summary[key] = { itemCount: item.length };
+    } else if (isRecord(item)) {
+      summary[key] = { keys: Object.keys(item) };
+    } else {
+      summary[key] = item;
+    }
+  }
+  return summary;
+}
+
+function summarizeDebugString(value: string): string {
+  return value.length <= 240 ? value : `${value.slice(0, 239)}…`;
+}
+
+function textFromContent(value: unknown): string {
+  if (typeof value === 'string') {
+    return value;
+  }
+  if (isRecord(value) && typeof value.text === 'string') {
+    return value.text;
+  }
+  return JSON.stringify(value ?? null);
+}
+
+function turnNumberFromContent(value: unknown): number | undefined {
+  return isRecord(value) && typeof value.turn === 'number'
+    ? value.turn
+    : undefined;
+}
+
+function stringField(record: Record<string, unknown>, key: string): string | undefined {
+  const value = record[key];
+  return typeof value === 'string' && value.trim() ? value : undefined;
+}
+
+function outputStatus(value: unknown): string | undefined {
+  if (typeof value === 'string') {
+    try {
+      return outputStatus(JSON.parse(value));
+    } catch {
+      return value.length > 0 ? value : undefined;
+    }
+  }
+  if (!isRecord(value)) {
+    return undefined;
+  }
+  const status = stringField(value, 'status');
+  const taskType = stringField(value, 'task_type');
+  if (status && taskType) {
+    return `${taskType}:${status}`;
+  }
+  return status ?? taskType;
+}
+
 function compactTheoMessageInput(input: unknown): unknown {
   if (!isRecord(input) || !Array.isArray(input.badResponses)) {
     return input;
@@ -138,6 +308,31 @@ function truncateLongText(value: string, maxChars: number, label: string): unkno
   };
 }
 
+function buildTheoRepairMessage(
+  input: unknown,
+  invalidDiagnosis: unknown,
+  validationError: TheoDiagnosisValidationError,
+): string {
+  return `${buildTheoDiagnosticMessage(input)}
+
+Your previous candidate diagnosis failed application validation. Return the complete corrected structured object.
+
+Correction rules:
+- Keep job_ids, what_went_wrong, expected_behavior, and evidence_windows aligned to the supplied diagnostic input.
+- For relevant_turns, use the trigger and instruction_file shown on the cited normalized trace turn.
+- For prompt candidates, prompt_diagnosis.exact_text and proposed_edit.old_text must be copied verbatim from the supplied prompt file.
+- proposed_edit.old_text must occur exactly once in the selected prompt file.
+- If you cannot make a valid exact prompt edit from supplied prompt text, return a non-prompt candidate with kind "unknown" and no prompt edit.
+
+<validation_errors>
+${validationError.issues.map((issue) => `- ${issue}`).join('\n')}
+</validation_errors>
+
+<invalid_diagnosis>
+${JSON.stringify(invalidDiagnosis, null, 2)}
+</invalid_diagnosis>`;
+}
+
 async function generateWithTheo(message: string): Promise<unknown> {
   const response = await theoAgent.generate(message, {
     maxSteps: 1,
@@ -190,7 +385,7 @@ export async function runTheo(
 
   await backtestDebugging?.writeStage(
     '03b-theo-expanded-diagnostic-input.json',
-    diagnosticInput,
+    compactTheoDiagnosticInputForDebug(diagnosticInput),
   );
   const diagnosticMessage = buildTheoDiagnosticMessage(diagnosticInput);
   await backtestDebugging?.writeStage('03c-theo-agent-request-payload.json', {
@@ -208,9 +403,11 @@ export async function runTheo(
   });
 
   const generatedDiagnosis = await generateDiagnosis(diagnosticMessage);
-  const diagnosis = validateTheoDiagnosis({
-    diagnosis: generatedDiagnosis,
-    input: diagnosticInput,
+  const diagnosis = await validateOrRepairTheoDiagnosis({
+    generatedDiagnosis,
+    diagnosticInput,
+    generateDiagnosis,
+    backtestDebugging,
   });
   const candidate = diagnosis.candidate ?? legacyPromptCandidate(diagnosis);
   const canReplay = candidate.kind === 'prompt';
@@ -318,6 +515,57 @@ function legacyPromptCandidate(diagnosis: TheoDiagnosis): CandidateProposal {
     risks: diagnosis.risks,
     prompt_edit: diagnosis.proposed_edit,
   };
+}
+
+async function validateOrRepairTheoDiagnosis({
+  generatedDiagnosis,
+  diagnosticInput,
+  generateDiagnosis,
+  backtestDebugging,
+}: {
+  generatedDiagnosis: unknown;
+  diagnosticInput: Awaited<ReturnType<typeof loadDiagnosticInput>>;
+  generateDiagnosis: GenerateTheoDiagnosis;
+  backtestDebugging?: BacktestDebuggingSink;
+}): Promise<TheoDiagnosis> {
+  try {
+    return validateTheoDiagnosis({
+      diagnosis: generatedDiagnosis,
+      input: diagnosticInput,
+    });
+  } catch (error) {
+    if (!(error instanceof TheoDiagnosisValidationError)) {
+      throw error;
+    }
+    await backtestDebugging?.writeStage('03d-theo-validation-error.json', {
+      issues: error.issues,
+      generatedDiagnosis,
+    });
+    const repairMessage = buildTheoRepairMessage(
+      diagnosticInput,
+      generatedDiagnosis,
+      error,
+    );
+    await backtestDebugging?.writeStage('03e-theo-repair-request-payload.json', {
+      model: 'openai/gpt-5.6-sol',
+      input: [
+        { role: 'developer', content: THEO_INSTRUCTIONS },
+        {
+          role: 'user',
+          content: [{ type: 'input_text', text: repairMessage }],
+        },
+      ],
+      structuredOutputSchema: 'theoDiagnosisSchema',
+      maxSteps: 1,
+      toolChoice: 'none',
+    });
+    const repairedDiagnosis = await generateDiagnosis(repairMessage);
+    await backtestDebugging?.writeStage('03f-theo-repair-output.json', repairedDiagnosis);
+    return validateTheoDiagnosis({
+      diagnosis: repairedDiagnosis,
+      input: diagnosticInput,
+    });
+  }
 }
 
 function isRecord(value: unknown): value is Record<string, unknown> {

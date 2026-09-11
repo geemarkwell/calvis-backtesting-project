@@ -321,6 +321,7 @@ export function validateTheoDiagnosis({
   }
 
   for (const relevantTurn of diagnosis.relevant_turns ?? []) {
+    canonicalizeRelevantTurn(relevantTurn, indexedTraceEntries);
     if (!evidenceReferences.has(relevantTurn.turn_ref)) {
       issues.push(
         `Relevant turn ${relevantTurn.turn_ref} is not included in evidence_windows.`,
@@ -416,4 +417,36 @@ export function validateTheoDiagnosis({
   }
 
   return diagnosis;
+}
+
+function canonicalizeRelevantTurn(
+  relevantTurn: TheoDiagnosis['relevant_turns'][number],
+  indexedTraceEntries: Map<
+    string,
+    {
+      readonly ref: string;
+      readonly content?: unknown;
+      readonly timestamp?: string;
+      readonly type?: string;
+      readonly trigger?: string;
+      readonly instructionFile?: string;
+      readonly turnRef?: string;
+    }
+  >,
+): void {
+  const traceEntry = indexedTraceEntries.get(relevantTurn.turn_ref);
+  const turnEntry = traceEntry?.type === 'turn_start'
+    ? traceEntry
+    : traceEntry?.turnRef
+      ? indexedTraceEntries.get(traceEntry.turnRef)
+      : undefined;
+  if (!turnEntry || traceEntry?.type === 'turn_start') {
+    return;
+  }
+  if (turnEntry.trigger) {
+    relevantTurn.trigger = turnEntry.trigger;
+  }
+  if (turnEntry.instructionFile) {
+    relevantTurn.instruction_file = turnEntry.instructionFile;
+  }
 }
