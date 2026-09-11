@@ -117,3 +117,50 @@ That is confusing.
 This matters for reading backtest progress over time. A user should be able to glance at the graph and quickly understand whether the system is improving or failing.
 
 The color should reflect the actual Maya verdict, not just whether the run completed successfully.
+
+## 5. Tag diagnosis fixes as `Code` or `Prompt`
+
+During diagnosis, the system should identify whether the suggested fix is likely a code change or a prompt change.
+
+Right now, CIE mostly assumes the fix belongs in the prompt system. That is useful for prompt backtesting, but some failures may clearly point to product/backend/frontend code instead.
+
+### Desired behavior
+
+Every diagnosis should include a fix type tag:
+
+```text
+Code
+```
+
+or
+
+```text
+Prompt
+```
+
+Example:
+
+```json
+{
+  "diagnosis": "Copilot stayed silent because the prompt does not clearly require scheduled check-ins after long quiet periods.",
+  "suggestedFixType": "Prompt",
+  "suggestedFix": "Update the scheduled-check-in instruction to require a guard check when no report has been received for more than one wake interval."
+}
+```
+
+```json
+{
+  "diagnosis": "The replay did not include the guard's latest message before Maya evaluated the turn.",
+  "suggestedFixType": "Code",
+  "suggestedFix": "Fix the turn-window builder so guard messages immediately before the selected Copilot turn are included in the evidence packet."
+}
+```
+
+### Why this matters
+
+- Prompt fixes can go through Theo → candidate prompt → replay → Maya.
+- Code fixes should not be forced into a prompt-edit flow.
+- The UI can route the user correctly: “start prompt improvement” vs “create engineering task.”
+- It makes diagnosis output clearer and less misleading.
+
+For now, this can be a simple required field on saved diagnosis results. Later, we can add confidence and allow mixed cases like `Prompt + Code` if needed.
