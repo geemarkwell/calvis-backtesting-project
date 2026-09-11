@@ -119,7 +119,7 @@ export async function runDiagnoseLens(
     startTurn: number;
     endTurn: number;
     lensId: DiagnoseLensId;
-    replaySource?: "file" | "production";
+    replaySource?: "production";
   },
   signal?: AbortSignal,
 ): Promise<DiagnoseResponse> {
@@ -131,7 +131,7 @@ export async function runDiagnoseLens(
       startTurn: request.startTurn,
       endTurn: request.endTurn,
       lensIds: [request.lensId],
-      replaySource: request.replaySource,
+      replaySource: "production",
     }),
     signal,
   });

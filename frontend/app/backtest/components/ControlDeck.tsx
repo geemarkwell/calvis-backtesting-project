@@ -155,16 +155,7 @@ export function ControlDeck({
 
         <label className="field field--mode">
           <span>REPLAY SOURCE</span>
-          <select
-            name="replaySource"
-            value={value.replaySource}
-            onChange={(event) =>
-              update("replaySource", event.target.value as ReplaySource)
-            }
-          >
-            <option value="file">FILE BUNDLE</option>
-            <option value="production">PRODUCTION DATA</option>
-          </select>
+          <input name="replaySource" value="PRODUCTION DATA" disabled readOnly />
         </label>
 
         {!value.evaluate && (

@@ -1,8 +1,7 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
-import { findBundleRoot, loadShiftBundle } from './shift-loader';
 import type { ShiftBundle } from './copilot-simulation.types';
 
-export type ReplaySource = 'file' | 'production';
+export type ReplaySource = 'production';
 
 export interface LoadedShiftBundle {
   jobId: string;
@@ -19,18 +18,8 @@ export class ShiftBundleSourceResolver {
     jobId: string | number,
     source: unknown,
   ): Promise<LoadedShiftBundle> {
-    const normalized = normalizeReplaySource(source);
-    if (normalized === 'production') {
-      return new ProductionShiftBundleSource().load(jobId);
-    }
-    return new FileShiftBundleSource().load(jobId);
-  }
-}
-
-export class FileShiftBundleSource implements ShiftBundleSource {
-  async load(jobId: string | number): Promise<LoadedShiftBundle> {
-    const bundleRoot = await findBundleRoot();
-    return loadShiftBundle(bundleRoot, jobId);
+    normalizeReplaySource(source);
+    return new ProductionShiftBundleSource().load(jobId);
   }
 }
 
@@ -92,13 +81,13 @@ export class ProductionShiftBundleSource implements ShiftBundleSource {
 }
 
 export function normalizeReplaySource(value: unknown): ReplaySource {
-  if (value === undefined || value === null || value === '' || value === 'file') {
-    return 'file';
-  }
-  if (value === 'production') {
+  if (value === undefined || value === null || value === '' || value === 'production') {
     return 'production';
   }
-  throw new BadRequestException('replaySource must be either file or production.');
+  if (value === 'file') {
+    throw new BadRequestException('Local file replay is no longer supported. CIE now uses production replay data only.');
+  }
+  throw new BadRequestException('replaySource must be production when provided.');
 }
 
 function productionApiBaseUrl(): string {

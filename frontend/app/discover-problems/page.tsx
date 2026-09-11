@@ -85,7 +85,7 @@ const INITIAL_FORM = {
   jobId: "",
   startTurn: "",
   endTurn: "",
-  replaySource: "file" as "file" | "production",
+  replaySource: "production" as const,
 };
 
 const DIAGNOSE_PROGRESS_LENSES = [
@@ -217,18 +217,7 @@ export default function DiscoverProblemsPage() {
           </label>
           <label className="field">
             <span>REPLAY SOURCE</span>
-            <select
-              value={form.replaySource}
-              onChange={(event) =>
-                setForm((current) => ({
-                  ...current,
-                  replaySource: event.target.value as "file" | "production",
-                }))
-              }
-            >
-              <option value="file">FILE BUNDLE</option>
-              <option value="production">PRODUCTION DATA</option>
-            </select>
+            <input value="PRODUCTION DATA" disabled readOnly />
           </label>
           <button
             type="button"
@@ -771,7 +760,7 @@ function StatusPanel({
 }
 
 function parseForm(form: typeof INITIAL_FORM):
-  | { jobId: string; startTurn: number; endTurn: number; replaySource: "file" | "production" }
+  | { jobId: string; startTurn: number; endTurn: number; replaySource: "production" }
   | string {
   const jobId = form.jobId.trim();
   const startTurn = Number(form.startTurn);

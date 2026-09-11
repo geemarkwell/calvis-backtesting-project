@@ -39,6 +39,23 @@ export interface ShiftBundleMessageEvidence {
   };
 }
 
+export interface ShiftBundleDurableAction {
+  id: string;
+  ref?: string;
+  ts: string;
+  turn?: number | null;
+  type: string;
+  source: string;
+  toolName?: string;
+  status?: string;
+  ok?: boolean | null;
+  body?: string;
+  input?: Record<string, unknown>;
+  output?: unknown;
+  chatMessageId?: string | number | null;
+  recipientGuardId?: string | number | null;
+}
+
 export interface ShiftBundle {
   shift: CopilotShift & {
     start: string;
@@ -53,6 +70,7 @@ export interface ShiftBundle {
   events: ShiftEvent[];
   baseline: BaselineEntry[];
   messageEvidence?: ShiftBundleMessageEvidence[];
+  durableActions?: ShiftBundleDurableAction[];
 }
 
 export interface CopilotSimulationAction {

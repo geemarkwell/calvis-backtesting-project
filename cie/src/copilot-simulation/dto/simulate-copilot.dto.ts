@@ -7,5 +7,5 @@ export class SimulateCopilotDto {
   callNiko?: boolean;
   debug?: boolean;
   useCompactContext?: boolean;
-  replaySource?: 'file' | 'production';
+  replaySource?: 'production';
 }

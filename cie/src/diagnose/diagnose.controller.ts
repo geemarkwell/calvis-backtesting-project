@@ -51,6 +51,11 @@ export class DiagnoseController {
         jobId: { type: 'string', example: '56370' },
         startTurn: { type: 'number', example: 9 },
         endTurn: { type: 'number', example: 16 },
+        replaySource: {
+          type: 'string',
+          enum: ['production'],
+          description: 'Optional legacy field. CIE now uses production replay data only.',
+        },
         lensIds: {
           type: 'array',
           description: 'Optional built-in Diagnose lenses. Defaults to all built-in lenses when omitted.',

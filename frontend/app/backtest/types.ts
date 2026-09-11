@@ -1,5 +1,5 @@
 export type ReplayMode = "original" | "candidate";
-export type ReplaySource = "file" | "production";
+export type ReplaySource = "production";
 export type BaselineSource = "shift" | `simulation:${number}`;
 
 export interface SimulationRequest {
