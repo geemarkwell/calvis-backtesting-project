@@ -45,8 +45,19 @@ export function compileTraceContext({
     ...(maxEvents ? { maxEvents } : {}),
     ...(maxTextChars ? { maxTextChars } : {}),
   };
-  const messages = trace
-    .filter((entry) => entry.type === 'guard_message' || entry.type === 'copilot_message')
+  const turnHeaders = trace
+    .filter((entry) => entry.type === 'turn_start')
+    .map((entry) => ({
+      ref: entry.ref,
+      turn: turnNumber(entry.content),
+      timestamp: entry.timestamp,
+      trigger: entry.trigger,
+      header: turnHeaderOf(entry.content),
+    }))
+    .filter((entry) => entry.header !== undefined);
+  const messages = dedupeMessages(
+    trace.filter((entry) => entry.type === 'guard_message' || entry.type === 'copilot_message'),
+  )
     .slice(-budget.maxMessages)
     .map((entry) => ({
       ref: entry.ref,
@@ -73,6 +84,10 @@ export function compileTraceContext({
       tool: toolName(entry.content),
       summary: truncate(textOf(toolError(entry.content)), budget.maxTextChars),
     }));
+  const temporalEvidence = toolEntries
+    .map((entry) => temporalEvidenceForTool(entry, budget.maxTextChars))
+    .filter((item): item is NonNullable<typeof item> => Boolean(item))
+    .slice(-16);
   const importantActions = toolEntries
     .filter((entry) => ACTION_TOOLS.has(toolName(entry.content)))
     .slice(-20)
@@ -84,30 +99,101 @@ export function compileTraceContext({
     }));
   const telemetrySummary = summarizeTelemetry(trace);
   const outputItems =
+    turnHeaders.length +
     messages.length +
     eventTimeline.length +
     toolCounts.length +
     failedTools.length +
+    temporalEvidence.length +
     importantActions.length;
   const context: CompactTraceContextDto = {
     purpose,
-    summary: `${trace.length} trace items compacted for ${purpose}: ${messages.length} messages, ${eventTimeline.length} events, ${toolEntries.length} tool calls across ${toolCounts.length} tools.`,
+    summary: `${trace.length} trace items compacted for ${purpose}: ${turnHeaders.length} turn headers, ${messages.length} messages, ${eventTimeline.length} events, ${toolEntries.length} tool calls across ${toolCounts.length} tools, and ${temporalEvidence.length} temporal source observations.`,
+    turnHeaders,
     messages,
     eventTimeline,
     toolCounts,
     failedTools,
+    temporalEvidence,
     importantActions,
     telemetrySummary,
-    evidenceRefs: [...new Set([...messages, ...eventTimeline, ...failedTools, ...importantActions].map((item) => item.ref))],
+    evidenceRefs: [...new Set([...turnHeaders, ...messages, ...eventTimeline, ...failedTools, ...temporalEvidence, ...importantActions].map((item) => item.ref))],
     omissions: buildOmissions(trace, messages.length, eventTimeline.length, toolEntries.length),
     budget: {
       ...budget,
       inputItems: trace.length,
       outputItems,
-      estimatedChars: JSON.stringify({ messages, eventTimeline, toolCounts, failedTools, importantActions, telemetrySummary }).length,
+      estimatedChars: JSON.stringify({ turnHeaders, messages, eventTimeline, toolCounts, failedTools, temporalEvidence, importantActions, telemetrySummary }).length,
     },
   };
   return context;
+}
+
+function temporalEvidenceForTool(entry: NormalizedTraceEntry, maxTextChars: number): {
+  ref: string;
+  timestamp?: string;
+  tool: string;
+  summary: string;
+} | null {
+  const tool = toolName(entry.content);
+  if (!/(location|telemetry|ping|heartbeat|activity|communications|job_logs)/i.test(tool)) {
+    return null;
+  }
+  const output = toolOutput(entry.content);
+  const summary = summarizeTemporalOutput(output);
+  if (!summary) return null;
+  return {
+    ref: entry.ref,
+    timestamp: entry.timestamp,
+    tool,
+    summary: truncate(summary, maxTextChars),
+  };
+}
+
+function summarizeTemporalOutput(output: unknown): string | null {
+  if (!isRecord(output)) {
+    return typeof output === 'string' && /(\d{1,2}:\d{2}|timestamp|time|ping|window)/i.test(output)
+      ? output
+      : null;
+  }
+  const parts: string[] = [];
+  const window = isRecord(output.window) ? output.window : undefined;
+  if (window) {
+    parts.push(`window=${JSON.stringify(compactPick(window, ['from', 'to', 'from_local', 'to_local']))}`);
+  }
+  if (Array.isArray(output.guards)) {
+    const guards = output.guards.slice(0, 3).map((guard) => {
+      if (!isRecord(guard)) return guard;
+      return compactPick(guard, [
+        'guard_id',
+        'guard_name',
+        'on_site',
+        'last_ping_at',
+        'last_ping_at_local',
+        'last_ping_age_seconds',
+        'data_freshness',
+        'current_distance_from_site_meters',
+        'ping_span',
+        'last_geofence_event',
+        'device',
+      ]);
+    });
+    parts.push(`guards=${JSON.stringify(guards)}`);
+  }
+  if (isRecord(output.summary)) {
+    parts.push(`summary=${JSON.stringify(output.summary)}`);
+  }
+  if (isRecord(output.rollup)) {
+    parts.push(`rollup=${JSON.stringify(output.rollup)}`);
+  }
+  if (Array.isArray(output.logs)) {
+    parts.push(`logs=${JSON.stringify(output.logs.slice(0, 5))}`);
+  }
+  return parts.length ? parts.join(' ') : null;
+}
+
+function compactPick(value: Record<string, unknown>, keys: string[]): Record<string, unknown> {
+  return Object.fromEntries(keys.filter((key) => key in value).map((key) => [key, value[key]]));
 }
 
 function summarizeTools(entries: readonly NormalizedTraceEntry[]) {
@@ -120,6 +206,33 @@ function summarizeTools(entries: readonly NormalizedTraceEntry[]) {
     counts.set(tool, current);
   }
   return [...counts.values()].sort((left, right) => right.count - left.count);
+}
+
+function dedupeMessages(entries: readonly NormalizedTraceEntry[]): NormalizedTraceEntry[] {
+  const byKey = new Map<string, NormalizedTraceEntry>();
+  for (const entry of entries) {
+    const key = `${roleForEntry(entry)}:${textOf(entry.content).replace(/\s+/g, ' ').trim()}`;
+    const existing = byKey.get(key);
+    if (!existing || sourcePriority(entry.ref) < sourcePriority(existing.ref)) {
+      byKey.set(key, entry);
+    }
+  }
+  return [...byKey.values()].sort((left, right) => left.timestamp.localeCompare(right.timestamp));
+}
+
+function sourcePriority(ref: string): number {
+  if (ref.includes('chat_message')) return 0;
+  if (ref.includes('dm_request')) return 1;
+  if (ref.includes('tool_call')) return 2;
+  return 3;
+}
+
+function turnNumber(content: unknown): number | null | undefined {
+  return isRecord(content) && typeof content.turn === 'number' ? content.turn : undefined;
+}
+
+function turnHeaderOf(content: unknown): unknown {
+  return isRecord(content) ? content.turnHeader : undefined;
 }
 
 function buildOmissions(
@@ -149,6 +262,10 @@ function toolName(content: unknown): string {
 
 function toolInput(content: unknown): unknown {
   return isRecord(content) ? content.input : undefined;
+}
+
+function toolOutput(content: unknown): unknown {
+  return isRecord(content) ? content.output : undefined;
 }
 
 function toolError(content: unknown): unknown {

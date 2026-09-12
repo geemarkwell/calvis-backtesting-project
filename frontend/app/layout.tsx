@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import GlobalSidebar from "./GlobalSidebar";
 import "./globals.css";
 
@@ -12,7 +13,9 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     <html lang="en">
       <body>
         <div className="root-layout-shell">
-          <GlobalSidebar />
+          <Suspense fallback={null}>
+            <GlobalSidebar />
+          </Suspense>
           <div className="root-layout-content">{children}</div>
         </div>
       </body>

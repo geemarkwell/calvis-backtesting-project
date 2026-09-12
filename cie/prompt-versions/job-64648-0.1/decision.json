@@ -1,0 +1,15 @@
+{
+  "jobId": "64648",
+  "version": "0.1",
+  "status": "pending",
+  "createdAt": "2026-09-12T00:09:13.011Z",
+  "decidedAt": null,
+  "evaluation": {
+    "runId": "maya-64648-1",
+    "judgedAt": "2026-09-12T00:10:34.559Z",
+    "fixed": true,
+    "verdict": "yes",
+    "confidence": 88,
+    "summary": "The historical baseline and old replay contain the called-out imperative clock-out direction. The candidate replaces it with a scheduled-end statement and an offer of administrative help, and it remains silent on the later shift-ending turn rather than issuing further clock-out direction."
+  }
+}

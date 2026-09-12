@@ -41,6 +41,7 @@ describe('DiagnoseController', () => {
 
     expect(service.discover).toHaveBeenCalledWith({
       jobId: '56370',
+      scope: 'turn-window',
       startTurn: 9,
       endTurn: 16,
     });
@@ -56,9 +57,19 @@ describe('DiagnoseController', () => {
 
     expect(service.discover).toHaveBeenCalledWith({
       jobId: '56370',
+      scope: 'turn-window',
       startTurn: 9,
       endTurn: 16,
       lensIds: ['tool-use', 'context'],
+    });
+  });
+
+  it('forwards full-job scope without manual turns', async () => {
+    await controller.discover({ jobId: '56370', scope: 'full-job' });
+
+    expect(service.discover).toHaveBeenCalledWith({
+      jobId: '56370',
+      scope: 'full-job',
     });
   });
 
@@ -83,6 +94,7 @@ describe('DiagnoseController', () => {
 
     expect(service.discover).toHaveBeenCalledWith({
       jobId: '56370',
+      scope: 'turn-window',
       startTurn: 9,
       endTurn: 16,
       lensIds: ['free-agent'],

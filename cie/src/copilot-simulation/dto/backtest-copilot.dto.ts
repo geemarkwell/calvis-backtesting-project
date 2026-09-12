@@ -10,6 +10,12 @@ export type BacktestCandidateKind =
   | 'test'
   | 'unknown';
 
+export interface BacktestTurnWindowDto {
+  startTurn: number;
+  endTurn: number;
+  source?: 'full-job' | 'evidence' | 'fallback';
+}
+
 export interface BacktestDiagnosisContextDto {
   diagnosisRunId?: string;
   patternId: string;
@@ -20,6 +26,8 @@ export interface BacktestDiagnosisContextDto {
   candidateKindRationale?: string;
   replayableHint?: boolean;
   requiresManualValidationHint?: boolean;
+  diagnosisWindow?: BacktestTurnWindowDto;
+  replayWindow?: BacktestTurnWindowDto;
 }
 
 export class BacktestCopilotDto extends SimulateCopilotDto {

@@ -385,7 +385,10 @@ function baselineContent(entry: BaselineEntry): unknown {
     return entry.text ?? null;
   }
   if (entry.type === 'turn_start') {
-    return { turn: entry.turn ?? null };
+    return {
+      turn: entry.turn ?? null,
+      ...(entry.turnHeader ? { turnHeader: entry.turnHeader } : {}),
+    };
   }
   if (entry.type === 'tool_call') {
     const baseName = baseToolName(entry.tool);

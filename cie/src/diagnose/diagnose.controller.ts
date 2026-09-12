@@ -45,10 +45,16 @@ export class DiagnoseController {
   @ApiBody({
     schema: {
       type: 'object',
-      required: ['jobId', 'startTurn', 'endTurn'],
+      required: ['jobId'],
       additionalProperties: false,
       properties: {
         jobId: { type: 'string', example: '56370' },
+        scope: {
+          type: 'string',
+          enum: ['full-job', 'turn-window'],
+          description: 'Use full-job to derive first/last replayable turns automatically. Omit scope with startTurn/endTurn for legacy manual windows.',
+          example: 'full-job',
+        },
         startTurn: { type: 'number', example: 9 },
         endTurn: { type: 'number', example: 16 },
         replaySource: {
@@ -58,12 +64,19 @@ export class DiagnoseController {
         },
         lensIds: {
           type: 'array',
-          description: 'Optional built-in Diagnose lenses. Defaults to all built-in lenses when omitted.',
+          description: 'Optional built-in Diagnose policy lenses. Defaults to all policy lenses when omitted.',
           items: {
             type: 'string',
-            enum: ['task-success', 'tool-use', 'context', 'safety-recovery', 'prompt-issue', 'free-agent'],
+            enum: [
+              'policy-role-authority',
+              'policy-uniform-attire',
+              'policy-time-scheduling',
+              'policy-checkin-checkout',
+              'policy-patrol-expectations',
+              'policy-escalation-rules',
+            ],
           },
-          example: ['task-success', 'tool-use'],
+          example: ['policy-role-authority', 'policy-escalation-rules'],
         },
       },
     },

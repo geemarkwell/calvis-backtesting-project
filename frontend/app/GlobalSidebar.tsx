@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
 import { useState } from "react";
 
 const routes = [
@@ -12,14 +12,18 @@ const routes = [
     shortLabel: "DP",
     description: "Diagnose lenses",
     children: [
-      { href: "/discover-problems/runs", label: "Runs", shortLabel: "RN", description: "History" },
+      { href: "/discover-problems/runs", label: "History", shortLabel: "HI", description: "" },
+      { href: "/discover-problems/activity", label: "Activity", shortLabel: "AC", description: "" },
     ],
   },
   { href: "/eval-suite", label: "Eval Suite", shortLabel: "EV", description: "Test criteria" },
+  { href: "/analytics", label: "Analytics", shortLabel: "AN", description: "Lens outcomes" },
 ];
 
 export default function GlobalSidebar() {
   const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const debugActive = pathname === "/" && searchParams.get("debug") === "1";
   const [collapsed, setCollapsed] = useState(false);
 
   return (
@@ -72,7 +76,7 @@ export default function GlobalSidebar() {
                       >
                         <b>{child.shortLabel}</b>
                         <span>{child.label}</span>
-                        <small>{child.description}</small>
+                        {child.description && <small>{child.description}</small>}
                       </Link>
                     );
                   })}
@@ -82,6 +86,16 @@ export default function GlobalSidebar() {
           );
         })}
       </nav>
+
+      <Link
+        className={debugActive ? "global-sidebar__debug-link is-active" : "global-sidebar__debug-link"}
+        href={debugActive ? "/" : "/?debug=1"}
+        title={collapsed ? "Debug" : undefined}
+      >
+        <b>DG</b>
+        <span>DEBUG</span>
+        <small>Manual controls</small>
+      </Link>
     </aside>
   );
 }

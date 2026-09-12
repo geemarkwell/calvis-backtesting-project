@@ -140,9 +140,8 @@ export default function DiagnoseRunsPage() {
                     <LabeledText label="Trace window">
                       JOB {run.jobId} / TURNS {run.startTurn}-{run.endTurn}
                     </LabeledText>
-                    <LabeledText label="Summary">{run.summary}</LabeledText>
-                    <LabeledText label="Created">{formatCreatedAt(run.createdAt)}</LabeledText>
-                    <LabeledText label="Artifact directory">{run.artifactDirectory}</LabeledText>
+                    <LabeledText label="Started at">{formatStartedAt(run.runId, run.createdAt)}</LabeledText>
+                    <LabeledText label="Ended at">{formatCreatedAt(run.createdAt)}</LabeledText>
                   </div>
                 </section>
               ))}
@@ -181,6 +180,16 @@ function timestamp(value?: string): number {
   if (!value) return 0;
   const parsed = new Date(value).getTime();
   return Number.isNaN(parsed) ? 0 : parsed;
+}
+
+function formatStartedAt(runId: string, fallback?: string): string {
+  const match = /^diagnose-(\d{17})/.exec(runId);
+  if (!match) return formatCreatedAt(fallback);
+  const stamp = match[1];
+  const parsed = new Date(
+    `${stamp.slice(0, 4)}-${stamp.slice(4, 6)}-${stamp.slice(6, 8)}T${stamp.slice(8, 10)}:${stamp.slice(10, 12)}:${stamp.slice(12, 14)}.${stamp.slice(14, 17)}Z`,
+  );
+  return Number.isNaN(parsed.getTime()) ? formatCreatedAt(fallback) : parsed.toLocaleString();
 }
 
 function formatCreatedAt(value?: string): string {

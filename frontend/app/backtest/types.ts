@@ -14,6 +14,12 @@ export interface SimulationRequest {
   replaySource?: ReplaySource;
 }
 
+export interface DiagnoseTurnWindow {
+  startTurn: number;
+  endTurn: number;
+  source: "full-job" | "evidence" | "fallback";
+}
+
 export interface BacktestRequest extends SimulationRequest {
   callout: string;
   expectedBehavior: string;
@@ -29,6 +35,8 @@ export interface BacktestRequest extends SimulationRequest {
     candidateKindRationale?: string;
     replayableHint?: boolean;
     requiresManualValidationHint?: boolean;
+    diagnosisWindow?: DiagnoseTurnWindow;
+    replayWindow?: DiagnoseTurnWindow;
   };
 }
 
@@ -122,6 +130,12 @@ export interface SavedTestFailure {
 }
 
 export type DiagnoseLensId =
+  | "policy-role-authority"
+  | "policy-uniform-attire"
+  | "policy-time-scheduling"
+  | "policy-checkin-checkout"
+  | "policy-patrol-expectations"
+  | "policy-escalation-rules"
   | "task-success"
   | "tool-use"
   | "context"
@@ -158,6 +172,8 @@ export interface DiagnosePattern {
   replayableHint?: boolean;
   requiresManualValidationHint?: boolean;
   expectedBehavior?: string;
+  diagnosisWindow?: DiagnoseTurnWindow;
+  replayWindow?: DiagnoseTurnWindow;
   evidence: DiagnoseEvidence[];
 }
 
@@ -351,6 +367,8 @@ export interface TheoRequest {
     candidateKindRationale?: string;
     replayableHint?: boolean;
     requiresManualValidationHint?: boolean;
+    diagnosisWindow?: DiagnoseTurnWindow;
+    replayWindow?: DiagnoseTurnWindow;
   };
 }
 

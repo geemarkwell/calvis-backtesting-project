@@ -14,6 +14,7 @@ import { TestSpecsModule } from './test-specs/test-specs.module';
 import { TestEvaluationsModule } from './test-evaluations/test-evaluations.module';
 import { TestFailuresModule } from './test-failures/test-failures.module';
 import { DiagnoseModule } from './diagnose/diagnose.module';
+import { DiagnosisQueueModule } from './diagnosis-queue/diagnosis-queue.module';
 
 @Module({
   imports: [
@@ -26,6 +27,7 @@ import { DiagnoseModule } from './diagnose/diagnose.module';
     TestEvaluationsModule,
     TestFailuresModule,
     DiagnoseModule,
+    DiagnosisQueueModule,
     MastraModule.register({ mastra }),
     AgentModule,
     MemoryModule,

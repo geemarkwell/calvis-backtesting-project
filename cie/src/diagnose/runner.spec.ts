@@ -20,7 +20,36 @@ jest.mock('../mastra/agents/prompt-issue-evaluator-agent', () => ({
 import { mkdtemp, readFile, rm } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
+import type { ShiftBundle } from '../copilot-simulation/copilot-simulation.types';
 import { buildDiagnoseMessage, runDiagnose } from './runner';
+
+const bundle = {
+  shift: {
+    id: '56370',
+    start: '2026-01-01T00:00:00.000Z',
+    end: '2026-01-01T01:00:00.000Z',
+    timezone: 'UTC',
+  },
+  events: [],
+  baseline: [
+    {
+      ts: '2026-01-01T00:09:00.000Z',
+      type: 'turn_start',
+      turn: 9,
+      trigger: 'scheduled_check_in',
+    },
+    {
+      ts: '2026-01-01T00:09:10.000Z',
+      type: 'tool_call',
+      tool: 'get_job_logs',
+      input: { job_id: '56370' },
+      output: { logs: [] },
+      ok: true,
+    },
+  ],
+} as ShiftBundle;
+
+const loadBundle = jest.fn(async () => ({ jobId: '56370', bundle }));
 
 const finding = {
   id: 'llm-tool-loop',
@@ -31,7 +60,7 @@ const finding = {
   diagnosis: 'The agent gathered similar evidence repeatedly before acting.',
   likelyCause: 'The prompt does not define when enough evidence has been collected.',
   suggestedFix: 'Add an evidence sufficiency rule before repeated read calls.',
-  evidence: [{ ref: 'baseline:1', summary: 'repeated get_job_logs call' }],
+  evidence: [{ ref: 'baseline:1', turn: 9, summary: 'repeated get_job_logs call' }],
   source: 'llm' as const,
 };
 
@@ -40,6 +69,7 @@ describe('diagnose runner', () => {
 
   beforeEach(async () => {
     runsRoot = await mkdtemp(join(tmpdir(), 'diagnose-runs-'));
+    loadBundle.mockClear();
   });
 
   afterEach(async () => {
@@ -75,13 +105,13 @@ describe('diagnose runner', () => {
         runsRoot,
         runId: 'diagnose-unit-test',
       },
-      { generateFindings },
+      { generateFindings, loadBundle },
     );
 
     expect(generateFindings).toHaveBeenCalledTimes(6);
     expect(result.lenses).toHaveLength(6);
     expect(result.evaluatorReports).toHaveLength(6);
-    expect(result.evaluatorReports[0].lens?.id).toBe('task-success');
+    expect(result.evaluatorReports[0].lens?.id).toBe('policy-role-authority');
     expect(result.llmFindings).toEqual([
       expect.objectContaining({
         ...finding,
@@ -112,6 +142,7 @@ describe('diagnose runner', () => {
           summary: 'Workflow issue found.',
           findings: [workflowFinding],
         }),
+        loadBundle,
       },
     );
 
@@ -119,6 +150,30 @@ describe('diagnose runner', () => {
       suggestedCandidateKind: 'workflow',
       replayableHint: false,
       requiresManualValidationHint: true,
+    });
+  });
+
+  it('derives full-job turns and finding replay windows', async () => {
+    const result = await runDiagnose(
+      {
+        request: { jobId: '56370', scope: 'full-job', lensIds: ['tool-use'] },
+        runsRoot,
+        runId: 'diagnose-full-job-test',
+      },
+      {
+        generateFindings: jest.fn().mockResolvedValue({
+          summary: 'Tool issue found.',
+          findings: [finding],
+        }),
+        loadBundle,
+      },
+    );
+
+    expect(result.startTurn).toBe(9);
+    expect(result.endTurn).toBe(9);
+    expect(result.llmFindings[0]).toMatchObject({
+      diagnosisWindow: { startTurn: 9, endTurn: 9, source: 'full-job' },
+      replayWindow: { startTurn: 9, endTurn: 9, source: 'evidence' },
     });
   });
 
@@ -137,7 +192,7 @@ describe('diagnose runner', () => {
         runsRoot,
         runId: 'diagnose-lens-subset-test',
       },
-      { generateFindings },
+      { generateFindings, loadBundle },
     );
 
     expect(generateFindings).toHaveBeenCalledTimes(1);

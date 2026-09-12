@@ -63,12 +63,14 @@ describe('CopilotBacktestService', () => {
     recordEvaluation: jest.fn(),
     get: jest.fn(),
   };
+  const analytics = { recordBacktestRun: jest.fn() };
   const service = new CopilotBacktestService(
     simulationService as never,
     originalService as never,
     mayaJudgmentService as never,
     theoService,
     candidateDecisionService as never,
+    analytics as never,
   );
   const input = {
     jobId: '56370',
@@ -88,6 +90,7 @@ describe('CopilotBacktestService', () => {
     mayaJudgmentService.judge.mockReset();
     theoService.diagnose.mockReset().mockResolvedValue(theoResult);
     candidateDecisionService.recordEvaluation.mockReset();
+    analytics.recordBacktestRun.mockReset();
     candidateDecisionService.get.mockReset().mockResolvedValue({
       decision: pendingDecision,
       updatedPrompt: candidateReplay.updatedPrompt,

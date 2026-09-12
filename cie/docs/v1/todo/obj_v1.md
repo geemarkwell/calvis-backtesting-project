@@ -287,6 +287,106 @@ The UI should make rollback status obvious:
 - reason for revert
 - regression that triggered it
 
+## 8. Fix deterministic signal messages
+
+The Discover Problems messages tab should make deterministic signals as readable as specialized LLM findings.
+
+Right now, deterministic findings can appear in the messages flow without useful message-level context. That makes them harder to inspect than LLM findings, especially when the user wants to understand which guard/copilot/tool messages caused the signal.
+
+### Desired behavior
+
+For deterministic signals, the UI should show:
+
+- the specific trace messages or tool calls that triggered the signal
+- turn number and timestamp where available
+- speaker / role metadata
+- why the deterministic analyzer considered it evidence
+- a clear fallback when no direct message evidence exists
+
+### Why this matters
+
+Deterministic analyzers are useful because they catch obvious failures cheaply and consistently. But if their message tab only shows generic evidence text, users cannot quickly verify whether the signal is legitimate.
+
+The deterministic messages view should be inspectable enough that a user can answer:
+
+```text
+What exact trace moment caused this deterministic signal?
+```
+
+without opening raw artifacts by hand.
+
+## 8. Show backtest history linked to each diagnosis
+
+Users should be able to see the history of backtests connected to a diagnosis.
+
+A diagnosis should not feel like a one-off note. It should become the parent record for all attempts to fix or validate that issue.
+
+### Goal
+
+From a diagnosis page, users should be able to see every related backtest run.
+
+This should include:
+
+- original diagnosis
+- suggested fix / candidate kind
+- each Theo candidate attempt
+- each replay/backtest run
+- Maya pass/fail result for each run
+- candidate diff or proposed change
+- whether the candidate was accepted, rejected, retried, or reverted
+- timestamps and user actions
+
+### Why this matters
+
+When a fix fails, users need context. They should not have to search through run folders or remember which backtest belonged to which diagnosis.
+
+Example history:
+
+```text
+Diagnosis: Copilot was too aggressive after patrol confirmation.
+
+Attempt 1: Prompt candidate v1
+  → Maya failed
+  → reason: still challenged guard without enough evidence
+
+Attempt 2: Prompt candidate v2
+  → Maya passed diagnosis target
+  → master policy passed
+  → accepted
+
+Later regression check
+  → failed patrol enforcement policy
+  → candidate reverted
+```
+
+### Desired UI behavior
+
+Each diagnosis should have a “Backtest history” section.
+
+The default view should show a simple timeline:
+
+```text
+diagnosed → candidate created → replayed → Maya failed → retried → Maya passed → accepted
+```
+
+Users should be able to click into each run for details, but the history view itself should stay readable and high-level.
+
+### Data requirement
+
+Every backtest run should store a reference back to its source diagnosis or pattern id.
+
+Suggested fields:
+
+```json
+{
+  "diagnosisId": "diag_123",
+  "patternId": "pattern_456",
+  "backtestRunId": "bt_789",
+  "candidateVersionId": "job-56370-0.2",
+  "mayaVerdict": "failed"
+}
+```
+
 ## 9. Send each completed shift trace to CIE for diagnosis
 
 After every job/shift ends, we should send that shift trace to CIE so CIE can start a diagnosis pass.
