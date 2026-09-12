@@ -23,6 +23,10 @@ export const diagnosisQueueIdParamSchema = z.object({
   id: z.string().trim().min(1),
 });
 
+export const clearDiagnosisQueueSchema = z.object({
+  status: z.enum(['queued', 'completed', 'failed']).optional(),
+});
+
 export const finishDiagnosisQueueJobSchema = z.object({
   jobId: z.union([z.string(), z.number()]).transform((value) => String(value).trim()),
   diagnosisRunId: z.string().trim().min(1).optional(),
@@ -41,6 +45,7 @@ export type DiagnosisQueueStatusDto = z.infer<typeof diagnosisQueueStatusSchema>
 export type EnqueueDiagnosisJobDto = z.infer<typeof enqueueDiagnosisJobSchema>;
 export type ListDiagnosisQueueDto = z.infer<typeof listDiagnosisQueueSchema>;
 export type DiagnosisQueueIdParamDto = z.infer<typeof diagnosisQueueIdParamSchema>;
+export type ClearDiagnosisQueueDto = z.infer<typeof clearDiagnosisQueueSchema>;
 export type FinishDiagnosisQueueJobDto = z.infer<typeof finishDiagnosisQueueJobSchema>;
 export type SweepStartDiagnosisQueueDto = z.infer<typeof sweepStartDiagnosisQueueSchema>;
 
@@ -68,6 +73,10 @@ export interface EnqueueDiagnosisJobResponseDto {
 export interface DiagnosisQueueResponseDto {
   items: DiagnosisQueueItemDto[];
   count: number;
+}
+
+export interface ClearDiagnosisQueueResponseDto {
+  deleted: number;
 }
 
 export interface SweepStartDiagnosisQueueResponseDto {

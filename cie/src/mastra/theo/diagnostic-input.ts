@@ -73,6 +73,18 @@ const candidateKindSchema = z.enum([
   'unknown',
 ]);
 
+const diagnosisTurnWindowSchema = z
+  .object({
+    startTurn: turnNumberSchema,
+    endTurn: turnNumberSchema,
+    source: z.enum(['full-job', 'evidence', 'fallback']).optional(),
+  })
+  .strict()
+  .refine((window) => window.startTurn <= window.endTurn, {
+    path: ['startTurn'],
+    message: 'startTurn cannot be greater than endTurn.',
+  });
+
 const diagnosisContextSchema = z
   .object({
     diagnosisRunId: nonEmptyTextSchema.optional(),
@@ -84,6 +96,8 @@ const diagnosisContextSchema = z
     candidateKindRationale: nonEmptyTextSchema.optional(),
     replayableHint: z.boolean().optional(),
     requiresManualValidationHint: z.boolean().optional(),
+    diagnosisWindow: diagnosisTurnWindowSchema.optional(),
+    replayWindow: diagnosisTurnWindowSchema.optional(),
   })
   .strict();
 

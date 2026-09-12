@@ -1,0 +1,13 @@
+{
+  "jobId": "64648",
+  "version": "0.1",
+  "createdAt": "2026-09-12T00:09:13.011Z",
+  "sourceVersion": "original",
+  "runId": "theo-20260912000809129-17712164",
+  "changedFile": "instructions/default.md",
+  "oldText": "## Continue assisting\n\nNo specific trigger shape matched this turn. Run a light version of the proactive\nsweep: check guard status and job logs, `get_open_obligations(session_id)` for any\nopen or overdue window, and any thread the guard left open that hasn't been followed up.\nPropose a DM only if something is genuinely worth saying, flag issues to ops with the\nright primitive, and update `analysis.md`. Silence is a fine outcome.\n",
+  "newText": "## Continue assisting\n\nNo specific trigger shape matched this turn. Run a light version of the proactive\nsweep: check guard status and job logs, `get_open_obligations(session_id)` for any\nopen or overdue window, and any thread the guard left open that hasn't been followed up.\nPropose a DM only if something is genuinely worth saying, flag issues to ops with the\nright primitive, and update `analysis.md`. Silence is a fine outcome.\n\nFor shift-end or clock-out outreach, state the scheduled end time as a fact and offer\nneutral help with the app or paperwork. Do not order the guard to clock out or imply\nyou can release them from coverage.\n",
+  "intendedEffect": "Preserve useful scheduled clock-out assistance while preventing imperative wording and implied authority over release from coverage.",
+  "sourceFileHash": "32db78f1ef356d0bfdf2b2628479f90287003b9261c65e23ce975c34ee6057ce",
+  "candidateFileHash": "277528f02523cc5a6830893df0ff8b561e7ed4a82d1140a58f3e95ca1f0b2bdf"
+}

@@ -82,15 +82,17 @@ export default function DiagnosisActivityPage() {
     setPage((current) => Math.min(current, totalPages - 1));
   }, [totalPages]);
 
-  async function runQueueItem(id: string) {
+  async function runQueueAction(item: DiagnosisQueueItem) {
+    const action = item.status === "running" ? "cancel" : "start";
     setError(null);
     try {
-      const response = await fetch(`/api/diagnose/queue/${encodeURIComponent(id)}/start`, {
+      const response = await fetch(`/api/diagnose/queue/${encodeURIComponent(item.id)}/${action}`, {
         method: "POST",
         cache: "no-store",
       });
+      const payload = await response.json().catch(() => null);
       if (!response.ok) {
-        throw new Error(await errorMessage(response, "Diagnosis queue item start failed"));
+        throw new Error(messageFromPayload(payload) ?? `Diagnosis queue item ${action} failed`);
       }
       await loadQueue();
     } catch (caught: unknown) {
@@ -107,8 +109,9 @@ export default function DiagnosisActivityPage() {
         method: "POST",
         cache: "no-store",
       });
+      const payload = await response.json().catch(() => null);
       if (!response.ok) {
-        throw new Error(await errorMessage(response, "Diagnosis queue scan failed"));
+        throw new Error(messageFromPayload(payload) ?? "Diagnosis queue scan failed");
       }
       await loadQueue();
     } catch (caught: unknown) {
@@ -230,9 +233,9 @@ export default function DiagnosisActivityPage() {
                       <ContextMenu.Popup className="diagnosis-context-menu">
                         <ContextMenu.Item
                           className="diagnosis-context-menu__item"
-                          onClick={() => void runQueueItem(item.id)}
+                          onClick={() => void runQueueAction(item)}
                         >
-                          Run
+                          {item.status === "running" ? "Cancel" : "Run"}
                         </ContextMenu.Item>
                       </ContextMenu.Popup>
                     </ContextMenu.Positioner>
@@ -338,14 +341,18 @@ function LabeledText({ label, children }: { label: string; children: ReactNode }
 async function errorMessage(response: Response, fallback: string): Promise<string> {
   try {
     const payload: unknown = await response.json();
-    if (payload && typeof payload === "object" && "message" in payload) {
-      const message = (payload as { message?: unknown }).message;
-      return Array.isArray(message) ? message.join("; ") : String(message);
-    }
+    return messageFromPayload(payload) ?? `${fallback} (${response.status})`;
   } catch {
-    // Response was not JSON.
+    return `${fallback} (${response.status})`;
   }
-  return `${fallback} (${response.status})`;
+}
+
+function messageFromPayload(payload: unknown): string | null {
+  if (payload && typeof payload === "object" && "message" in payload) {
+    const message = (payload as { message?: unknown }).message;
+    return Array.isArray(message) ? message.join("; ") : String(message);
+  }
+  return null;
 }
 
 function isDiagnosisQueueResponse(value: unknown): value is DiagnosisQueueResponse {

@@ -2,6 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { DiagnoseService } from '../diagnose/diagnose.service';
 import { DiagnosisQueueSchema } from './diagnosis-queue.schema';
 import type {
+  ClearDiagnosisQueueDto,
+  ClearDiagnosisQueueResponseDto,
   DiagnosisQueueIdParamDto,
   DiagnosisQueueResponseDto,
   DiagnosisQueueStatusDto,
@@ -15,6 +17,8 @@ import type {
 
 @Injectable()
 export class DiagnosisQueueService {
+  private readonly cancelledJobIds = new Set<string>();
+
   constructor(
     private readonly schema: DiagnosisQueueSchema,
     private readonly diagnoseService: DiagnoseService,
@@ -35,7 +39,9 @@ export class DiagnosisQueueService {
   }
 
   async start(dto: DiagnosisQueueIdParamDto): Promise<{ item: DiagnosisQueueResponseDto['items'][number] }> {
-    return { item: await this.schema.markRunning(dto) };
+    const item = await this.schema.markRunning(dto);
+    void this.runStartedDiagnosis(item.jobId);
+    return { item };
   }
 
   async complete(dto: FinishDiagnosisQueueJobDto): Promise<{ item: DiagnosisQueueResponseDto['items'][number] }> {
@@ -44,6 +50,21 @@ export class DiagnosisQueueService {
 
   async fail(dto: FinishDiagnosisQueueJobDto): Promise<{ item: DiagnosisQueueResponseDto['items'][number] }> {
     return { item: await this.schema.markFailed(dto) };
+  }
+
+  async cancel(dto: DiagnosisQueueIdParamDto): Promise<{ item: DiagnosisQueueResponseDto['items'][number] }> {
+    const item = await this.schema.cancel(dto);
+    this.cancelledJobIds.add(item.jobId);
+    await this.startNextQueuedDiagnosis();
+    return { item };
+  }
+
+  async deleteOne(dto: DiagnosisQueueIdParamDto): Promise<ClearDiagnosisQueueResponseDto> {
+    return { deleted: await this.schema.deleteOne(dto) };
+  }
+
+  async clear(dto: ClearDiagnosisQueueDto): Promise<ClearDiagnosisQueueResponseDto> {
+    return { deleted: await this.schema.clear(dto) };
   }
 
   async sweepStart(dto: SweepStartDiagnosisQueueDto): Promise<SweepStartDiagnosisQueueResponseDto> {
@@ -99,6 +120,10 @@ export class DiagnosisQueueService {
         replaySource: 'production',
         useCompactContext: true,
       });
+      if (this.cancelledJobIds.has(jobId)) {
+        this.cancelledJobIds.delete(jobId);
+        return;
+      }
       await this.schema.markCompleted({ jobId, diagnosisRunId: diagnosis.runId });
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : String(error);

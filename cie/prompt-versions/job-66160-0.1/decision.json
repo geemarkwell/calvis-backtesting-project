@@ -1,0 +1,15 @@
+{
+  "jobId": "66160",
+  "version": "0.1",
+  "status": "rejected",
+  "createdAt": "2026-09-12T17:57:00.863Z",
+  "decidedAt": "2026-09-12T18:10:10.271Z",
+  "evaluation": {
+    "runId": "maya-66160-1",
+    "judgedAt": "2026-09-12T18:00:03.872Z",
+    "fixed": false,
+    "verdict": "no",
+    "confidence": 88,
+    "summary": "The candidate removed the specific orders not to clock in and to find Garrett, but it did not fully fix the called-out role-authority behavior. It still used permission-like and directive language about logging, and it omitted the neutral prerequisite explanation and actual escalation path expected when Garrett was unreachable."
+  }
+}

@@ -7,6 +7,7 @@ import type {
   DiagnosisQueueItemDto,
   DiagnosisQueueStatusDto,
   EnqueueDiagnosisJobDto,
+  ClearDiagnosisQueueDto,
   FinishDiagnosisQueueJobDto,
   ListDiagnosisQueueDto,
 } from './dto/diagnosis-queue.dto';
@@ -135,6 +136,42 @@ export class DiagnosisQueueSchema {
 
   async markFailed(dto: FinishDiagnosisQueueJobDto): Promise<DiagnosisQueueItemDto> {
     return this.finishByJob(dto, 'failed');
+  }
+
+  async cancel(dto: DiagnosisQueueIdParamDto): Promise<DiagnosisQueueItemDto> {
+    await this.ensureInitialized();
+    const item = await this.findById(dto.id);
+    if (!item) throw new Error(`Diagnosis queue item ${dto.id} not found.`);
+    const completedAt = new Date().toISOString();
+    await this.db.execute({
+      sql: `UPDATE diagnosis_queue
+        SET status = 'failed', error_message = 'Cancelled by user.', completed_at = ?
+        WHERE id = ? AND status IN ('queued', 'running')`,
+      args: [completedAt, dto.id],
+    });
+    const updated = await this.findById(dto.id);
+    if (!updated) throw new Error(`Diagnosis queue item ${dto.id} not found.`);
+    return updated;
+  }
+
+  async deleteOne(dto: DiagnosisQueueIdParamDto): Promise<number> {
+    await this.ensureInitialized();
+    const result = await this.db.execute({
+      sql: `DELETE FROM diagnosis_queue WHERE id = ?`,
+      args: [dto.id],
+    });
+    return result.rowsAffected;
+  }
+
+  async clear(dto: ClearDiagnosisQueueDto): Promise<number> {
+    await this.ensureInitialized();
+    const where = dto.status ? 'WHERE status = ?' : `WHERE status != 'running'`;
+    const args = dto.status ? [dto.status] : [];
+    const result = await this.db.execute({
+      sql: `DELETE FROM diagnosis_queue ${where}`,
+      args,
+    });
+    return result.rowsAffected;
   }
 
   private async finishByJob(
