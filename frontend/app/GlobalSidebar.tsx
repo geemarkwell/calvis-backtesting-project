@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
 import { useState } from "react";
 
 const routes = [
@@ -22,6 +22,8 @@ const routes = [
 
 export default function GlobalSidebar() {
   const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const debugActive = pathname === "/" && searchParams.get("debug") === "1";
   const [collapsed, setCollapsed] = useState(false);
 
   return (
@@ -86,8 +88,8 @@ export default function GlobalSidebar() {
       </nav>
 
       <Link
-        className="global-sidebar__debug-link"
-        href="/?debug=1"
+        className={debugActive ? "global-sidebar__debug-link is-active" : "global-sidebar__debug-link"}
+        href={debugActive ? "/" : "/?debug=1"}
         title={collapsed ? "Debug" : undefined}
       >
         <b>DG</b>

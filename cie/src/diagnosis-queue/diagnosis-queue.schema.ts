@@ -66,14 +66,34 @@ export class DiagnosisQueueSchema {
 
   async list(dto: ListDiagnosisQueueDto): Promise<DiagnosisQueueItemDto[]> {
     await this.ensureInitialized();
-    const where = dto.status ? 'WHERE status = ?' : '';
-    const args = dto.status ? [dto.status, dto.limit] : [dto.limit];
-    const result = await this.db.execute({
-      sql: `SELECT * FROM diagnosis_queue ${where}
-        ORDER BY queued_at DESC
-        LIMIT ?`,
-      args,
-    });
+    const result = dto.status
+      ? await this.db.execute({
+          sql: `SELECT * FROM diagnosis_queue
+            WHERE status = ?
+            ORDER BY ${statusOrderColumn(dto.status)} DESC, queued_at DESC
+            LIMIT ?`,
+          args: [dto.status, dto.limit],
+        })
+      : await this.db.execute({
+          sql: `SELECT * FROM diagnosis_queue
+            ORDER BY
+              CASE status
+                WHEN 'running' THEN 0
+                WHEN 'completed' THEN 1
+                WHEN 'failed' THEN 2
+                WHEN 'queued' THEN 3
+                ELSE 4
+              END ASC,
+              CASE
+                WHEN status = 'completed' THEN COALESCE(completed_at, queued_at)
+                WHEN status = 'running' THEN COALESCE(started_at, queued_at)
+                WHEN status = 'failed' THEN COALESCE(completed_at, queued_at)
+                ELSE queued_at
+              END DESC,
+              queued_at DESC
+            LIMIT ?`,
+          args: [dto.limit],
+        });
     return result.rows.map(rowToItem);
   }
 
@@ -199,6 +219,12 @@ export class DiagnosisQueueSchema {
       `CREATE INDEX IF NOT EXISTS diagnosis_queue_job_idx ON diagnosis_queue (job_id, queued_at)`,
     ], 'write');
   }
+}
+
+function statusOrderColumn(status: DiagnosisQueueStatusDto): string {
+  if (status === 'completed' || status === 'failed') return 'COALESCE(completed_at, queued_at)';
+  if (status === 'running') return 'COALESCE(started_at, queued_at)';
+  return 'queued_at';
 }
 
 function rowToItem(row: Record<string, unknown>): DiagnosisQueueItemDto {

@@ -1,5 +1,6 @@
 "use client";
 
+import { ContextMenu } from "@base-ui/react/context-menu";
 import Link from "next/link";
 import type { ReactNode } from "react";
 import { useCallback, useEffect, useMemo, useState } from "react";
@@ -80,6 +81,23 @@ export default function DiagnosisActivityPage() {
   useEffect(() => {
     setPage((current) => Math.min(current, totalPages - 1));
   }, [totalPages]);
+
+  async function runQueueItem(id: string) {
+    setError(null);
+    try {
+      const response = await fetch(`/api/diagnose/queue/${encodeURIComponent(id)}/start`, {
+        method: "POST",
+        cache: "no-store",
+      });
+      if (!response.ok) {
+        throw new Error(await errorMessage(response, "Diagnosis queue item start failed"));
+      }
+      await loadQueue();
+    } catch (caught: unknown) {
+      setError(caught instanceof Error ? caught.message : String(caught));
+      setStatus("error");
+    }
+  }
 
   async function scan() {
     setScanStatus("scanning");
@@ -196,14 +214,30 @@ export default function DiagnosisActivityPage() {
                 <span>Status</span>
               </div>
               {visibleItems.map((item) => (
-                <section className="theo-target-card diagnose-pattern-card" key={item.id}>
-                  <QueueItemSummary item={item} />
-                  {item.errorMessage && (
-                    <div className="theo-target-card__details">
-                      <LabeledText label="Error">{item.errorMessage}</LabeledText>
-                    </div>
-                  )}
-                </section>
+                <ContextMenu.Root key={item.id}>
+                  <ContextMenu.Trigger className="diagnosis-activity-context-trigger">
+                    <section className="theo-target-card diagnose-pattern-card">
+                      <QueueItemSummary item={item} />
+                      {item.errorMessage && (
+                        <div className="theo-target-card__details">
+                          <LabeledText label="Error">{item.errorMessage}</LabeledText>
+                        </div>
+                      )}
+                    </section>
+                  </ContextMenu.Trigger>
+                  <ContextMenu.Portal>
+                    <ContextMenu.Positioner>
+                      <ContextMenu.Popup className="diagnosis-context-menu">
+                        <ContextMenu.Item
+                          className="diagnosis-context-menu__item"
+                          onClick={() => void runQueueItem(item.id)}
+                        >
+                          Run
+                        </ContextMenu.Item>
+                      </ContextMenu.Popup>
+                    </ContextMenu.Positioner>
+                  </ContextMenu.Portal>
+                </ContextMenu.Root>
               ))}
             </div>
           )}

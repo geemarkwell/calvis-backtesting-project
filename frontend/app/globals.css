@@ -3011,7 +3011,8 @@ pre {
   text-decoration: none;
 }
 
-.global-sidebar__debug-link:hover {
+.global-sidebar__debug-link:hover,
+.global-sidebar__debug-link.is-active {
   border-color: var(--hazard);
   background: rgba(255, 42, 42, 0.07);
   color: var(--hazard);
@@ -3819,6 +3820,57 @@ pre {
   padding: 0;
   text-transform: uppercase;
 }
+.diagnosis-activity-context-trigger {
+  display: block;
+  outline: none;
+}
+
+.diagnosis-activity-context-trigger:focus,
+.diagnosis-activity-context-trigger:focus-visible,
+.diagnosis-activity-context-trigger:focus-within,
+.diagnosis-activity-context-trigger[data-popup-open],
+.diagnosis-activity-context-trigger [data-focus-visible],
+.diagnosis-activity-context-trigger *:focus,
+.diagnosis-activity-context-trigger *:focus-visible {
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+.diagnosis-context-menu {
+  background: #050505;
+  border: 0;
+  box-shadow: none;
+  min-width: 140px;
+  outline: none;
+  padding: 6px;
+  z-index: 1000;
+}
+
+.diagnosis-context-menu:focus,
+.diagnosis-context-menu:focus-visible,
+.diagnosis-context-menu:focus-within,
+.diagnosis-context-menu[data-open],
+.diagnosis-context-menu *:focus,
+.diagnosis-context-menu *:focus-visible {
+  box-shadow: none !important;
+  outline: none !important;
+}
+
+.diagnosis-context-menu__item {
+  color: var(--ink);
+  cursor: pointer;
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 0.12em;
+  padding: 10px 12px;
+  text-transform: uppercase;
+}
+
+.diagnosis-context-menu__item[data-highlighted] {
+  background: #151515;
+  color: var(--ink);
+}
+
 .diagnosis-activity-row {
   grid-template-columns: minmax(150px, 1.15fr) minmax(100px, 0.7fr) minmax(100px, 0.7fr) minmax(150px, 1fr) minmax(150px, 1fr) minmax(110px, 0.8fr) minmax(90px, auto) !important;
   align-items: center;
