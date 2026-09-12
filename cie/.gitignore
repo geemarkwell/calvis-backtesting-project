@@ -4,6 +4,7 @@
 /build
 /runs
 /database
+mastra.db
 
 # Logs
 logs
